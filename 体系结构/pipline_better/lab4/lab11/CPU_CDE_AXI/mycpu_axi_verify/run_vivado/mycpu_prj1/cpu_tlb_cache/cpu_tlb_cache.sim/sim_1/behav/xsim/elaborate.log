@@ -1,0 +1,36 @@
+Vivado Simulator 2019.2
+Copyright 1986-1999, 2001-2019 Xilinx, Inc. All Rights Reserved.
+Running: D:/vivado/Vivado/2019.2/bin/unwrapped/win64.o/xelab.exe -wto 6ce6ab47adc1493fbfe71653d738c76e --incr --debug typical --relax --mt 2 -L blk_mem_gen_v8_4_4 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip -L xpm --snapshot tb_cpu_with_tlb_cache_improved_behav xil_defaultlib.tb_cpu_with_tlb_cache_improved xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+WARNING: [VRFC 10-5021] port 'enb' is not connected on this instance [D:/pipline_better/lab5/labcode/mycpu/cpu_with_tlb_cache.v:533]
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module xil_defaultlib.tlb_default
+Compiling module xil_defaultlib.cache_default
+Compiling module xil_defaultlib.fetch
+Compiling module xil_defaultlib.decode
+Compiling module xil_defaultlib.adder
+Compiling module xil_defaultlib.alu
+Compiling module xil_defaultlib.multiply
+Compiling module xil_defaultlib.exe
+Compiling module xil_defaultlib.mem
+Compiling module xil_defaultlib.wb
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4_output_stage(...
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4_softecc_outpu...
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4_mem_module(C_...
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4(C_FAMILY="art...
+Compiling module xil_defaultlib.inst_rom
+Compiling module xil_defaultlib.regfile
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4_output_stage(...
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4_mem_module(C_...
+Compiling module blk_mem_gen_v8_4_4.blk_mem_axi_regs_fwd_v8_4(C_DATA...
+Compiling module blk_mem_gen_v8_4_4.blk_mem_gen_v8_4_4(C_FAMILY="art...
+Compiling module xil_defaultlib.data_ram
+Compiling module xil_defaultlib.cpu_with_tlb_cache
+Compiling module xil_defaultlib.tb_cpu_with_tlb_cache_improved
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot tb_cpu_with_tlb_cache_improved_behav

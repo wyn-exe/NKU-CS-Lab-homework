@@ -1,0 +1,450 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献} 
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+		\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+		\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+		\textbf{\Huge\textbf{\kaishu{GPU编程}}}
+
+		\vspace{\fill}
+    
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+    
+    \vfill
+    {\Large \today}
+    \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}  
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+\section{实验目标}
+
+本实验旨在设计并实现基于CUDA的数论变换(NTT)多项式乘法并行算法，通过GPU并行计算技术加速大规模多项式乘法运算。具体目标包括：
+
+\begin{enumerate}
+	\item 实现GPU基础版本的NTT算法，探索GPU并行计算在数论变换中的应用潜力
+	\item 设计并实现GPU Barrett规约版本，优化模运算性能，减少计算开销
+	\item 设计并实现GPU Montgomery规约版本，进一步提升模运算效率
+	\item 对比分析五种不同实现方式的性能表现，量化GPU加速效果
+	\item 深入分析不同规约算法在GPU架构下的适用性和性能特征
+\end{enumerate}
+
+\section{实验平台配置}
+
+\subsection{硬件配置}
+实验使用的GPU硬件配置如下：
+\begin{itemize}
+	\item \textbf{GPU型号}：GRID T4-8Q
+	\item \textbf{SM数量}：40个流式多处理器
+	\item \textbf{最大线程数/块}：1024
+	\item \textbf{最大网格大小}：2,147,483,647
+\end{itemize}
+
+\subsection{软件环境}
+\begin{itemize}
+	\item \textbf{编程语言}：C++/CUDA
+	\item \textbf{编译器}：NVCC
+	\item \textbf{运行时}：CUDA Runtime API
+\end{itemize}
+
+\section{算法设计与实现}
+
+\subsection{GPU基础加速版本}
+
+GPU基础版本采用直接的CUDA并行化策略，将传统CPU串行NTT算法转换为GPU并行实现。
+
+\subsubsection{核心设计思路}
+\begin{enumerate}
+	\item \textbf{位逆序置换并行化}：这是一个典型的“易并行”任务。每个元素的目标位置可以独立计算,不受其他元素影响。因此,可以启动一个CUDA核函数,让每个线程负责一个数组元素的位逆序交换。
+	\item \textbf{蝶形运算并行化}：在每个NTT层级中，不同蝶形运算组之间相互独立，可并行执行
+	\item \textbf{内存管理优化}：采用统一内存管理，减少CPU-GPU数据传输开销
+	\item \textbf{点值乘法与最终缩放}：这两步也是易并行的。每个元素的计算都是独立的。因此,可以启动一个核函数,让每个线程负责数组中一个位置的乘法运算。
+	\item \textbf{模运算}: 在基础版本中,我们直接使用CUDA C++中的`\%`运算符进行模乘和模加减运算。这虽然简单,但`\%`操作(尤其是对64位整数)在硬件层面通常会编译成较慢的除法指令,是潜在的性能瓶颈。
+\end{enumerate}
+
+\subsubsection{关键实现策略}
+核心蝶形运算采用以下并行策略：
+\begin{itemize}
+	\item 外层循环遍历不同长度的蝶形运算($h = 2, 4, 8, \ldots$)
+	\item 中层使用grid并行化不同的蝶形运算组
+	\item 内层使用block并行化同组内的蝶形运算对
+	\item 预计算并存储旋转因子，避免重复计算
+\end{itemize}
+
+\subsubsection{关键代码}
+蝶形运算是NTT的核心,其基础GPU核函数ntt\_basic\_kernel的设计如下。该核函数由len/h个Block启动,每个Block处理一个大小为h的蝶形组。
+\begin{lstlisting}[language=C++, caption={基础NTT蝶形运算核函数 \texttt{ntt\_basic\_kernel}}]
+	__global__ void ntt_basic_kernel(LL *a, int len, int h, LL *w_table, LL p) {
+		// blockIdx.x 标识当前是第几个蝶形运算组
+		int j_base = blockIdx.x * h;
+		// threadIdx.x 负责组内的计算
+		for (int k = threadIdx.x; k < h / 2; k += blockDim.x) {
+			int idx1 = j_base + k;
+			int idx2 = j_base + k + h / 2;
+			LL w = w_table[k]; // 从预计算表中获取旋转因子
+			// 核心蝶形运算, 使用128位整数避免中间结果溢出
+			unsigned __int128 product = (unsigned __int128)a[idx2] * w;
+			LL t = product % p;
+			a[idx2] = (a[idx1] - t + p) % p;
+			a[idx1] = (a[idx1] + t) % p;
+		}
+	}
+\end{lstlisting}
+
+\subsection{GPU Barrett规约版本}
+
+Barrett规约是一种高效的模运算优化技术，特别适用于固定模数的重复模运算场景。
+
+\subsubsection{Barrett规约原理}
+Barrett规约通过预计算模数的倒数近似值，将除法运算转换为乘法和位移运算：
+$$x \bmod p \approx x - \lfloor \frac{x \cdot \mu}{2^{64}} \rfloor \cdot p$$
+其中 $\mu = \lfloor \frac{2^{64}}{p} \rfloor$ 为预计算的倒数近似值。
+
+\subsubsection{GPU优化策略}
+\begin{enumerate}
+	\item \textbf{预计算优化}：在CPU端预计算Barrett参数，避免GPU端重复计算
+	\item \textbf{内存访问优化}：将Barrett参数存储在GPU常量内存中，提高访问效率
+	\item \textbf{精度控制}：使用128位中间计算保证精度，最终结果转换为64位
+	\item \textbf{溢出处理}：增加边界检查，处理可能的下溢情况
+\end{enumerate}
+
+Barrett规约将模运算的复杂度从$O(\log p)$降低到$O(1)$，显著提升了GPU并行效率。
+
+\subsubsection{关键代码}
+Barrett规约的核心在于其设备端乘法函数,它利用128位整数和预计算的`im`来避免除法。
+\begin{lstlisting}[language=C++, caption={GPU Barrett模乘设备函数 \texttt{gpu\_barrett\_multiply}}]
+	struct GPUBarrett { ULL mod, im; };
+	
+	__device__ ULL gpu_barrett_multiply(ULL a, ULL b, const GPUBarrett* barrett) {
+		unsigned __int128 z = (unsigned __int128)a * b;
+		// 关键步骤: 将除法替换为乘法和移位
+		unsigned __int128 x = ((unsigned __int128)z * barrett->im) >> 64;
+		unsigned __int128 y = x * barrett->mod;
+		ULL v = (ULL)(z - y);
+		// 处理下溢和边界情况
+		if (z < y) v += barrett->mod;
+		if (v >= barrett->mod) v -= barrett->mod;
+		return v;
+	}
+\end{lstlisting}
+
+\subsection{GPU Montgomery规约版本}
+
+Montgomery规约是另一种高效的模运算技术，通过域转换避免传统除法运算。
+
+\subsubsection{Montgomery规约原理}
+Montgomery规约工作在Montgomery域中，将模运算转换为：
+$$\text{MonRed}(aR, bR) = \frac{(aR)(bR)}{R} \bmod p = abR \bmod p$$
+其中$R = 2^{64}$为Montgomery基数。
+
+\subsubsection{关键设计要点}
+\begin{enumerate}
+	\item \textbf{域转换管理}：
+	\begin{itemize}
+		\item 输入数据转换到Montgomery域：$a \rightarrow aR \bmod p$
+		\item NTT计算在Montgomery域内进行
+		\item 输出结果转换回普通域：$aR \rightarrow a \bmod p$
+	\end{itemize}
+	\item \textbf{参数预计算}：
+	\begin{itemize}
+		\item 计算$R^2 \bmod p$用于域转换
+		\item 计算$p'$满足$pp' \equiv -1 \pmod{2^{64}}$
+	\end{itemize}
+	\item \textbf{GPU内存优化}：所有Montgomery参数统一管理，减少内存访问开销
+\end{enumerate}
+
+Montgomery规约的优势在于避免了除法运算，所有操作都是乘法和位运算，更适合GPU并行架构。
+
+\subsubsection{关键代码}
+Montgomery实现的关键是其域内乘法函数和域转换函数。以下是域内乘法的设备函数。
+\begin{lstlisting}[language=C++, caption={GPU Montgomery模乘设备函数 \texttt{montgomery\_reduce}}]
+	struct MontgomeryParams { ULL mod, n_prime, r_squared; };
+	
+	// T = a * b, a和b已在Montgomery域
+	__device__ ULL montgomery_reduce(unsigned __int128 T, const MontgomeryParams* params) {
+		// 关键步骤: 同样避免了显式的大数除法
+		ULL m = (ULL)T * params->n_prime;
+		unsigned __int128 t = (T + (unsigned __int128)m * params->mod) >> 64;
+		return (t >= params->mod) ? (t - params->mod) : t;
+	}
+	
+	__device__ ULL montgomery_multiply(ULL a, ULL b, const MontgomeryParams* params) {
+		return montgomery_reduce((unsigned __int128)a * b, params);
+	}
+\end{lstlisting}
+
+\section{实验结果分析}
+
+\subsection{测试数据集说明}
+实验使用4个不同规模和模数的测试数据集：
+\begin{itemize}
+	\item \textbf{数据集0}：$n=4$, $p=7340033$ (小规模测试)
+	\item \textbf{数据集1}：$n=131072$, $p=7340033$ (中等规模，小模数)
+	\item \textbf{数据集2}：$n=131072$, $p=104857601$ (中等规模，中等模数)  
+	\item \textbf{数据集3}：$n=131072$, $p=469762049$ (中等规模，较大模数)
+\end{itemize}
+
+\subsection{性能测试结果}
+
+\begin{table}[H]
+	\centering
+	\caption{不同版本在各测试集上的执行时间 (单位: ms)}
+	\label{tab:results}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{l|cc|cc|cc|cc}
+			\toprule
+			\multirow{2}{*}{\textbf{实现版本}} & \multicolumn{2}{c|}{\textbf{测试集 0}} & \multicolumn{2}{c|}{\textbf{测试集 1}} & \multicolumn{2}{c|}{\textbf{测试集 2}} & \multicolumn{2}{c}{\textbf{测试集 3}} \\
+			& n=4 & p=7340033 & n=131072 & p=7340033 & n=131072 & p=104857601 & n=131072 & p=469762049 \\
+			\midrule
+			CPU Barrett规约 & \multicolumn{2}{c|}{0.011} & \multicolumn{2}{c|}{61.502} & \multicolumn{2}{c|}{61.710} & \multicolumn{2}{c}{61.815} \\
+			CPU Montgomery规约 & \multicolumn{2}{c|}{0.005} & \multicolumn{2}{c|}{48.606} & \multicolumn{2}{c|}{48.801} & \multicolumn{2}{c}{48.537} \\
+			\midrule
+			GPU基础版本 & \multicolumn{2}{c|}{\textbf{124.330}} & \multicolumn{2}{c|}{24.406} & \multicolumn{2}{c|}{26.197} & \multicolumn{2}{c}{24.817} \\
+			GPU Barrett规约 & \multicolumn{2}{c|}{2.424} & \multicolumn{2}{c|}{18.537} & \multicolumn{2}{c|}{17.851} & \multicolumn{2}{c}{18.183} \\
+			GPU Montgomery规约 & \multicolumn{2}{c|}{0.714} & \multicolumn{2}{c|}{\textbf{19.902}} & \multicolumn{2}{c|}{\textbf{16.790}} & \multicolumn{2}{c}{\textbf{18.114}} \\
+			\bottomrule
+		\end{tabular}%
+	}
+\end{table}
+
+\subsection{时间复杂度分析}
+
+\subsubsection{理论时间复杂度}
+对于长度为$n$的多项式乘法：
+\begin{itemize}
+	\item \textbf{传统方法}：$O(n^2)$
+	\item \textbf{NTT方法}：$O(n \log n)$
+\end{itemize}
+
+\subsubsection{GPU并行化效果分析}
+GPU并行化主要优化以下操作：
+\begin{enumerate}
+	\item \textbf{位逆序置换}：从$O(n)$串行降低到$O(1)$并行
+	\item \textbf{蝶形运算}：每层$O(n)$运算并行化
+	\item \textbf{点值乘法}：$O(n)$完全并行化
+\end{enumerate}
+
+\subsection{加速比分析}
+
+\subsubsection{数据集0分析（小规模）}
+在小规模数据（$n=4$）下：
+\begin{itemize}
+	\item GPU基础版本相对CPU版本出现\textbf{负加速}现象
+	\item 原因：GPU启动开销(kernel launch overhead)远大于实际计算时间
+	\item GPU初始化和内存传输成本在小规模下占主导地位
+\end{itemize}
+
+\subsubsection{数据集1-3分析（中大规模）}
+在中大规模数据（$n=131072$）下：
+
+\begin{table}[H]
+	\centering
+	\caption{GPU相对CPU加速比}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{对比项} & \textbf{数据集1} & \textbf{数据集2} & \textbf{数据集3} \\
+		\hline
+		GPU基础 vs CPU Barrett & 2.52× & 2.36× & 2.49× \\
+		\hline
+		GPU基础 vs CPU Montgomery & 1.99× & 1.86× & 1.96× \\
+		\hline
+		GPU Barrett vs CPU Barrett & 3.32× & 3.46× & 3.40× \\
+		\hline
+		GPU Montgomery vs CPU Montgomery & 2.44× & 2.91× & 2.68× \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{规约优化效果分析}
+
+\begin{table}[H]
+	\centering
+	\caption{GPU内部不同版本加速比}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{优化效果} & \textbf{数据集1} & \textbf{数据集2} & \textbf{数据集3} \\
+		\hline
+		Barrett vs 基础版本 & 1.32× & 1.47× & 1.36× \\
+		\hline
+		Montgomery vs 基础版本 & 1.23× & 1.56× & 1.37× \\
+		\hline
+	\end{tabular}
+\end{table}
+	
+	\section{性能分析与讨论}
+	
+	\subsection{GPU加速效果评估}
+	
+	\subsubsection{正向加速效果}
+	在合适规模下($n \geq 131072$)，GPU版本展现出明显的加速效果：
+	
+	Barrett规约版本表现最佳，相对CPU实现达到3.32×-3.46×的加速比;基础GPU版本也达到1.86×-2.52×的加速比;Montgomery规约版本达到2.44×-2.91×的加速比。
+	
+	\subsubsection{规约算法对比}
+	\begin{itemize}
+		\item \textbf{Barrett规约}：
+		\begin{itemize}
+			\item 优势：预计算开销小，适合GPU并行
+			\item 在GPU上相对基础版本提升32\%-47\%
+		\end{itemize}
+		\item \textbf{Montgomery规约}：
+		\begin{itemize}
+			\item 优势：避免除法运算，计算效率高
+			\item 域转换开销在大规模下被摊销
+			\item 在GPU上相对基础版本提升23\%-56\%
+		\end{itemize}
+	\end{itemize}
+	
+	\subsection{性能瓶颈分析}
+	
+	\subsubsection{GPU架构限制}
+	\begin{enumerate}
+		\item \textbf{内存带宽限制}：NTT算法存在大量不规则内存访问
+		\item \textbf{线程分歧}：条件分支导致warp内线程执行不一致
+		\item \textbf{同步开销}：不同NTT层级间需要全局同步
+	\end{enumerate}
+	
+	\subsubsection{算法特性影响}
+	\begin{enumerate}
+		\item \textbf{数据依赖}：NTT的蝶形运算存在层级间数据依赖
+		\item \textbf{访问模式}：位逆序和蝶形运算的内存访问模式不规则
+		\item \textbf{计算密度}：相对于内存访问，计算量较小
+	\end{enumerate}
+	
+	\subsection{规模敏感性分析}
+	
+	GPU加速效果与问题规模密切相关：
+	
+	\subsubsection{小规模问题（$n < 1000$）}
+	\begin{itemize}
+		\item GPU启动开销占主导，出现负加速
+		\item 建议使用CPU版本
+	\end{itemize}
+	
+	\subsubsection{中大规模问题（$n \geq 100000$）}
+	\begin{itemize}
+		\item GPU并行优势明显，加速比稳定在2-3倍
+		\item Barrett规约版本表现最佳
+		\item 建议优先使用GPU Barrett规约版本
+	\end{itemize}
+	
+	
+	\section{实验结论}
+	
+	本实验成功实现了基于CUDA的NTT多项式乘法并行加速，主要结论如下：
+	
+	\begin{enumerate}
+		\item \textbf{GPU加速有效性}：在合适规模下($n \geq 131072$)，GPU版本相对CPU版本可达到2-3.5倍加速比
+		\item \textbf{规约算法优势}：Barrett和Montgomery规约在GPU上都能带来额外的30\%-50\%性能提升
+		\item \textbf{Barrett规约最优}：在本实验环境下，GPU Barrett规约版本表现最佳
+		\item \textbf{规模敏感性}：GPU加速效果强烈依赖于问题规模，小规模问题不适合GPU加速
+	\end{enumerate}
+	
+	通过本实验，验证了GPU并行计算在数论变换优化中的显著效果，为大规模多项式运算提供了高效的解决方案。
+
+
+\section{链接}
+\textbf{Gitee链接}  \href{https://gitee.com/sky_whale/parallel-programming-with-nku}{Gitee}
+
+\end{document}

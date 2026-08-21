@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}番剧列表{% endblock %}
+{% block content %}
+<h2 class="mb-4">番剧列表</h2>
+
+<form class="row gx-2 mb-3" method="get">
+  <div class="col-md-3">
+    <input name="search" value="{{ request.args.search }}" class="form-control" placeholder="按名称搜索">
+  </div>
+  <div class="col-md-2">
+    <input name="region" value="{{ request.args.region }}" class="form-control" placeholder="地区">
+  </div>
+  <div class="col-md-3">
+    <select name="tag" class="form-select">
+      <option value="">全部标签</option>
+      {% for t in tags %}
+        <option value="{{ t.name }}" {% if request.args.tag == t.name %}selected{% endif %}>
+          {{ t.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select name="sort" class="form-select">
+      <option value="">默认排序</option>
+      <option value="views" {% if request.args.sort=='views' %}selected{% endif %}>播放量</option>
+      <option value="rating" {% if request.args.sort=='rating' %}selected{% endif %}>评分</option>
+    </select>
+  </div>
+  <div class="col-auto form-check align-self-center">
+    <input class="form-check-input" type="checkbox" name="desc" id="desc" value="1" {% if request.args.desc %}checked{% endif %}>
+    <label class="form-check-label" for="desc">降序</label>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-outline-secondary">筛选</button>
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th><th>名称</th><th>播放量</th><th>评分</th><th>创建时间</th><th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in anime_list %}
+      <tr>
+        <td>{{ a.anime_id }}</td>
+        <td><a href="{{ url_for('detail', anime_id=a.anime_id) }}">{{ a.title }}</a></td>
+        <td>{{ a.views }}</td>
+        <td>{{ a.rating }}</td>
+        <td>{{ a.created_at }}</td>
+        <td>
+          <a class="btn btn-sm btn-primary" href="{{ url_for('edit', anime_id=a.anime_id) }}">编辑</a>
+          <a class="btn btn-sm btn-danger" href="{{ url_for('delete', anime_id=a.anime_id) }}">删除</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

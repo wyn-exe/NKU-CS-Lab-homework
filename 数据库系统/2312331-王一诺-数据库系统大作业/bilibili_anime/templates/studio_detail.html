@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ studio_name }} 下的番剧{% endblock %}
+{% block content %}
+<div class="d-flex mb-3">
+  <a class="btn btn-outline-secondary me-2" href="{{ url_for('studios') }}">← 返回制作单位列表</a>
+  <h2>{{ studio_name }}（共 {{ anime_list|length }} 部）</h2>
+</div>
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead><tr><th>ID</th><th>名称</th><th>播放量</th><th>评分</th></tr></thead>
+    <tbody>
+      {% for a in anime_list %}
+      <tr>
+        <td>{{ a.anime_id }}</td>
+        <td><a href="{{ url_for('detail', anime_id=a.anime_id) }}">{{ a.title }}</a></td>
+        <td>{{ a.views }}</td>
+        <td>{{ a.rating }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

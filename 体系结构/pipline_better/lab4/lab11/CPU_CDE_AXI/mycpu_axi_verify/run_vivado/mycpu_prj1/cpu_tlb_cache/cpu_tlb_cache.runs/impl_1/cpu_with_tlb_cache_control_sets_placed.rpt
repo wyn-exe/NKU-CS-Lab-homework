@@ -1,0 +1,130 @@
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
+| Date         : Wed Jan  7 21:57:09 2026
+| Host         : wyn running 64-bit major release  (build 9200)
+| Command      : report_control_sets -verbose -file cpu_with_tlb_cache_control_sets_placed.rpt
+| Design       : cpu_with_tlb_cache
+| Device       : xc7a200t
+-----------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    52 |
+|    Minimum number of control sets                        |    52 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    49 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    52 |
+| >= 0 to < 4        |     0 |
+| >= 4 to < 6        |     3 |
+| >= 6 to < 8        |     0 |
+| >= 8 to < 10       |     2 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    47 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               8 |            7 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |              45 |           16 |
+| Yes          | No                    | No                     |            1872 |          776 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             290 |           85 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++----------------+------------------------------------------+-----------------------------------------------------+------------------+----------------+
+|  Clock Signal  |               Enable Signal              |                   Set/Reset Signal                  | Slice Load Count | Bel Load Count |
++----------------+------------------------------------------+-----------------------------------------------------+------------------+----------------+
+|  clk_IBUF_BUFG |                                          | WB_module/ID_valid0                                 |                3 |              4 |
+|  clk_IBUF_BUFG | WB_module/exc_commit                     | WB_module/cause_exc_code_r[3]_i_1_n_0               |                1 |              4 |
+|  clk_IBUF_BUFG | MEM_module/ID_allow_in0                  | MEM_module/IF_ID_bus_r_reg[0]                       |                2 |              5 |
+|  clk_IBUF_BUFG |                                          |                                                     |                7 |              8 |
+|  clk_IBUF_BUFG | WB_module/status_im_r                    | WB_module/status_exl_r0                             |                3 |              9 |
+|  clk_IBUF_BUFG | MEM_module/ID_allow_in0                  | MEM_module/IF_ID_bus_r_reg[27]                      |                4 |             16 |
+|  clk_IBUF_BUFG | MEM_module/next_fetch                    | WB_module/clear                                     |               12 |             30 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_2[0]     |                                                     |               18 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[152][0]       |                                                     |               15 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_8[0]     |                                                     |               15 |             32 |
+|  clk_IBUF_BUFG | WB_module/epc_r[31]_i_1_n_0              | WB_module/clear                                     |                7 |             32 |
+|  clk_IBUF_BUFG | WB_module/badvaddr_r[31]_i_1_n_0         | WB_module/clear                                     |                9 |             32 |
+|  clk_IBUF_BUFG | WB_module/compare_wen                    | WB_module/clear                                     |                8 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[151]_0[0]     |                                                     |               16 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[152]_2[0]     |                                                     |               11 |             32 |
+|  clk_IBUF_BUFG | EXE_module/multiply_module/multiplier    | EXE_module/multiply_module/multiplicand[63]_i_1_n_0 |               10 |             32 |
+|  clk_IBUF_BUFG | WB_module/E[0]                           |                                                     |               22 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[149]_1[0]     |                                                     |               12 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_11[0]    |                                                     |               12 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[151]_2[0]     |                                                     |               20 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_9[0]     |                                                     |               24 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[152]_0[0]     |                                                     |               14 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153][0]       |                                                     |               17 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[151][0]       |                                                     |               21 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_4[0]     |                                                     |               17 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[151]_3[0]     |                                                     |               25 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_3[0]     |                                                     |               18 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_7[0]     |                                                     |               14 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_5[0]     |                                                     |               14 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[150][0]       |                                                     |               12 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[152]_1[0]     |                                                     |               15 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_6[0]     |                                                     |               13 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[149]_0[0]     |                                                     |               14 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[151]_1[0]     |                                                     |               17 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_0[0]     |                                                     |               10 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[152]_4[0]     |                                                     |               14 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[150]_0[0]     |                                                     |               12 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_10[0]    |                                                     |               12 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[152]_3[0]     |                                                     |               10 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_1[0]     |                                                     |                8 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[153]_12[0]    |                                                     |               14 |             32 |
+|  clk_IBUF_BUFG | WB_module/MEM_WB_bus_r_reg[149][0]       |                                                     |               10 |             32 |
+|  clk_IBUF_BUFG | EXE_module/multiply_module/EXE_allow_in0 | EXE_module/multiply_module/EXE_valid_reg_0          |               13 |             34 |
+|  clk_IBUF_BUFG |                                          | WB_module/clear                                     |               13 |             41 |
+|  clk_IBUF_BUFG | WB_module/hi0                            |                                                     |               28 |             64 |
+|  clk_IBUF_BUFG | WB_module/lo0                            |                                                     |               15 |             64 |
+|  clk_IBUF_BUFG | EXE_module/multiply_module/multiplier    |                                                     |               24 |             64 |
+|  clk_IBUF_BUFG | EXE_module/multiply_module/mult_valid    | EXE_module/multiply_module/product_temp             |               16 |             64 |
+|  clk_IBUF_BUFG | IF_module/E[0]                           |                                                     |               35 |             98 |
+|  clk_IBUF_BUFG | MEM_module/MEM_over                      |                                                     |               65 |            186 |
+|  clk_IBUF_BUFG | EXE_module/multiply_module/EXE_allow_in0 |                                                     |               69 |            188 |
+|  clk_IBUF_BUFG | MEM_module/ID_allow_in0                  |                                                     |               74 |            216 |
++----------------+------------------------------------------+-----------------------------------------------------+------------------+----------------+
+
+

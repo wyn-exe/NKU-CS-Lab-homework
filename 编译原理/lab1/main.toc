@@ -1,0 +1,46 @@
+\babel@toc {UKenglish}{}\relax 
+\contentsline {section}{\numberline {1}摘要}{2}{section.1}%
+\contentsline {paragraph}{关键词}{2}{section*.1}%
+\contentsline {section}{\numberline {2}引言}{2}{section.2}%
+\contentsline {section}{\numberline {3}实验要求与分工}{2}{section.3}%
+\contentsline {section}{\numberline {4}基于简单程序熟悉完整编译过程}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}测试程序}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}编译过程}{3}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}预处理器}{4}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}编译器}{7}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}词法分析}{8}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}语法分析}{9}{subsubsection.4.4.2}%
+\contentsline {paragraph}{函数定义节点（FunctionDecl）}{9}{section*.11}%
+\contentsline {paragraph}{语句节点}{10}{section*.13}%
+\contentsline {paragraph}{表达式节点（算术运算 / 函数调用 / 隐式转换）}{10}{section*.16}%
+\contentsline {subsubsection}{\numberline {4.4.3}语义分析}{11}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}中间代码生成}{11}{subsubsection.4.4.4}%
+\contentsline {paragraph}{模块头}{11}{lstlisting.-2}%
+\contentsline {paragraph}{全局常量（字符串字面量）}{11}{lstlisting.-3}%
+\contentsline {paragraph}{函数定义：@factorial 的 IR}{12}{lstlisting.-4}%
+\contentsline {paragraph}{@main 的 IR}{13}{lstlisting.-5}%
+\contentsline {paragraph}{函数声明（外部可变参数函数）}{13}{lstlisting.-6}%
+\contentsline {paragraph}{属性（attributes）与模块元数据}{13}{lstlisting.-7}%
+\contentsline {paragraph}{总结}{14}{section*.24}%
+\contentsline {subsubsection}{\numberline {4.4.5}代码生成}{14}{subsubsection.4.4.5}%
+\contentsline {subsection}{\numberline {4.5}汇编器——目标文件生成}{17}{subsection.4.5}%
+\contentsline {subsubsection}{\numberline {4.5.1}从反汇编文件看汇编器输出}{17}{subsubsection.4.5.1}%
+\contentsline {subsubsection}{\numberline {4.5.2}从 nm 的符号表看：符号的种类与链接责任}{18}{subsubsection.4.5.2}%
+\contentsline {subsubsection}{\numberline {4.5.3}汇编器具体功能总结}{18}{subsubsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.6}链接器}{19}{subsection.4.6}%
+\contentsline {subsubsection}{\numberline {4.6.1}地址分配（节内偏移 → 运行时虚拟地址）}{19}{subsubsection.4.6.1}%
+\contentsline {subsubsection}{\numberline {4.6.2}未定义符号（U）如何被处理 — PLT 与 GOT 的引入}{19}{subsubsection.4.6.2}%
+\contentsline {subsubsection}{\numberline {4.6.3}插入的运行时与启动代码}{20}{subsubsection.4.6.3}%
+\contentsline {subsubsection}{\numberline {4.6.4}重定位已被解析}{20}{subsubsection.4.6.4}%
+\contentsline {subsubsection}{\numberline {4.6.5}符号表的变化：更多运行时符号与段符号}{20}{subsubsection.4.6.5}%
+\contentsline {subsubsection}{\numberline {4.6.6}功能总结}{20}{subsubsection.4.6.6}%
+\contentsline {section}{\numberline {5}LLVM IR编程和ARM汇编编程}{21}{section.5}%
+\contentsline {subsection}{\numberline {5.1}测试程序}{21}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}LLVM IR编写}{23}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}ARM汇编编写}{29}{subsection.5.3}%
+\contentsline {paragraph}{函数框架设计}{29}{lstlisting.-23}%
+\contentsline {paragraph}{循环条件检查}{30}{lstlisting.-24}%
+\contentsline {paragraph}{循环体实现}{30}{lstlisting.-25}%
+\contentsline {paragraph}{循环结束和返回}{30}{lstlisting.-26}%
+\contentsline {paragraph}{完整ARM汇编实现}{30}{lstlisting.-27}%
+\contentsline {section}{\numberline {6}结论}{35}{section.6}%

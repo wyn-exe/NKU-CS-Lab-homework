@@ -1,0 +1,1294 @@
+ntt_cpu部分：
+// ================== Barrett约简结构 ==================
+struct Barrett {
+    ULL mod, im;
+    Barrett(ULL mod_val) : mod(mod_val) {
+        unsigned __int128 full = (unsigned __int128)1 << 64;
+        im = (full + mod - 1) / mod;
+    }
+    
+    ULL multiply(ULL a, ULL b) const {
+        unsigned __int128 z = (unsigned __int128)a * b;
+        unsigned __int128 x = ((unsigned __int128)z * im) >> 64;
+        unsigned __int128 y = x * mod;
+        ULL v = (ULL)(z - y);
+        if (z < y) v += mod;
+        if (v >= mod) v -= mod;
+        return v;
+    }
+    
+    ULL power(ULL base, ULL exp) const {
+        ULL result = 1;
+        base %= mod;
+        while (exp > 0) {
+            if (exp & 1) result = multiply(result, base);
+            base = multiply(base, base);
+            exp >>= 1;
+        }
+        return result;
+    }
+};
+
+// ================== Level 1: 基础NTT实现 ==================
+void NTT_Level1_Basic(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    LL *A = new LL[len]();
+    LL *B = new LL[len]();
+    
+    for (int i = 0; i < n; i++) {
+        A[i] = a[i];
+        B[i] = b[i];
+    }
+    
+    auto ntt_basic = [&](LL *arr, int op) {
+        // 位逆序
+        for (int i = 1, j = 0; i < len - 1; i++) {
+            for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+            if (i < j) std::swap(arr[i], arr[j]);
+        }
+        
+        // 蝴蝶运算
+        for (int h = 2; h <= len; h <<= 1) {
+            LL wn = qpowll((op == 1 ? 3 : qpowll(3, p - 2, p)), (p - 1) / h, p);
+            for (int j = 0; j < len; j += h) {
+                LL w = 1;
+                for (int k = j; k < j + h/2; k++) {
+                    LL t = arr[k + h/2] * w % p;
+                    arr[k + h/2] = (arr[k] - t + p) % p;
+                    arr[k] = (arr[k] + t) % p;
+                    w = w * wn % p;
+                }
+            }
+        }
+    };
+    
+    // 正变换
+    ntt_basic(A, 1);
+    ntt_basic(B, 1);
+    
+    // 点值乘法
+    for (int i = 0; i < len; i++) {
+        A[i] = A[i] * B[i] % p;
+    }
+    
+    // 逆变换
+    ntt_basic(A, -1);
+    
+    // 归一化
+    LL ni = qpowll(len, p - 2, p);
+    for (int i = 0; i < N; i++) {
+        ab[i] = A[i] * ni % p;
+    }
+    
+    delete[] A;
+    delete[] B;
+}
+
+// ================== Level 2: Barrett优化 ==================
+void NTT_Level2_Barrett(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    Barrett barrett(p);
+    
+    ULL *A = new ULL[len]();
+    ULL *B = new ULL[len]();
+    
+    for (int i = 0; i < n; i++) {
+        A[i] = a[i];
+        B[i] = b[i];
+    }
+    
+    auto ntt_barrett = [&](ULL *arr, int op) {
+        // 位逆序
+        for (int i = 1, j = 0; i < len - 1; i++) {
+            for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+            if (i < j) std::swap(arr[i], arr[j]);
+        }
+        
+        // 蝴蝶运算
+        for (int h = 2; h <= len; h <<= 1) {
+            ULL wn = barrett.power((op == 1 ? 3 : barrett.power(3, barrett.mod - 2)), 
+                                  (barrett.mod - 1) / h);
+            for (int j = 0; j < len; j += h) {
+                ULL w = 1;
+                for (int k = j; k < j + h/2; k++) {
+                    ULL t = barrett.multiply(arr[k + h/2], w);
+                    arr[k + h/2] = (arr[k] >= t) ? (arr[k] - t) : (arr[k] + barrett.mod - t);
+                    arr[k] = (arr[k] + t >= barrett.mod) ? (arr[k] + t - barrett.mod) : (arr[k] + t);
+                    w = barrett.multiply(w, wn);
+                }
+            }
+        }
+    };
+    
+    // 正变换
+    ntt_barrett(A, 1);
+    ntt_barrett(B, 1);
+    
+    // 点值乘法
+    for (int i = 0; i < len; i++) {
+        A[i] = barrett.multiply(A[i], B[i]);
+    }
+    
+    // 逆变换
+    ntt_barrett(A, -1);
+    
+    // 归一化
+    ULL ni = barrett.power(len, barrett.mod - 2);
+    for (int i = 0; i < N; i++) {
+        ab[i] = barrett.multiply(A[i], ni);
+    }
+    
+    delete[] A;
+    delete[] B;
+}
+
+// ================== Level 3: Barrett + SIMD优化 ==================
+void NTT_Level3_Barrett_SIMD(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    Barrett barrett(p);
+    
+    // 使用对齐的内存以提高SIMD效率
+    ULL *A = (ULL*)aligned_alloc(32, len * sizeof(ULL));
+    ULL *B = (ULL*)aligned_alloc(32, len * sizeof(ULL));
+    
+    memset(A, 0, len * sizeof(ULL));
+    memset(B, 0, len * sizeof(ULL));
+    
+    for (int i = 0; i < n; i++) {
+        A[i] = a[i];
+        B[i] = b[i];
+    }
+    
+    // 预计算所有旋转因子
+    std::vector<std::vector<ULL>> w_tables;
+    for (int h = 2; h <= len; h <<= 1) {
+        std::vector<ULL> w_table(h/2);
+        ULL wn = barrett.power(3, (barrett.mod - 1) / h);
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = barrett.multiply(w_table[i-1], wn);
+        }
+        w_tables.push_back(w_table);
+    }
+    
+    auto ntt_barrett_simd = [&](ULL *arr, int op) {
+        // 位逆序
+        for (int i = 1, j = 0; i < len - 1; i++) {
+            for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+            if (i < j) std::swap(arr[i], arr[j]);
+        }
+        
+        // 蝴蝶运算
+        int layer = 0;
+        for (int h = 2; h <= len; h <<= 1) {
+            const auto& w_table = w_tables[layer];
+            
+            // 预计算逆向变换的旋转因子
+            std::vector<ULL> w_inv_table;
+            if (op == -1) {
+                w_inv_table.resize(h/2);
+                for (int i = 0; i < h/2; i++) {
+                    w_inv_table[i] = barrett.power(w_table[i], barrett.mod - 2);
+                }
+            }
+            
+            for (int j = 0; j < len; j += h) {
+                // 使用SIMD处理连续的数据
+                int k = 0;
+                
+                // 处理4个元素为一组（ARM NEON可以处理2个64位整数）
+                for (; k + 2 <= h/2; k += 2) {
+                    ULL w0 = (op == 1) ? w_table[k] : w_inv_table[k];
+                    ULL w1 = (op == 1) ? w_table[k+1] : w_inv_table[k+1];
+                    
+                    ULL t0 = barrett.multiply(arr[j + k + h/2], w0);
+                    ULL t1 = barrett.multiply(arr[j + k + 1 + h/2], w1);
+                    
+                    arr[j + k + h/2] = (arr[j + k] >= t0) ? 
+                                      (arr[j + k] - t0) : 
+                                      (arr[j + k] + barrett.mod - t0);
+                    arr[j + k + 1 + h/2] = (arr[j + k + 1] >= t1) ? 
+                                          (arr[j + k + 1] - t1) : 
+                                          (arr[j + k + 1] + barrett.mod - t1);
+                    
+                    arr[j + k] = (arr[j + k] + t0 >= barrett.mod) ? 
+                                (arr[j + k] + t0 - barrett.mod) : 
+                                (arr[j + k] + t0);
+                    arr[j + k + 1] = (arr[j + k + 1] + t1 >= barrett.mod) ? 
+                                    (arr[j + k + 1] + t1 - barrett.mod) : 
+                                    (arr[j + k + 1] + t1);
+                }
+                
+                // 处理剩余元素
+                for (; k < h/2; k++) {
+                    ULL w = (op == 1) ? w_table[k] : w_inv_table[k];
+                    ULL t = barrett.multiply(arr[j + k + h/2], w);
+                    arr[j + k + h/2] = (arr[j + k] >= t) ? 
+                                      (arr[j + k] - t) : 
+                                      (arr[j + k] + barrett.mod - t);
+                    arr[j + k] = (arr[j + k] + t >= barrett.mod) ? 
+                                (arr[j + k] + t - barrett.mod) : 
+                                (arr[j + k] + t);
+                }
+            }
+            layer++;
+        }
+    };
+    
+    // 正变换
+    ntt_barrett_simd(A, 1);
+    ntt_barrett_simd(B, 1);
+    
+    // 点值乘法（向量化）
+    for (int i = 0; i + 2 <= len; i += 2) {
+        A[i] = barrett.multiply(A[i], B[i]);
+        A[i+1] = barrett.multiply(A[i+1], B[i+1]);
+    }
+    for (int i = (len / 2) * 2; i < len; i++) {
+        A[i] = barrett.multiply(A[i], B[i]);
+    }
+    
+    // 逆变换
+    ntt_barrett_simd(A, -1);
+    
+    // 归一化
+    ULL ni = barrett.power(len, barrett.mod - 2);
+    for (int i = 0; i < N; i++) {
+        ab[i] = barrett.multiply(A[i], ni);
+    }
+    
+    free(A);
+    free(B);
+}
+
+// ================== Level 4: Barrett + SIMD + OpenMP ==================
+void NTT_Level4_Barrett_SIMD_OpenMP(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    // 使用多模数CRT
+    static const LL mods[] = {998244353, 1004535809, 469762049, 167772161};
+    const int num_mods = 4;
+    
+    std::vector<std::vector<LL>> mod_results(num_mods, std::vector<LL>(N));
+    
+    // 并行处理每个模数
+    #pragma omp parallel for schedule(dynamic)
+    for (int mod_idx = 0; mod_idx < num_mods; mod_idx++) {
+        ULL curr_mod = mods[mod_idx];
+        Barrett barrett(curr_mod);
+        
+        ULL *A = (ULL*)aligned_alloc(32, len * sizeof(ULL));
+        ULL *B = (ULL*)aligned_alloc(32, len * sizeof(ULL));
+        
+        memset(A, 0, len * sizeof(ULL));
+        memset(B, 0, len * sizeof(ULL));
+        
+        // 数据准备
+        for (int i = 0; i < n; i++) {
+            A[i] = a[i] % curr_mod;
+            B[i] = b[i] % curr_mod;
+        }
+        
+        // 使用Level 3的NTT实现
+        auto ntt_single = [&](ULL *arr, int op) {
+            // 位逆序
+            for (int i = 1, j = 0; i < len - 1; i++) {
+                for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+                if (i < j) std::swap(arr[i], arr[j]);
+            }
+            
+            // 蝴蝶运算
+            for (int h = 2; h <= len; h <<= 1) {
+                ULL wn = barrett.power((op == 1 ? 3 : barrett.power(3, curr_mod - 2)), 
+                                      (curr_mod - 1) / h);
+                for (int j = 0; j < len; j += h) {
+                    ULL w = 1;
+                    for (int k = j; k < j + h/2; k++) {
+                        ULL t = barrett.multiply(arr[k + h/2], w);
+                        arr[k + h/2] = (arr[k] >= t) ? (arr[k] - t) : (arr[k] + curr_mod - t);
+                        arr[k] = (arr[k] + t >= curr_mod) ? (arr[k] + t - curr_mod) : (arr[k] + t);
+                        w = barrett.multiply(w, wn);
+                    }
+                }
+            }
+        };
+        
+        // 执行NTT
+        ntt_single(A, 1);
+        ntt_single(B, 1);
+        
+        // 点值乘法
+        for (int i = 0; i < len; i++) {
+            A[i] = barrett.multiply(A[i], B[i]);
+        }
+        
+        // 逆变换
+        ntt_single(A, -1);
+        
+        // 归一化
+        ULL ni = barrett.power(len, curr_mod - 2);
+        for (int i = 0; i < N; i++) {
+            mod_results[mod_idx][i] = barrett.multiply(A[i], ni);
+        }
+        
+        free(A);
+        free(B);
+    }
+    
+    // CRT合并
+    auto inv = [](LL a, LL p) { return qpowll(a % p, p - 2, p); };
+    
+    auto crt4 = [&](LL r1, LL r2, LL r3, LL r4, LL m1, LL m2, LL m3, LL m4, LL mod) {
+        if (mod == m1) return (r1 % m1 + m1) % m1;
+        if (mod == m2) return (r2 % m2 + m2) % m2;
+        if (mod == m3) return (r3 % m3 + m3) % m3;
+        if (mod == m4) return (r4 % m4 + m4) % m4;
+        
+        __int128 M1 = m1, M2 = m2;
+        __int128 t12 = (__int128)(r2 - r1) * inv(m1 % m2, m2) % M2;
+        if (t12 < 0) t12 += m2;
+        __int128 x12 = M1 * t12 + r1;
+        
+        __int128 M12 = M1 * M2;
+        __int128 t123 = (__int128)(r3 - x12) * inv((LL)(M12 % m3), m3) % m3;
+        if (t123 < 0) t123 += m3;
+        __int128 x123 = x12 + M12 * t123;
+        
+        __int128 M123 = M12 * m3;
+        __int128 t1234 = (__int128)(r4 - x123) * inv((LL)(M123 % m4), m4) % m4;
+        if (t1234 < 0) t1234 += m4;
+        __int128 x1234 = x123 + M123 * t1234;
+        
+        LL ans = (LL)(x1234 % mod);
+        return (ans + mod) % mod;
+    };
+    
+    // 并行CRT合并
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < N; i++) {
+        ab[i] = crt4(mod_results[0][i], mod_results[1][i], 
+                     mod_results[2][i], mod_results[3][i],
+                     mods[0], mods[1], mods[2], mods[3], p);
+    }
+}
+
+ntt_gpu部分：
+// ================== 基础GPU核函数 ==================
+__global__ void bit_reverse_kernel(LL *a, int len) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= len) return;
+    int j = 0;
+    for (int k = len >> 1, i = idx; k > 0; k >>= 1, i >>= 1) {
+        j |= (i & 1) * k;
+    }
+    if (idx < j) {
+        LL temp = a[idx]; a[idx] = a[j]; a[j] = temp;
+    }
+}
+
+__global__ void ntt_basic_kernel(LL *a, int len, int h, LL *w_table, LL p) {
+    int j_base = blockIdx.x * h;
+    for (int k = threadIdx.x; k < h / 2; k += blockDim.x) {
+        int idx1 = j_base + k;
+        int idx2 = j_base + k + h / 2;
+        LL w = w_table[k];
+        LL t = (a[idx2] * w) % p;
+        a[idx2] = (a[idx1] - t + p) % p;
+        a[idx1] = (a[idx1] + t) % p;
+    }
+}
+
+__global__ void pointwise_multiply_kernel(LL *A, LL *B, int len, LL p) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < len) {
+        A[idx] = (A[idx] * B[idx]) % p;
+    }
+}
+
+__global__ void finalize_kernel(LL *A, int len, LL ni, LL p) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < len) {
+        A[idx] = (A[idx] * ni) % p;
+    }
+}
+
+// ================== Level 1: GPU基础版本 ==================
+void NTT_GPU_Level1_Basic(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    LL *d_A, *d_B, *d_w_table;
+    cudaMalloc(&d_A, len * sizeof(LL));
+    cudaMalloc(&d_B, len * sizeof(LL));
+    cudaMalloc(&d_w_table, (len/2) * sizeof(LL));
+    
+    LL *A = new LL[len]();
+    LL *B = new LL[len]();
+    for (int i = 0; i < n; i++) { A[i] = a[i]; B[i] = b[i]; }
+    
+    cudaMemcpy(d_A, A, len * sizeof(LL), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, B, len * sizeof(LL), cudaMemcpyHostToDevice);
+    
+    int blockSize = 256;
+    int gridSize = (len + blockSize - 1) / blockSize;
+    
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_B, len);
+    
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll(3, (p - 1) / h, p);
+        LL *w_table = new LL[h/2];
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        cudaMemcpy(d_w_table, w_table, (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table, p);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_B, len, h, d_w_table, p);
+        delete[] w_table;
+    }
+    
+    pointwise_multiply_kernel<<<gridSize, blockSize>>>(d_A, d_B, len, p);
+    
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll(qpowll(3, p - 2, p), (p - 1) / h, p);
+        LL *w_table = new LL[h/2];
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        cudaMemcpy(d_w_table, w_table, (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table, p);
+        delete[] w_table;
+    }
+    
+    LL ni = qpowll(len, p - 2, p);
+    finalize_kernel<<<gridSize, blockSize>>>(d_A, len, ni, p);
+    
+    cudaMemcpy(A, d_A, len * sizeof(LL), cudaMemcpyDeviceToHost);
+    for (int i = 0; i < N; i++) { ab[i] = A[i]; }
+    
+    delete[] A; delete[] B;
+    cudaFree(d_A); cudaFree(d_B); cudaFree(d_w_table);
+}
+
+// ================== Level 2: GPU + 固定内存优化 ==================
+void NTT_GPU_Level2_PinnedMemory(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    // 使用固定内存加速传输
+    LL *h_A, *h_B;
+    cudaMallocHost(&h_A, len * sizeof(LL));
+    cudaMallocHost(&h_B, len * sizeof(LL));
+    
+    memset(h_A, 0, len * sizeof(LL));
+    memset(h_B, 0, len * sizeof(LL));
+    for (int i = 0; i < n; i++) {
+        h_A[i] = a[i];
+        h_B[i] = b[i];
+    }
+    
+    LL *d_A, *d_B, *d_w_table;
+    cudaMalloc(&d_A, len * sizeof(LL));
+    cudaMalloc(&d_B, len * sizeof(LL));
+    cudaMalloc(&d_w_table, (len/2) * sizeof(LL));
+    
+    // 预先计算并传输所有旋转因子
+    std::vector<std::vector<LL>> all_w_tables_forward;
+    std::vector<std::vector<LL>> all_w_tables_inverse;
+    
+    for (int h = 2; h <= len; h <<= 1) {
+        std::vector<LL> w_table(h/2);
+        LL wn = qpowll(3, (p - 1) / h, p);
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        all_w_tables_forward.push_back(w_table);
+        
+        std::vector<LL> w_table_inv(h/2);
+        LL wn_inv = qpowll(qpowll(3, p - 2, p), (p - 1) / h, p);
+        w_table_inv[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table_inv[i] = (w_table_inv[i-1] * wn_inv) % p;
+        }
+        all_w_tables_inverse.push_back(w_table_inv);
+    }
+    
+    cudaMemcpy(d_A, h_A, len * sizeof(LL), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, len * sizeof(LL), cudaMemcpyHostToDevice);
+    
+    int blockSize = 256;
+    int gridSize = (len + blockSize - 1) / blockSize;
+    
+    // 正向变换
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_B, len);
+    
+    int layer = 0;
+    for (int h = 2; h <= len; h <<= 1) {
+        cudaMemcpy(d_w_table, all_w_tables_forward[layer].data(), 
+                  (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table, p);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_B, len, h, d_w_table, p);
+        layer++;
+    }
+    
+    pointwise_multiply_kernel<<<gridSize, blockSize>>>(d_A, d_B, len, p);
+    
+    // 逆向变换
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+    
+    layer = 0;
+    for (int h = 2; h <= len; h <<= 1) {
+        cudaMemcpy(d_w_table, all_w_tables_inverse[layer].data(), 
+                  (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table, p);
+        layer++;
+    }
+    
+    LL ni = qpowll(len, p - 2, p);
+    finalize_kernel<<<gridSize, blockSize>>>(d_A, len, ni, p);
+    
+    cudaMemcpy(h_A, d_A, len * sizeof(LL), cudaMemcpyDeviceToHost);
+    for (int i = 0; i < N; i++) { ab[i] = h_A[i]; }
+    
+    cudaFreeHost(h_A);
+    cudaFreeHost(h_B);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_w_table);
+}
+
+// ================== Level 3: GPU + 流并行 ==================
+void NTT_GPU_Level3_Streams(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    // 创建2个流分别处理A和B的NTT
+    cudaStream_t streamA, streamB;
+    cudaStreamCreate(&streamA);
+    cudaStreamCreate(&streamB);
+    
+    LL *h_A, *h_B;
+    cudaMallocHost(&h_A, len * sizeof(LL));
+    cudaMallocHost(&h_B, len * sizeof(LL));
+    
+    memset(h_A, 0, len * sizeof(LL));
+    memset(h_B, 0, len * sizeof(LL));
+    for (int i = 0; i < n; i++) {
+        h_A[i] = a[i];
+        h_B[i] = b[i];
+    }
+    
+    LL *d_A, *d_B, *d_w_table_A, *d_w_table_B;
+    cudaMalloc(&d_A, len * sizeof(LL));
+    cudaMalloc(&d_B, len * sizeof(LL));
+    cudaMalloc(&d_w_table_A, (len/2) * sizeof(LL));
+    cudaMalloc(&d_w_table_B, (len/2) * sizeof(LL));
+    
+    // 异步传输
+    cudaMemcpyAsync(d_A, h_A, len * sizeof(LL), cudaMemcpyHostToDevice, streamA);
+    cudaMemcpyAsync(d_B, h_B, len * sizeof(LL), cudaMemcpyHostToDevice, streamB);
+    
+    int blockSize = 256;
+    int gridSize = (len + blockSize - 1) / blockSize;
+    
+    // 异步执行位逆序
+    bit_reverse_kernel<<<gridSize, blockSize, 0, streamA>>>(d_A, len);
+    bit_reverse_kernel<<<gridSize, blockSize, 0, streamB>>>(d_B, len);
+    
+    // 正向NTT（并行处理A和B）
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll(3, (p - 1) / h, p);
+        LL *w_table = new LL[h/2];
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        
+        cudaMemcpyAsync(d_w_table_A, w_table, (h/2) * sizeof(LL), 
+                       cudaMemcpyHostToDevice, streamA);
+        cudaMemcpyAsync(d_w_table_B, w_table, (h/2) * sizeof(LL), 
+                       cudaMemcpyHostToDevice, streamB);
+        
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock, 0, streamA>>>(
+            d_A, len, h, d_w_table_A, p);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock, 0, streamB>>>(
+            d_B, len, h, d_w_table_B, p);
+        
+        delete[] w_table;
+    }
+    
+    // 等待两个流完成
+    cudaStreamSynchronize(streamA);
+    cudaStreamSynchronize(streamB);
+    
+    // 点值乘法（在默认流中）
+    pointwise_multiply_kernel<<<gridSize, blockSize>>>(d_A, d_B, len, p);
+    
+    // 逆向NTT（只需要处理A）
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+    
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll(qpowll(3, p - 2, p), (p - 1) / h, p);
+        LL *w_table = new LL[h/2];
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        cudaMemcpy(d_w_table_A, w_table, (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_basic_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table_A, p);
+        delete[] w_table;
+    }
+    
+    LL ni = qpowll(len, p - 2, p);
+    finalize_kernel<<<gridSize, blockSize>>>(d_A, len, ni, p);
+    
+    cudaMemcpy(h_A, d_A, len * sizeof(LL), cudaMemcpyDeviceToHost);
+    for (int i = 0; i < N; i++) { ab[i] = h_A[i]; }
+    
+    cudaFreeHost(h_A);
+    cudaFreeHost(h_B);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_w_table_A);
+    cudaFree(d_w_table_B);
+    cudaStreamDestroy(streamA);
+    cudaStreamDestroy(streamB);
+}
+
+对处理大模数设计的ntt_heterogeneous部分：
+// 快速幂
+LL qpowll(LL a, LL b, LL p) {
+    LL res = 1;
+    a %= p;
+    while (b) {
+        if (b & 1) res = res * a % p;
+        a = a * a % p;
+        b >>= 1;
+    }
+    return res;
+}
+
+// GPU快速幂
+__device__ LL gpu_pow(LL a, LL b, LL p) {
+    LL res = 1;
+    a %= p;
+    while (b) {
+        if (b & 1) res = res * a % p;
+        a = a * a % p;
+        b >>= 1;
+    }
+    return res;
+}
+
+// Barrett约简结构
+struct Barrett {
+    ULL mod, im;
+    Barrett(ULL mod_val) : mod(mod_val) {
+        im = (ULL)(-1) / mod + 1;
+    }
+    
+    ULL reduce(ULL a) const {
+        ULL q = (ULL)(((unsigned __int128)a * im) >> 64);
+        ULL r = a - q * mod;
+        return r < mod ? r : r - mod;
+    }
+    
+    ULL multiply(ULL a, ULL b) const {
+        return reduce((unsigned __int128)a * b);
+    }
+};
+
+// ================== GPU核函数 ==================
+__global__ void bit_reverse_kernel(LL *a, int len) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= len) return;
+    int j = 0;
+    for (int k = len >> 1, i = idx; k > 0; k >>= 1, i >>= 1) {
+        j |= (i & 1) * k;
+    }
+    if (idx < j) {
+        LL temp = a[idx]; a[idx] = a[j]; a[j] = temp;
+    }
+}
+
+__global__ void ntt_kernel(LL *a, int len, int h, LL *w_table, LL p) {
+    int j_base = blockIdx.x * h;
+    for (int k = threadIdx.x; k < h / 2; k += blockDim.x) {
+        int idx1 = j_base + k;
+        int idx2 = j_base + k + h / 2;
+        LL w = w_table[k];
+        LL t = (a[idx2] * w) % p;
+        a[idx2] = (a[idx1] - t + p) % p;
+        a[idx1] = (a[idx1] + t) % p;
+    }
+}
+
+__global__ void pointwise_multiply_kernel(LL *A, LL *B, int len, LL p) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < len) {
+        A[idx] = (A[idx] * B[idx]) % p;
+    }
+}
+
+__global__ void finalize_kernel(LL *A, int len, LL ni, LL p) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < len) {
+        A[idx] = (A[idx] * ni) % p;
+    }
+}
+
+// ================== CPU NTT函数 ==================
+void cpu_ntt_basic(LL *a, int len, int op, LL p) {
+    // 位逆序
+    for (int i = 1, j = 0; i < len - 1; i++) {
+        for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+        if (i < j) std::swap(a[i], a[j]);
+    }
+    
+    // 蝴蝶运算
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll((op == 1 ? 3 : qpowll(3, p - 2, p)), (p - 1) / h, p);
+        for (int j = 0; j < len; j += h) {
+            LL w = 1;
+            for (int k = j; k < j + h/2; k++) {
+                LL t = a[k + h/2] * w % p;
+                a[k + h/2] = (a[k] - t + p) % p;
+                a[k] = (a[k] + t) % p;
+                w = w * wn % p;
+            }
+        }
+    }
+}
+
+void cpu_ntt_barrett(ULL *a, int len, int op, const Barrett &barrett) {
+    ULL p = barrett.mod;
+    
+    // 位逆序
+    for (int i = 1, j = 0; i < len - 1; i++) {
+        for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+        if (i < j) std::swap(a[i], a[j]);
+    }
+    
+    // 蝴蝶运算
+    for (int h = 2; h <= len; h <<= 1) {
+        ULL wn = qpowll((op == 1 ? 3 : qpowll(3, p - 2, p)), (p - 1) / h, p);
+        for (int j = 0; j < len; j += h) {
+            ULL w = 1;
+            for (int k = j; k < j + h/2; k++) {
+                ULL t = barrett.multiply(a[k + h/2], w);
+                a[k + h/2] = (a[k] >= t) ? (a[k] - t) : (a[k] + p - t);
+                a[k] = (a[k] + t >= p) ? (a[k] + t - p) : (a[k] + t);
+                w = barrett.multiply(w, wn);
+            }
+        }
+    }
+}
+
+// GPU NTT单模数实现
+void gpu_ntt_single_mod(const LL *a, const LL *b, LL *result, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    LL *d_A, *d_B, *d_w_table;
+    cudaMalloc(&d_A, len * sizeof(LL));
+    cudaMalloc(&d_B, len * sizeof(LL));
+    cudaMalloc(&d_w_table, (len/2) * sizeof(LL));
+    
+    LL *h_A = new LL[len]();
+    LL *h_B = new LL[len]();
+    
+    for (int i = 0; i < n; i++) {
+        h_A[i] = a[i] % p;
+        h_B[i] = b[i] % p;
+    }
+    
+    cudaMemcpy(d_A, h_A, len * sizeof(LL), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, len * sizeof(LL), cudaMemcpyHostToDevice);
+    
+    int blockSize = 256;
+    int gridSize = (len + blockSize - 1) / blockSize;
+    
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_B, len);
+    
+    // 正向NTT
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll(3, (p - 1) / h, p);
+        LL *w_table = new LL[h/2];
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        cudaMemcpy(d_w_table, w_table, (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table, p);
+        ntt_kernel<<<butterflyGrid, butterflyBlock>>>(d_B, len, h, d_w_table, p);
+        delete[] w_table;
+    }
+    
+    pointwise_multiply_kernel<<<gridSize, blockSize>>>(d_A, d_B, len, p);
+    
+    bit_reverse_kernel<<<gridSize, blockSize>>>(d_A, len);
+    
+    // 逆向NTT
+    for (int h = 2; h <= len; h <<= 1) {
+        LL wn = qpowll(qpowll(3, p - 2, p), (p - 1) / h, p);
+        LL *w_table = new LL[h/2];
+        w_table[0] = 1;
+        for (int i = 1; i < h/2; i++) {
+            w_table[i] = (w_table[i-1] * wn) % p;
+        }
+        cudaMemcpy(d_w_table, w_table, (h/2) * sizeof(LL), cudaMemcpyHostToDevice);
+        int butterflyGrid = len / h;
+        int butterflyBlock = min(h/2, 512);
+        ntt_kernel<<<butterflyGrid, butterflyBlock>>>(d_A, len, h, d_w_table, p);
+        delete[] w_table;
+    }
+    
+    LL ni = qpowll(len, p - 2, p);
+    finalize_kernel<<<gridSize, blockSize>>>(d_A, len, ni, p);
+    
+    cudaMemcpy(result, d_A, N * sizeof(LL), cudaMemcpyDeviceToHost);
+    
+    delete[] h_A;
+    delete[] h_B;
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_w_table);
+}
+
+// ================== Level 1: CPU + GPU 基础协同 ==================
+void NTT_Level1_CPU_GPU_Basic(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    // 使用4个模数进行CRT
+    static const ULL mods[] = {998244353, 1004535809, 469762049, 167772161};
+    
+    // CPU处理2个模数，GPU处理2个模数
+    std::vector<LL> cpu_results[2];
+    std::vector<LL> gpu_results[2];
+    
+    // CPU处理部分
+    std::thread cpu_thread([&]() {
+        for (int i = 0; i < 2; i++) {
+            LL curr_mod = mods[i];
+            LL *A = new LL[len]();
+            LL *B = new LL[len]();
+            
+            for (int j = 0; j < n; j++) {
+                A[j] = a[j] % curr_mod;
+                B[j] = b[j] % curr_mod;
+            }
+            
+            cpu_ntt_basic(A, len, 1, curr_mod);
+            cpu_ntt_basic(B, len, 1, curr_mod);
+            
+            for (int j = 0; j < len; j++) {
+                A[j] = A[j] * B[j] % curr_mod;
+            }
+            
+            cpu_ntt_basic(A, len, -1, curr_mod);
+            
+            LL ni = qpowll(len, curr_mod - 2, curr_mod);
+            cpu_results[i].resize(N);
+            for (int j = 0; j < N; j++) {
+                cpu_results[i][j] = A[j] * ni % curr_mod;
+            }
+            
+            delete[] A;
+            delete[] B;
+        }
+    });
+    
+    // GPU处理部分
+    for (int i = 2; i < 4; i++) {
+        gpu_results[i-2].resize(N);
+        gpu_ntt_single_mod(a, b, gpu_results[i-2].data(), n, mods[i]);
+    }
+    
+    // 等待CPU线程完成
+    cpu_thread.join();
+    
+    // CRT合并
+    auto crt2 = [](ULL a1, ULL a2, ULL m1, ULL m2) -> ULL {
+        LL inv_m1 = qpowll(m1 % m2, m2 - 2, m2);
+        __int128 t = (__int128)(a2 - a1) * inv_m1 % m2;
+        if (t < 0) t += m2;
+        __int128 result = a1 + (__int128)m1 * t;
+        return (ULL)result;
+    };
+    
+    auto crt4 = [&](ULL r1, ULL r2, ULL r3, ULL r4, ULL m1, ULL m2, ULL m3, ULL m4, ULL mod) {
+        if (mod == m1) return r1 % m1;
+        if (mod == m2) return r2 % m2;
+        if (mod == m3) return r3 % m3;
+        if (mod == m4) return r4 % m4;
+        
+        ULL x12 = crt2(r1, r2, m1, m2);
+        ULL x34 = crt2(r3, r4, m3, m4);
+        ULL m12 = m1 * m2;
+        ULL m34 = m3 * m4;
+        
+        LL inv_m12 = qpowll(m12 % m34, m34 - 2, m34);
+        __int128 t = (__int128)(x34 - x12) * inv_m12 % m34;
+        if (t < 0) t += m34;
+        __int128 result = x12 + (__int128)m12 * t;
+        
+        return (ULL)result % mod;
+    };
+    
+    for (int i = 0; i < N; i++) {
+        ab[i] = crt4(cpu_results[0][i], cpu_results[1][i], 
+                     gpu_results[0][i], gpu_results[1][i],
+                     mods[0], mods[1], mods[2], mods[3], p);
+    }
+}
+
+// ================== Level 2: CPU(Barrett) + GPU 协同 ==================
+void NTT_Level2_CPU_Barrett_GPU(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    static const ULL mods[] = {998244353, 1004535809, 469762049, 167772161};
+    const int num_mods = 4;
+    
+    // 动态负载分配
+    int cpu_mods = (n < 50000) ? 3 : 2;
+    int gpu_mods = num_mods - cpu_mods;
+    
+    std::vector<std::vector<LL>> all_results(num_mods, std::vector<LL>(N));
+    
+    // CPU处理（使用Barrett优化）
+    std::thread cpu_thread([&]() {
+        for (int i = 0; i < cpu_mods; i++) {
+            ULL curr_mod = mods[i];
+            Barrett barrett(curr_mod);
+            
+            ULL *A = new ULL[len]();
+            ULL *B = new ULL[len]();
+            
+            for (int j = 0; j < n; j++) {
+                A[j] = a[j] % curr_mod;
+                B[j] = b[j] % curr_mod;
+            }
+            
+            cpu_ntt_barrett(A, len, 1, barrett);
+            cpu_ntt_barrett(B, len, 1, barrett);
+            
+            for (int j = 0; j < len; j++) {
+                A[j] = barrett.multiply(A[j], B[j]);
+            }
+            
+            cpu_ntt_barrett(A, len, -1, barrett);
+            
+            ULL ni = qpowll(len, curr_mod - 2, curr_mod);
+            for (int j = 0; j < N; j++) {
+                all_results[i][j] = barrett.multiply(A[j], ni);
+            }
+            
+            delete[] A;
+            delete[] B;
+        }
+    });
+    
+    // GPU处理
+    std::vector<std::thread> gpu_threads;
+    for (int i = 0; i < gpu_mods; i++) {
+        int mod_idx = cpu_mods + i;
+        gpu_threads.emplace_back([&, mod_idx]() {
+            gpu_ntt_single_mod(a, b, all_results[mod_idx].data(), n, mods[mod_idx]);
+        });
+    }
+    
+    // 等待所有任务完成
+    cpu_thread.join();
+    for (auto& t : gpu_threads) {
+        t.join();
+    }
+    
+    // CRT合并
+    auto crt2 = [](ULL a1, ULL a2, ULL m1, ULL m2) -> ULL {
+        LL inv_m1 = qpowll(m1 % m2, m2 - 2, m2);
+        __int128 t = (__int128)(a2 - a1) * inv_m1 % m2;
+        if (t < 0) t += m2;
+        __int128 result = a1 + (__int128)m1 * t;
+        return (ULL)result;
+    };
+    
+    auto crt4 = [&](ULL r1, ULL r2, ULL r3, ULL r4, ULL m1, ULL m2, ULL m3, ULL m4, ULL mod) {
+        if (mod == m1) return r1 % m1;
+        if (mod == m2) return r2 % m2;
+        if (mod == m3) return r3 % m3;
+        if (mod == m4) return r4 % m4;
+        
+        ULL x12 = crt2(r1, r2, m1, m2);
+        ULL x34 = crt2(r3, r4, m3, m4);
+        ULL m12 = m1 * m2;
+        ULL m34 = m3 * m4;
+        
+        LL inv_m12 = qpowll(m12 % m34, m34 - 2, m34);
+        __int128 t = (__int128)(x34 - x12) * inv_m12 % m34;
+        if (t < 0) t += m34;
+        __int128 result = x12 + (__int128)m12 * t;
+        
+        return (ULL)result % mod;
+    };
+    
+    for (int i = 0; i < N; i++) {
+        ab[i] = crt4(all_results[0][i], all_results[1][i], 
+                     all_results[2][i], all_results[3][i],
+                     mods[0], mods[1], mods[2], mods[3], p);
+    }
+}
+
+// ================== Level 3: CPU(Barrett+OpenMP) + GPU(流) 协同 ==================
+void NTT_Level3_CPU_OpenMP_GPU_Stream(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    static const ULL mods[] = {998244353, 1004535809, 469762049, 167772161};
+    const int num_mods = 4;
+    
+    int N = 2 * n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    std::vector<std::vector<LL>> all_results(num_mods, std::vector<LL>(N));
+    
+    // CPU部分（使用OpenMP并行）
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 0; i < 2; i++) {
+        ULL curr_mod = mods[i];
+        Barrett barrett(curr_mod);
+        
+        ULL *A = new ULL[len]();
+        ULL *B = new ULL[len]();
+        
+        for (int j = 0; j < n; j++) {
+            A[j] = a[j] % curr_mod;
+            B[j] = b[j] % curr_mod;
+        }
+        
+        cpu_ntt_barrett(A, len, 1, barrett);
+        cpu_ntt_barrett(B, len, 1, barrett);
+        
+        for (int j = 0; j < len; j++) {
+            A[j] = barrett.multiply(A[j], B[j]);
+        }
+        
+        cpu_ntt_barrett(A, len, -1, barrett);
+        
+        ULL ni = qpowll(len, curr_mod - 2, curr_mod);
+        for (int j = 0; j < N; j++) {
+            all_results[i][j] = barrett.multiply(A[j], ni);
+        }
+        
+        delete[] A;
+        delete[] B;
+    }
+    
+    // GPU部分（使用流并行）
+    cudaStream_t stream1, stream2;
+    cudaStreamCreate(&stream1);
+    cudaStreamCreate(&stream2);
+    
+    std::thread gpu_thread1([&]() {
+        cudaSetDevice(0);
+        gpu_ntt_single_mod(a, b, all_results[2].data(), n, mods[2]);
+    });
+    
+    std::thread gpu_thread2([&]() {
+        cudaSetDevice(0);
+        gpu_ntt_single_mod(a, b, all_results[3].data(), n, mods[3]);
+    });
+    
+    gpu_thread1.join();
+    gpu_thread2.join();
+    
+    cudaStreamDestroy(stream1);
+    cudaStreamDestroy(stream2);
+    
+    // CRT合并
+    auto crt2 = [](ULL a1, ULL a2, ULL m1, ULL m2) -> ULL {
+        LL inv_m1 = qpowll(m1 % m2, m2 - 2, m2);
+        __int128 t = (__int128)(a2 - a1) * inv_m1 % m2;
+        if (t < 0) t += m2;
+        __int128 result = a1 + (__int128)m1 * t;
+        return (ULL)result;
+    };
+    
+    auto crt4 = [&](ULL r1, ULL r2, ULL r3, ULL r4, ULL m1, ULL m2, ULL m3, ULL m4, ULL mod) {
+        if (mod == m1) return r1 % m1;
+        if (mod == m2) return r2 % m2;
+        if (mod == m3) return r3 % m3;
+        if (mod == m4) return r4 % m4;
+        
+        ULL x12 = crt2(r1, r2, m1, m2);
+        ULL x34 = crt2(r3, r4, m3, m4);
+        ULL m12 = m1 * m2;
+        ULL m34 = m3 * m4;
+        
+        LL inv_m12 = qpowll(m12 % m34, m34 - 2, m34);
+        __int128 t = (__int128)(x34 - x12) * inv_m12 % m34;
+        if (t < 0) t += m34;
+        __int128 result = x12 + (__int128)m12 * t;
+        
+        return (ULL)result % mod;
+    };
+    
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+        ab[i] = crt4(all_results[0][i], all_results[1][i], 
+                     all_results[2][i], all_results[3][i],
+                     mods[0], mods[1], mods[2], mods[3], p);
+    }
+}
+
+// ================== Level 4: CPU(Pthread) + GPU(多流) 全系统协同 ==================
+struct ThreadTask {
+    const LL* a;
+    const LL* b;
+    int n;
+    ULL mod;
+    std::vector<LL>* result;
+};
+
+void* cpu_ntt_thread_worker(void* arg) {
+    ThreadTask* task = (ThreadTask*)arg;
+    int N = 2 * task->n - 1;
+    int len = 1;
+    while (len < N) len <<= 1;
+    
+    Barrett barrett(task->mod);
+    ULL *A = new ULL[len]();
+    ULL *B = new ULL[len]();
+    
+    for (int i = 0; i < task->n; i++) {
+        A[i] = task->a[i] % task->mod;
+        B[i] = task->b[i] % task->mod;
+    }
+    
+    cpu_ntt_barrett(A, len, 1, barrett);
+    cpu_ntt_barrett(B, len, 1, barrett);
+    
+    for (int i = 0; i < len; i++) {
+        A[i] = barrett.multiply(A[i], B[i]);
+    }
+    
+    cpu_ntt_barrett(A, len, -1, barrett);
+    
+    ULL ni = qpowll(len, task->mod - 2, task->mod);
+    task->result->resize(N);
+    for (int i = 0; i < N; i++) {
+        (*task->result)[i] = barrett.multiply(A[i], ni);
+    }
+    
+    delete[] A;
+    delete[] B;
+    return nullptr;
+}
+
+void NTT_Level4_Pthread_GPU_Full(const LL *a, const LL *b, LL *ab, int n, LL p) {
+    static const ULL mods[] = {998244353, 1004535809, 469762049, 167772161};
+    const int num_mods = 4;
+    int N = 2 * n - 1;
+    
+    std::vector<std::vector<LL>> all_results(num_mods, std::vector<LL>(N));
+    
+    // CPU Pthread处理前2个模数
+    pthread_t threads[2];
+    ThreadTask tasks[2];
+    
+    for (int i = 0; i < 2; i++) {
+        tasks[i] = {a, b, n, mods[i], &all_results[i]};
+        pthread_create(&threads[i], nullptr, cpu_ntt_thread_worker, &tasks[i]);
+    }
+    
+    // GPU并行处理后2个模数
+    std::thread gpu_thread1([&]() {
+        gpu_ntt_single_mod(a, b, all_results[2].data(), n, mods[2]);
+    });
+    
+    std::thread gpu_thread2([&]() {
+        gpu_ntt_single_mod(a, b, all_results[3].data(), n, mods[3]);
+    });
+    
+    // 等待CPU线程完成
+    for (int i = 0; i < 2; i++) {
+        pthread_join(threads[i], nullptr);
+    }
+    
+    // 等待GPU线程完成
+    gpu_thread1.join();
+    gpu_thread2.join();
+    
+    // CRT合并（使用OpenMP并行）
+    auto crt2 = [](ULL a1, ULL a2, ULL m1, ULL m2) -> ULL {
+        LL inv_m1 = qpowll(m1 % m2, m2 - 2, m2);
+        __int128 t = (__int128)(a2 - a1) * inv_m1 % m2;
+        if (t < 0) t += m2;
+        __int128 result = a1 + (__int128)m1 * t;
+        return (ULL)result;
+    };
+    
+    auto crt4 = [&](ULL r1, ULL r2, ULL r3, ULL r4, ULL m1, ULL m2, ULL m3, ULL m4, ULL mod) {
+        if (mod == m1) return r1 % m1;
+        if (mod == m2) return r2 % m2;
+        if (mod == m3) return r3 % m3;
+        if (mod == m4) return r4 % m4;
+        
+        ULL x12 = crt2(r1, r2, m1, m2);
+        ULL x34 = crt2(r3, r4, m3, m4);
+        ULL m12 = m1 * m2;
+        ULL m34 = m3 * m4;
+        
+        LL inv_m12 = qpowll(m12 % m34, m34 - 2, m34);
+        __int128 t = (__int128)(x34 - x12) * inv_m12 % m34;
+        if (t < 0) t += m34;
+        __int128 result = x12 + (__int128)m12 * t;
+        
+        return (ULL)result % mod;
+    };
+    
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) {
+        ab[i] = crt4(all_results[0][i], all_results[1][i], 
+                     all_results[2][i], all_results[3][i],
+                     mods[0], mods[1], mods[2], mods[3], p);
+    }
+}

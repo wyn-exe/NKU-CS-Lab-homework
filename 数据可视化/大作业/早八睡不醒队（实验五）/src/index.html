@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji 瀑布流背景</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body,
+        html {
+            padding: 0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: block;
+        }
+
+        .startwaves {
+            position: fixed;
+            display: flex;
+            justify-content: center;
+            height: 120vh;
+            width: 100%;
+            background-color: #469ce5;
+            transform: translateY(-10vh);
+            animation-name: down;
+            animation-duration: 3s;
+            animation-delay: 1s;
+            animation-timing-function: ease-out;
+            z-index: 999;
+        }
+
+        @keyframes down {
+            0% {
+                transform: translateY(-10vh);
+            }
+
+            100% {
+                transform: translateY(110vh);
+            }
+
+        }
+
+        .waves {
+            display: block;
+            position: absolute;
+            bottom: 120vh;
+            width: 100%;
+        }
+
+        #videobg {
+            width: 100%;
+            height: 100%;
+            z-index:99;
+        }
+
+        #centertext {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            background-color: #939ce400;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            animation-name: out;
+            animation-duration: 1s;
+            animation-delay: 3s;
+            animation-fill-mode: forwards; 
+            z-index:99;
+        }
+
+        @keyframes out {
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+        @keyframes in {
+            100% {
+                opacity: 1;
+                z-index:99;
+            }
+        }
+       #main{
+			position: absolute;
+			left: 0;
+			top: 50%;
+            width: 100%;
+            height: 100%;
+			opacity: 0;
+            display: none;
+			transform: translateY(-50%);
+			animation-name: in;
+			animation-duration: 1.5s;
+			animation-delay: 0.5s;
+			animation-iteration-count: 1;
+			animation-fill-mode: forwards; 
+		}
+        .scroll-button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  margin-left: -50px;
+  width: 100px;
+  height: 100px;
+  z-index: 99;
+  background-color: #00b3ffc8;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 100px;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform-origin: center;
+  overflow: hidden; /* 防止波纹扩展出按钮范围 */
+}
+
+.scroll-button:hover {
+  transform: scale(1.2);
+}
+
+.scroll-button.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* 波纹的样式 */
+.ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 1s ease-out;
+  pointer-events: none; /* 使波纹不干扰点击 */
+}
+
+/* 多重波纹的动画效果 */
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+    </style>
+</head>
+<body>
+    <div class="startwaves" id="downout">
+        <div class="waves">
+            <img src="waves/wave-1.svg" />
+            <img src="waves/wave-2.svg" />
+            <img src="waves/wave-3.svg" />
+            <img src="waves/wave-4.svg" />
+            <img src="waves/wave-5.svg" id="shape" />
+        </div>
+    </div>
+    <div id="videobg">
+        <div id="centertext">
+            <h1>制作</h1>
+            <p>早八睡不醒队<br />关于Emoji的数据研究</p>
+        </div>
+    </div>
+    <div id="main">
+        <div id="emoji-container"></div>
+        <div class="container">
+            <h1 class="title">Do You Know About Emoji?</h1>
+        </div>
+        <script src="script.js"></script>
+    </div>
+    <div class="scroll-button" id="scroll-button">
+        click
+    </div>
+    
+    <script>
+        var downwave = document.getElementById('downout');
+        var content = document.getElementById('main');
+        const buttonElement = document.getElementById('scroll-button');
+        // 添加动画结束事件监听器
+        downwave.addEventListener('animationend', function() {
+            // 在动画结束后执行你的操作，比如改变元素属性
+            downwave.style.display = 'none';
+            content.style.display='flex';
+            buttonElement.classList.add('visible');  // 显示按钮
+        });
+        buttonElement.addEventListener('click', () => {
+  const numberOfRipples = 4; // 设置波纹的数量
+  
+  // 创建多个波纹
+  for (let i = 0; i < numberOfRipples; i++) {
+    // 创建一个新的波纹元素
+    const ripple = document.createElement('div');
+    ripple.classList.add('ripple');
+    
+    // 设置不同的动画延迟，使波纹依次扩展
+    ripple.style.animationDelay = `${i * 0.2}s`;  // 每个波纹延迟0.2秒
+    
+    // 将波纹添加到按钮中
+    buttonElement.appendChild(ripple);
+  }
+
+  // 在波纹动画完成后移除它们
+  setTimeout(() => {
+    const ripples = buttonElement.querySelectorAll('.ripple');
+    ripples.forEach(ripple => ripple.remove()); // 移除所有波纹元素
+
+    // 动画结束后跳转到新页面
+    window.location.href = 'main.html';  // 替换为你想跳转的新页面 URL
+  }, 1000);  // 波纹动画时间为1秒，因此延时1秒后跳转
+});
+    </script>
+</body>
+</html>

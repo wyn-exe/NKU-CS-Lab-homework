@@ -1,0 +1,5 @@
+﻿  main.cpp
+D:\算法导论\动态规划\main.cpp(5,21): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+D:\算法导论\动态规划\main.cpp(8,11): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\算法导论\动态规划\main.cpp(70,12): warning C4244: “return”: 从“__int64”转换到“int”，可能丢失数据
+  动态规划.vcxproj -> D:\算法导论\动态规划\x64\Debug\动态规划.exe

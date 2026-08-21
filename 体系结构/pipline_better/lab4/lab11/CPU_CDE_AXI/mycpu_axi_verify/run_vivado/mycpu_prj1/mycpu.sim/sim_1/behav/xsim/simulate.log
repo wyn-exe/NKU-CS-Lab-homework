@@ -1,0 +1,11 @@
+Vivado Simulator 2019.2
+Time resolution is 1 ps
+ Block Memory Generator module loading initial data...
+ Block Memory Generator data initialization complete.
+Block Memory Generator module tb_top.soc_lite.u_axi_ram.ram.inst.axi_mem_module.blk_mem_gen_v8_4_4_inst is using a behavioral model for simulation which will not precisely model memory collision behavior.
+==============================================================
+Test begin!
+==============================================================
+Test end!
+----PASS!!!
+$finish called at time : 4695 ns : File "D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/testbench/mycpu_tb.v" Line 267

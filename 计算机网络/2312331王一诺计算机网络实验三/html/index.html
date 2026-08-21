@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Networking Lab 3 Page</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --accent: #0f766e;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 32px 20px;
+      background: linear-gradient(135deg, #0ea5e9, #0f766e);
+      color: #ffffff;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: 0.5px; }
+    header p { margin: 4px 0; font-size: 15px; }
+    main {
+      max-width: 1100px;
+      margin: -30px auto 40px;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    .info-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .info-list li {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f8fafc;
+      font-weight: 600;
+    }
+    .info-list span { display: block; font-size: 13px; color: var(--muted); font-weight: 500; }
+    h2 {
+      margin: 24px 0 12px;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+    }
+    .gallery figure {
+      margin: 0;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .gallery img { width: 100%; height: 150px; object-fit: cover; display: block; }
+    .gallery figcaption {
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 18px 10px 26px;
+    }
+    .note {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #ecfeff;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Networking Lab 3 Page</h1>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Student Info</h2>
+      <ul class="info-list">
+        <li><span>Major</span>Computer Science</li>
+        <li><span>Student ID</span>2312331</li>
+        <li><span>Name</span>王一诺</li>
+        <li><span>Course</span>Computer Networks Experiment</li>
+      </ul>
+
+      <h2>Image Gallery (6 Images)</h2>
+      <div class="gallery">
+        <figure>
+          <img src="images/pic1.svg" alt="Color block 1">
+          <figcaption>Image 1: teal gradient</figcaption>
+        </figure>
+        <figure>
+          <img src="images/pic2.svg" alt="Color block 2">
+          <figcaption>Image 2: orange tones</figcaption>
+        </figure>
+        <figure>
+          <img src="images/pic3.svg" alt="Color block 3">
+          <figcaption>Image 3: violet lines</figcaption>
+        </figure>
+        <figure>
+          <img src="images/pic4.svg" alt="Color block 4">
+          <figcaption>Image 4: green arcs</figcaption>
+        </figure>
+        <figure>
+          <img src="images/pic5.svg" alt="Color block 5">
+          <figcaption>Image 5: blue wave</figcaption>
+        </figure>
+        <figure>
+          <img src="images/pic6.svg" alt="Color block 6">
+          <figcaption>Image 6: bold stripes</figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    HTTP only. Avoid HTTPS so the capture shows cleartext HTTP.
+  </footer>
+</body>
+</html>

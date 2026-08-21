@@ -1,0 +1,46 @@
+Vivado Simulator 2019.2
+Time resolution is 1 ps
+ Block Memory Generator module loading initial data...
+ Block Memory Generator data initialization complete.
+Block Memory Generator module tb_cpu_with_tlb_cache_improved.uut.inst_rom_module.inst.native_mem_module.blk_mem_gen_v8_4_4_inst is using a behavioral model for simulation which will not precisely model memory collision behavior.
+Block Memory Generator module tb_cpu_with_tlb_cache_improved.uut.data_ram_module.inst.native_mem_module.blk_mem_gen_v8_4_4_inst is using a behavioral model for simulation which will not precisely model memory collision behavior.
+=================================================================
+Starting Improved TLB+Cache CPU Simulation
+=================================================================
+Reset released, CPU starts running...
+Cycle 100: PC=0x00000018, Inst=0xac0d0078, Valid=000ff0f0, TLB_S0=         47, ICache=          0
+Cycle 200: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=         95, ICache=          0
+Cycle 300: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        145, ICache=          0
+Cycle 400: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        192, ICache=          0
+Cycle 500: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        239, ICache=          0
+Cycle 600: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        286, ICache=          0
+Cycle 700: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        335, ICache=          0
+Cycle 800: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        382, ICache=          0
+Cycle 900: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        428, ICache=          0
+Cycle 1000: PC=0x00000054, Inst=0x0721000e, Valid=000ff0f0, TLB_S0=        477, ICache=          0
+
+=================================================================
+IMPROVED EXPERIMENT REPORT DATA SUMMARY
+=================================================================
+Total Cycles:        1000
+Total Instructions:  477
+IPC:                 0.477
+Average CPI:         2.096
+---
+TLB Port 0 Hit Rate: 96.16%
+TLB Port 1 Hit Rate: 90.51%
+ICache Hit Rate:     0.00%
+DCache Hit Rate:     0.00%
+---
+Pipeline Efficiency: 98.10%
+Data Hazards:        900
+Control Hazards:     992
+=================================================================
+
+=================================================================
+Simulation Complete!
+Report files generated:
+  - simulation_results_improved.txt
+  - experiment_report_improved.txt
+=================================================================
+$finish called at time : 10100 ns : File "D:/pipline_better/lab5/labcode/mycpu/tb_cpu_with_tlb_cache_improved.v" Line 167

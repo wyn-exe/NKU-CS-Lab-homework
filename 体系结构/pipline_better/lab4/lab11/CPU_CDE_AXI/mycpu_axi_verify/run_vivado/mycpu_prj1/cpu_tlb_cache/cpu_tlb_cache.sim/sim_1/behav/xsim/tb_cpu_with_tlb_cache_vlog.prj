@@ -1,0 +1,23 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  --include "../../../../../../../../../../../lab5/labcode/mycpu" \
+"../../../../cpu_tlb_cache.srcs/sources_1/ip/data_ram/sim/data_ram.v" \
+"../../../../cpu_tlb_cache.srcs/sources_1/ip/inst_rom/sim/inst_rom.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/adder.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/alu.v" \
+"../../../../../../../../../../../lab5/labcode/lab16/cache_verify/rtl/cache/cache.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/cpu_with_tlb_cache.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/decode.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/exe.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/fetch.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/mem.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/multiply.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/regfile.v" \
+"../../../../../../../../../../../lab5/labcode/lab13/tlb_verify/rtl/tlb/tlb.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/wb.v" \
+"../../../../../../../../../../../lab5/labcode/mycpu/tb_cpu_with_tlb_cache.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

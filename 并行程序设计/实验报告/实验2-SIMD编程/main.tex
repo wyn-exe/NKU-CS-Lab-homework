@@ -1,0 +1,608 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献} 
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+		\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+		\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+		\textbf{\Huge\textbf{\kaishu{SIMD编程}}}
+
+		\vspace{\fill}
+    
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+    
+    \vfill
+    {\Large \today}
+    \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}  
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+%--------------------------目标--------------------------------
+\section{实验目标}
+在多项式乘法的计算中，传统朴素算法的时间复杂度为O(\( n^{2} \))，难以满足实际应用中对大规模多项式运算的效率需求。数论变换（NTT）作为快速数论域中的离散傅里叶变换（FFT），可将多项式乘法的时间复杂度降低至O(nlogn)，成为同态加密等领域的核心优化手段。本实验聚焦NTT算法的实现与优化，重点研究递归与迭代式NTT的设计差异，并通过Montgomery模约减算法与SIMD向量化技术（ARM NEON及x86 AVX）进一步加速计算。通过对比朴素乘法、递归/迭代NTT及其优化版本在不同平台（ARM鲲鹏与x86）的性能表现，验证优化策略的有效性。
+%-------------------------配置----------------------------------
+\section{实验平台配置}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		平台$\backslash$ 处理器& 操作系统& 编译器& 指令集\\
+		\midrule
+		ARM/华为鲲鹏处理器& OpenEuler& GCC& NEON指令集\\
+		X86/Intel Core i9-14900HX& Windows 11& MSVC& AVX/AVX2指令集\\
+		\bottomrule
+	\end{tabular}
+	\caption{实验环境}
+	\label{table:t1}
+\end{table}
+%-------------------------实验内容----------------------------------
+\section{代码设计}
+\subsection{朴素多项式乘法与SIMD优化}
+朴素多项式乘法是直接按照多项式乘法的定义实现，即对于两个长度为n的多项式a和b，计算它们的乘积ab时，需要计算a中每个元素与b中每个元素的乘积并累加到结果数组的相应位置。这种方法的复杂度为O(n²)，虽然简单直观，但在处理大规模多项式时效率低下。
+
+针对ARM平台，我们使用NEON指令集进行SIMD优化。在poly\_multiply\_neon函数中，通过将每次乘法运算向量化，利用NEON指令同时处理四个整数元素，即每次将系数a[i]广播到整个SIMD寄存器，然后加载连续的4个b[j]值进行向量化乘法。减少了循环迭代次数,从而大幅度提升了计算效率。
+
+NEON优化版本的关键在于正确处理向量化乘法和模运算。由于NEON指令集不直接提供向量化的模运算，我们采用了混合策略：向量化计算乘法和加法，然后标量处理模运算。虽然这种实现不能完全向量化，但仍然显著提升了性能。
+
+\begin{lstlisting}[title=朴素乘法的SIMD优化,frame=trbl,language={C++}]
+	void poly_multiply_neon(int *a, int *b, int *ab, int n, int p) {//朴素乘法的SIMD优化
+		// 初始化结果数组
+		for (int i = 0; i < 2 * n - 1; ++i) {
+			ab[i] = 0;
+		}
+		for (int i = 0; i < n; ++i) {
+			int a_val = a[i];
+			int32x2_t a_low2 = vdup_n_s32(a_val);  // 复制两个 a[i]
+			
+			for (int j = 0; j + 3 < n; j += 4) {
+				// 加载 b[j], b[j+1], b[j+2], b[j+3]
+				int32x4_t b_vec = vld1q_s32(&b[j]);
+				// 拆成低2位和高2位
+				int32x2_t b_low2 = vget_low_s32(b_vec);
+				int32x2_t b_high2 = vget_high_s32(b_vec);				
+				// 乘法：a[i] * b[j~j+3] -> int64x2_t
+				int64x2_t mul_low2 = vmull_s32(a_low2, b_low2);   // a[i] * b[j], b[j+1]
+				int64x2_t mul_high2 = vmull_s32(a_low2, b_high2); // a[i] * b[j+2], b[j+3]				
+				// 加上 ab[i+j ~ i+j+3]
+				int64_t tmp[4];
+				tmp[0] = mul_low2[0] + ab[i + j + 0];
+				tmp[1] = mul_low2[1] + ab[i + j + 1];
+				tmp[2] = mul_high2[0] + ab[i + j + 2];
+				tmp[3] = mul_high2[1] + ab[i + j + 3];				
+				// 取模写回
+				for (int k = 0; k < 4; ++k) {
+					tmp[k] %= p;
+					if (tmp[k] < 0) tmp[k] += p;
+					ab[i + j + k] = (int)tmp[k];
+				}
+			}			
+			// 处理剩下不足4个的部分
+			for (int j = (n & ~3); j < n; ++j) {
+				ab[i + j] = (1LL * a[i] * b[j] % p + ab[i + j]) % p;
+			}
+		}
+	}
+\end{lstlisting}
+
+\subsection{递归实现的NTT多项式乘法}
+NTT递归实现的基本思想是将原问题分解为子问题，采用分治的策略，递归地计算多项式变换。对于长度为N的多项式，我们将其分成两部分，分别对两部分进行递归变换，然后合并结果。递归的复杂度是O(n log n)，比朴素的O(n²)要高效得多。
+
+递归NTT的核心操作是蝴蝶变换，它将两个点的值组合成两个新的值：一个和值和一个差值。在每次递归调用中，我们将输入数组分成两半，分别对奇数和偶数位置的元素进行变换。递归基是长度为1的数组，此时直接返回。合并阶段使用旋转因子进行蝴蝶操作，旋转因子通过快速幂计算得到。
+
+多项式乘法通过NTT实现时，需要先将两个多项式转换到NTT域，然后进行点乘，最后进行逆NTT变换。NTT\_recursion\_multiply函数实现了这一流程：补零扩展数组长度到2的幂次，执行正向NTT，点乘，然后执行逆NTT并缩放结果。虽然递归实现清晰易懂，但由于递归开销和频繁的内存访问，可以预料到其性能不如迭代实现。
+
+\begin{lstlisting}[title=NTT递归实现,frame=trbl,language={C++}]
+	const int g=3;
+	// NTT递归实现
+	void NTT_recursion(int *a,int len,int op,int g,int p){//NTT递归模块
+		if (len == 1) return;
+		int half = len / 2;
+		int A1[half], A2[half];
+		
+		for (int i = 0; i < half; ++i) {
+			A1[i] = a[i * 2];
+			A2[i] = a[i * 2 + 1];
+		}
+		
+		NTT_recursion(A1, half, op, g, p);
+		NTT_recursion(A2, half, op, g, p);
+		
+		int wn = qpow((op == 1 ? g : qpow(g, p - 2, p)), (p - 1) / len, p);
+		int w = 1;
+		for (int i = 0; i < half; ++i) {
+			int t = 1LL * A2[i] * w % p;
+			a[i] = (A1[i] + t) % p;
+			a[i + half] = (A1[i] - t + p) % p;
+			w = 1LL * w * wn % p;
+		}
+	}
+	
+	void NTT_recursion_multiply(int *a, int *b, int *ab, int n, int p){//NTT递归
+		int N = 2 * n - 1;
+		int len = 1;
+		int ni;
+		while (len < N) len <<= 1; // 求len,且保证为2的整数次幂
+		ni=qpow(len,p-2,p);
+		int A[len], B[len];
+		for (int i = 0; i < len; ++i) {
+			A[i] = (i < n) ? a[i] : 0;
+			B[i] = (i < n) ? b[i] : 0;
+		}
+		NTT_recursion(A, len, 1, g, p);
+		NTT_recursion(B, len, 1, g, p);
+		for (int i = 0; i < len; ++i) {
+			A[i] = (1LL * A[i] * B[i]) % p;
+		}
+		NTT_recursion(A, len, -1, g, p);
+		for (int i = 0; i < N; ++i) {
+			ab[i] = (1LL * A[i] * ni) % p;
+		}
+	}
+\end{lstlisting}
+
+\subsection{使用Montgomery算法neon优化的递归NTT}
+为了进一步提升递归NTT的性能，引入了Montgomery模约减算法和NEON向量化优化。Montgomery算法通过将模运算转换为位移和减法，避免了昂贵的除法操作。我们设计了MontgomeryParams结构体来存储模数相关的预计算参数，包括模数、n'和R²。在NTT\_recursion\_mont函数中，我们使用Montgomery算法进行模乘与逆变换，以提高计算速度。通过SIMD优化，我们能够将Montgomery运算并行化，从而进一步提升性能。
+
+\subsubsection{Montgomery规约与向量化取模/模乘}
+关于Montgomery规约：在使用Montgomery算法时，所有的操作都应在Montgomery域内进行。数字在进入NTT递归之前，需要先转换成Montgomery域表示，这样乘法与加法操作就可以高效地进行。于是设计to\_montgomery\_scalar(x)将一个普通的数字转换为Montgomery域的表示，设计from\_montgomery\_scalar(x)将Montgomery域的数字转换回普通数字。
+\begin{lstlisting}[title=数域转换,frame=trbl,language={C++}]
+	static inline uint32_t to_montgomery_scalar(uint32_t a, const MontgomeryParams* params) {
+		return montgomery_reduce_scalar((uint64_t)a * params->r_squared, params);
+	}
+	static inline uint32_t from_montgomery_scalar(uint32_t a, const MontgomeryParams* params) {
+		return montgomery_reduce_scalar((uint64_t)a, params);
+	}
+\end{lstlisting}
+在向量化实现中，主要挑战是如何在NEON指令集中高效实现Montgomery约减。设计了montgomery\_reduce\_neon函数，使用NEON指令并行处理4个元素的约减运算。对于乘法运算，设计了montgomery\_multiply\_neon，它先计算常规乘积，然后应用Montgomery约减。
+\begin{lstlisting}[title=向量化Montgomery规约和模乘,frame=trbl,language={C++}]
+	static inline uint32x4_t montgomery_reduce_neon(uint64x2_t T_low, uint64x2_t T_high, const MontgomeryParams* params) {
+		uint32x4_t n_prime_vec = vdupq_n_u32(params->n_prime);
+		uint32x4_t mod_vec = vdupq_n_u32(params->mod);
+		uint32x4_t T_low32 = vcombine_u32(vmovn_u64(T_low), vmovn_u64(T_high));
+		uint32x4_t m = vmulq_u32(T_low32, n_prime_vec);
+		
+		uint64x2_t mul_low = vmull_u32(vget_low_u32(m), vget_low_u32(mod_vec));
+		uint64x2_t mul_high = vmull_u32(vget_high_u32(m), vget_high_u32(mod_vec));
+		uint64x2_t sum_low = vaddq_u64(T_low, mul_low);
+		uint64x2_t sum_high = vaddq_u64(T_high, mul_high);
+		
+		uint32x4_t t = vcombine_u32(vshrn_n_u64(sum_low, 32), vshrn_n_u64(sum_high, 32));
+		uint32x4_t cmp = vcgeq_u32(t, mod_vec);
+		uint32x4_t sub = vsubq_u32(t, mod_vec);
+		return vbslq_u32(cmp, sub, t);
+	}
+	
+	static inline uint32x4_t montgomery_multiply_neon(uint32x4_t a, uint32x4_t b, const MontgomeryParams* params) {
+		uint64x2_t low = vmull_u32(vget_low_u32(a), vget_low_u32(b));
+		uint64x2_t high = vmull_u32(vget_high_u32(a), vget_high_u32(b));
+		return montgomery_reduce_neon(low, high, params);
+	}
+\end{lstlisting}
+\subsubsection{向量化蝴蝶变换}
+递归NTT的向量化优化版本NTT\_recursion\_mont将所有运算转换到Montgomery域进行。旋转因子的计算也使用Montgomery形式的快速幂。蝴蝶操作被重写为使用向量化Montgomery乘法和加法的形式。虽然递归结构限制了向量化的程度，但在合并阶段我们仍能对4个连续的蝴蝶操作进行向量化处理。
+\begin{lstlisting}[title=Montgomery域内快速幂,frame=trbl,language={C++}]
+uint32_t montgomery_pow(uint32_t a, int b, const MontgomeryParams* params) {
+	uint32_t res = to_montgomery_scalar(1, params); // Montgomery域的1
+	while (b) {
+		if (b & 1) res = montgomery_reduce_scalar((uint64_t)res * a, params);
+		a = montgomery_reduce_scalar((uint64_t)a * a, params);
+		b >>= 1;
+	}
+	return res;
+}
+\end{lstlisting}
+\subsubsection{最终代码实现}
+最终的NTT\_recursion\_multiply\_SIMD函数将输入数据转换到Montgomery域，执行向量化优化的递归NTT，进行点乘，然后逆变换并将结果转换回常规表示。这种实现减少了模运算的开销，提高了计算密度，特别是在处理大模数时优势明显。
+\begin{lstlisting}[title=使用Montgomery算法neon优化的递归NTT,frame=trbl,language={C++}]
+	void NTT_recursion_mont(uint32_t *a, int len, int op, uint32_t g, uint32_t p, const MontgomeryParams *params) {
+		if (len == 1) return;
+		int half = len / 2;
+		uint32_t *A1 = (uint32_t*)alloca(sizeof(uint32_t) * half);
+		uint32_t *A2 = (uint32_t*)alloca(sizeof(uint32_t) * half);
+		for (int i = 0; i < half; ++i) {
+			A1[i] = a[i * 2];
+			A2[i] = a[i * 2 + 1];
+		}
+		
+		NTT_recursion_mont(A1, half, op, g, p, params);
+		NTT_recursion_mont(A2, half, op, g, p, params);
+		
+		uint32_t root = (op == 1 ? g : qpow(g, p - 2, p));
+		uint32_t root_mont = to_montgomery_scalar(root, params);
+		uint32_t wn = montgomery_pow(root_mont, (p - 1) / len, params);
+		uint32_t w = to_montgomery_scalar(1, params);
+		for (int i = 0; i < half; ++i) {
+			// t = A2[i] * w (Montgomery乘法)
+			uint32_t t = montgomery_reduce_scalar((uint64_t)A2[i] * w, params);
+			
+			// a[i] = (A1[i] + t) % p;
+			uint32_t add = A1[i] + t;
+			if (add >= p) add -= p;
+			a[i] = add;
+			
+			// a[i+half] = (A1[i] - t + p) % p;
+			uint32_t sub = A1[i] + p - t;
+			if (sub >= p) sub -= p;
+			a[i + half] = sub;
+			
+			// w = w * wn (Montgomery)
+			w = montgomery_reduce_scalar((uint64_t)w * wn, params);
+		}
+	}
+	
+	void NTT_recursion_multiply_SIMD(int *a, int *b, int *ab, int n, int p, int g=3) {
+		const int N = 2 * n - 1;
+		int len = 1;
+		while (len < N) len <<= 1;
+		int ni = qpow(len, p - 2, p);
+		MontgomeryParams params = init_montgomery_params(p);
+		
+		// 转Montgomery域
+		uint32_t *A = (uint32_t*)aligned_alloc(16, len * sizeof(uint32_t));
+		uint32_t *B = (uint32_t*)aligned_alloc(16, len * sizeof(uint32_t));
+		for (int i = 0; i < len; ++i) {
+			A[i] = (i < n) ? to_montgomery_scalar(a[i], &params) : 0;
+			B[i] = (i < n) ? to_montgomery_scalar(b[i], &params) : 0;
+		}
+		
+		NTT_recursion_mont(A, len, 1, g, p, &params);
+		NTT_recursion_mont(B, len, 1, g, p, &params);
+		
+		// 点值相乘Montgomery
+		for (int i = 0; i < len; ++i) {
+			A[i] = montgomery_reduce_scalar((uint64_t)A[i] * B[i], &params);
+		}
+		
+		NTT_recursion_mont(A, len, -1, g, p, &params);
+		
+		for (int i = 0; i < N; ++i) {
+			ab[i] = (uint64_t)from_montgomery_scalar(A[i], &params) * ni % p;
+		}
+		free(A);
+		free(B);
+	}
+\end{lstlisting}
+
+\subsection{迭代实现的NTT多项式乘法}
+迭代NTT通过消除递归调用提高了性能。设计了NTT\_Iteration函数和对应的多项式乘法函数NTT\_Iteration\_multiply。迭代实现首先进行位逆序置换，然后通过多层循环实现蝴蝶操作。
+
+位逆序置换确保数据在内存中的排列适合后续的迭代计算。迭代过程从最小的子问题开始，逐步合并结果。每次迭代处理当前长度的所有子序列，对每对元素应用蝴蝶操作。
+
+NTT\_Iteration\_multiply函数的流程与递归版本类似，但由于避免了递归开销，性能显著提升。迭代实现还具有更好的内存局部性，因为数据访问模式更加规律，有利于处理器缓存的有效利用。这种实现特别适合处理大规模多项式，是实践中常用的NTT实现方式。
+\begin{lstlisting}[title=NTT迭代实现,frame=trbl,language={C++}]
+  void NTT_Iteration(int *a, int len, int op, int g, int p) {//NTT迭代模块
+  	// 位逆序置换
+  	for (int i = 1, j = 0; i < len - 1; i++) {
+  		for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+  		if (i < j) {
+  			int tmp = a[i];
+  			a[i] = a[j];
+  			a[j] = tmp;
+  		}
+  	}
+  	// 蝴蝶操作
+  	for (int h = 2; h <= len; h <<= 1) {
+  		// 计算原根
+  		int wn = qpow((op == 1 ? g : qpow(g, p - 2, p)), (p - 1) / h, p);
+  		// 对每个长度为h的段进行变换
+  		for (int j = 0; j < len; j += h) {
+  			int w = 1;
+  			for (int k = j; k < j + h/2; k++) {
+  				int t = 1LL * a[k + h/2] * w % p;
+  				a[k + h/2] = (a[k] - t + p) % p;
+  				a[k] = (a[k] + t) % p;
+  				w = 1LL * w * wn % p;
+  			}
+  		}
+  	}
+  }
+  void NTT_Iteration_multiply(int *a, int *b, int *ab, int n, int p) {//NTT迭代
+  	int N = 2 * n - 1;
+  	int len = 1;
+  	while (len < N) len <<= 1;  // 确保len为2的幂次
+  	// 计算len的逆元
+  	int ni = qpow(len, p-2, p);
+  	// 创建并初始化临时数组
+  	int *A = new int[len]();
+  	int *B = new int[len]();
+  	// 复制输入数据
+  	for (int i = 0; i < len; i++) {
+  		A[i] = (i < n) ? a[i] : 0;
+  		B[i] = (i < n) ? b[i] : 0;
+  	}
+  	// NTT变换
+  	NTT_Iteration(A, len, 1, g, p);
+  	NTT_Iteration(B, len, 1, g, p);
+  	// 点值乘法
+  	for (int i = 0; i < len; i++) {
+  		A[i] = (1LL * A[i] * B[i]) % p;
+  	}
+  	// 逆变换
+  	NTT_Iteration(A, len, -1, g, p);
+  	// 乘上ni并保存结果
+  	for (int i = 0; i < N; i++) {
+  		ab[i] = (1LL * A[i] * ni) % p;
+  	}
+  	delete[] A;
+  	delete[] B;
+  }
+\end{lstlisting}
+
+\subsection{使用Montgomery算法neon优化的迭代NTT}
+\subsubsection{设计思想}
+结合Montgomery算法和NEON向量化的迭代NTT是我实现的最高效版本。NTT\_Iteration\_SIMD函数在迭代NTT的基础上，使用Montgomery算法优化模运算，并对蝴蝶操作进行向量化处理。
+
+设计了专门的旋转因子表准备函数prepare\_w\_table，预先计算Montgomery域内的旋转因子。在蝴蝶操作阶段，我们每次处理4个连续的蝴蝶操作，使用NEON指令并行加载数据、执行Montgomery乘法和加减运算。边界条件处理确保模运算结果的正确性。
+\begin{lstlisting}[title=Montgomery域内旋转因子预计算,frame=trbl,language={C++}]
+	static void prepare_w_table(uint32_t* W, int len, uint32_t wn, uint32_t p, const MontgomeryParams* params) {
+		W[0] = to_montgomery_scalar(1, params); // 1的Montgomery表示
+		for (int i = 1; i < len; i++) {
+			// Montgomery 域乘法
+			W[i] = montgomery_reduce_scalar((uint64_t)W[i-1] * wn, params);
+		}
+	}
+\end{lstlisting}
+NTT\_Iteration\_multiply\_SIMD函数整合了所有这些优化：数据转换为Montgomery表示，使用向量化蝴蝶操作的迭代NTT，点乘，然后逆变换和结果转换，极大利用并行计算能力提高效率，
+
+\subsubsection{最终代码实现}
+\begin{lstlisting}[title=使用Montgomery算法neon优化的NTT迭代,frame=trbl,language={C++}]
+	void NTT_Iteration_SIMD(uint32_t* a, int len, int op, uint32_t g, uint32_t p, const MontgomeryParams* params) {
+		// 位逆序置换
+		for (int i = 1, j = 0; i < len-1; i++) {
+			for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+			if (i < j) { uint32_t tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+		}
+		uint32_t* W = (uint32_t*)aligned_alloc(16, len * sizeof(uint32_t));
+		uint32x4_t mod_vec = vdupq_n_u32(p);
+		for (int h = 2; h <= len; h <<= 1) {
+			uint32_t root = (op == 1 ? g : qpow(g, p-2, p));
+			uint32_t root_mont = to_montgomery_scalar(root, params); // 先转域
+			uint32_t wn = montgomery_pow(root_mont, (p-1)/h, params); // 全在 Montgomery 域
+			prepare_w_table(W, h/2, wn, p, params);
+			
+			for (int j = 0; j < len; j += h) {
+				int k = 0;
+				for (; k + 4 <= h/2; k += 4) {
+					uint32x4_t vA = vld1q_u32(a + j + k);
+					uint32x4_t vB = vld1q_u32(a + j + k + h/2);
+					uint32x4_t vW = vld1q_u32(W + k);
+					uint32x4_t vT = montgomery_multiply_neon(vB, vW, params);
+					
+					uint32x4_t vSum = vaddq_u32(vA, vT);
+					uint32x4_t vDiff = vsubq_u32(vA, vT);
+					
+					vSum = vbslq_u32(vcgeq_u32(vSum, mod_vec), vsubq_u32(vSum, mod_vec), vSum);
+					vDiff = vbslq_u32(vcgtq_u32(vT, vA), vaddq_u32(vDiff, mod_vec), vDiff);
+					
+					vst1q_u32(a + j + k, vSum);
+					vst1q_u32(a + j + k + h/2, vDiff);
+				}
+				for (; k < h/2; ++k) {
+					uint32_t t = montgomery_reduce_scalar((uint64_t)a[j+k+h/2] * W[k], params);
+					uint32_t u = a[j+k];
+					uint32_t add = u + t;
+					if (add >= p) add -= p;
+					a[j+k] = add;
+					uint32_t sub = u + p - t;
+					if (sub >= p) sub -= p;
+					a[j+k+h/2] = sub;
+				}
+			}
+		}
+		free(W);
+	}
+	
+	void NTT_Iteration_multiply_SIMD(int* a, int* b, int* ab, int n, int p) {
+		const int N = 2*n-1;
+		int len = 1;
+		while (len < N) len <<= 1;
+		int ni = qpow(len, p-2, p);
+		uint32_t* A = (uint32_t*)aligned_alloc(16, len * sizeof(uint32_t));
+		uint32_t* B = (uint32_t*)aligned_alloc(16, len * sizeof(uint32_t));
+		MontgomeryParams params = init_montgomery_params(p);
+		
+		// 输入数据 to_montgomery_scalar
+		for (int i = 0; i < len; ++i) {
+			A[i] = (i < n) ? to_montgomery_scalar(a[i], &params) : 0;
+			B[i] = (i < n) ? to_montgomery_scalar(b[i], &params) : 0;
+		}
+		// 正向NTT
+		NTT_Iteration_SIMD(A, len, 1, 3, p, &params);
+		NTT_Iteration_SIMD(B, len, 1, 3, p, &params);
+		// 点值乘
+		for (int i = 0; i < len; ++i) {
+			A[i] = montgomery_reduce_scalar((uint64_t)A[i] * B[i], &params);
+		}
+		// 逆向NTT
+		NTT_Iteration_SIMD(A, len, -1, 3, p, &params);
+		// 输出 from_montgomery_scalar
+		for (int i = 0; i < N; ++i) {
+			ab[i] = (uint64_t)from_montgomery_scalar(A[i], &params) * ni % p;
+		}
+		free(A);
+		free(B);
+	}
+\end{lstlisting}
+
+%-------------------------ARM结果----------------------------------
+\section{ARM下的结果与分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$time/us$} }& \multicolumn{1}{c|}{n = 4} & \multicolumn{3}{c|}{n = 131072} \\
+		\cline{3-6}
+		\multicolumn{2}{|c|}{}&$p = 7340033$&$p = 7340033$&$p = 104857601$&$p = 469762049$\\
+		\hline
+		\multirow{6}*{算法}&$poly\_multiply$&0.00015&95461&101199&105109\\
+		\cline{2-6}
+		&$poly\_multiply\_neon$&0.00031&58407.3&64438.9&68163.6\\
+		\cline{2-6}
+		&$NTT\_recursion\_multiply$&0.00542&252.097&291.666&318.798\\
+		\cline{2-6}
+		&$NTT\_recursion\_multiply\_SIMD$&0.01685&201.418&228.387&246.418\\
+		\cline{2-6}
+		&$NTT\_Iteration\_multiply$&0.00449&83.5684&88.2875&91.4507\\
+		\cline{2-6}
+		&$NTT\_Iteration\_multiply\_SIMD$&0.01549&45.4782&44.4055&44.6895\\
+		\hline
+	\end{tabular}
+	\caption{ARM下的运行结果}
+	\label{table:t2}
+\end{table}
+根据实验结果，可以对各算法的性能进行系统分析。在n=4的小规模测试中，朴素乘法最快(0.00015us)，而各种NTT实现由于初始化开销较大而表现较差。可见对于极小规模问题，简单算法可能更优。
+
+在n=131072的大规模测试中，性能差异显著。朴素乘法需要约95461-105109us，而NEON优化的朴素乘法将时间减少到58407-68163us，提速约39-45\%。这展示了SIMD并行化的效果。
+
+递归NTT基础版本将时间降至252-318us，提速约300倍，展示了O(n log n)算法的巨大优势。Montgomery优化的递归NTT进一步将时间减少到201-246us,证明了Montgomery算法在减少模运算开销方面的有效性。
+
+迭代NTT基础版本表现出色(83-91μs)，比递归版本快约3倍，这主要归功于消除了递归开销和更好的内存访问模式。最终的Montgomery+NEON优化迭代NTT达到最佳性能(44-45μs)，比基础迭代版本快约2倍。
+
+值得注意的是，在n=131072下随着模数p的增大(从7340033到469762049)，各算法的运行时间略有增加但幅度不大，说明我们的实现在处理不同大小的模数时都具有良好的适应性。特别是Montgomery优化的版本，对大模数的处理效率下降更小（甚至反而更快），可见Montgomery算法在处理大数模运算时具有优势。
+%-------------------------X86----------------------------------
+\section{移植x86与运行分析}
+\subsection{移植后代码}
+将代码从ARM平台移植到x86平台主要涉及NEON intrinsics到AVX/SSE intrinsics的转换，主要修改有：
+
+1.头文件替换：移除了arm\_neon.h，添加了immintrin.h以支持x86 SIMD指令。
+
+2.SIMD数据类型转换：将int32x4\_t等NEON类型替换为\_\_m128i等x86 SIMD类型。
+
+3.指令替换：将vld1q\_s32等NEON函数替换为\_mm\_loadu\_si128等x86等效函数。
+
+4.内存对齐处理：x86对内存对齐要求更严格，添加了ALIGNED\_ALLOC和ALIGNED\_FREE宏来处理不同平台的内存对齐分配。
+
+5.Montgomery乘法实现：由于x86和ARM的SIMD指令集差异，我们重写了向量化的Montgomery乘法函数，使用x86的128位寄存器实现类似功能。
+
+这些修改保持了算法的逻辑不变，只是针对x86平台的特性进行了适配。比如蝴蝶操作的向量化实现，虽然使用的具体指令不同，但整体结构和优化思想保持一致。具体代码不在此处展示。
+\subsection{运行结果与分析}
+由于cout限制，我只获取了n=4，p=7340033的输入及答案文件，作为正确性测试。移植后的代码在x86平台上通过了所有正确性测试，说明移植正确。由于精度问题，在CodeBlocks运行的结果只显示一位数，全部运行结果都为0us，借助Vtune可以看到整个程序（而非具体函数）的性能：
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		算法类型$\backslash$指标& 用时& 时钟周期/M& CPI\\
+		\midrule
+		朴素乘法& 0.036& 28.8& 1.200\\
+		朴素乘法(SIMD)& 0.026& 21.6& 0.900\\
+		递归NTT& 0.006& 21.6& 1.286\\
+		递归NTT(Montgomery)& 0.006& 28.8& 2.000\\
+		迭代NTT& 0.006& 21.6& 1.125\\
+		迭代NTT(Montgomery)& 0.006& 26.4& 1.375\\
+		\bottomrule
+	\end{tabular}
+	\caption{Vtune结果}
+	\label{table:t3}
+\end{table}
+可以看到，所有NTT变体(0.006)均显著优于朴素乘法(0.036)及其SIMD优化版本(0.026)，这与ARM平台观察到的趋势一致，验证了NTT算法在理论时间复杂度上的优势。朴素乘法SIMD优化使执行时间从0.036s降至0.026s(提升28\%)，CPI从1.2降至0.9，表明NEON向量化确实提高了指令级并行度。而使用Montgomery的NTT增加CPI表明硬件执行效率下降，在小规模数据(n=4)下未能体现优势。这些结果与小规模测试用例的特性相关，更大规模数据可能展现不同特征。
+%-------------------------实验总结----------------------------------
+\section{实验总结和思考}
+本实验实现了NTT多项式乘法及其优化方法，从朴素乘法到高度优化的SIMD版本，展示了算法优化和SIMD加速的协同效应。可以注意到，算法级优化（从O(n²)到O(n log n)）带来的性能提升是要大于单纯的代码优化，这说明在代码设计中应首先关注算法选择。同时，SIMD向量化、Montgomery模约减也能带来显著的额外收益，特别是在大规模数据计算时。
+
+通过ARM和x86双平台的实践，对跨平台向量化编程有了一定程度的理解。不同平台的SIMD指令集虽然概念相似，但在细节上存在诸多差异，需要仔细处理。
+
+\section{链接}
+\textbf{Gitee链接}  \href{https://gitee.com/sky_whale/parallel-programming-with-nku}{Gitee}
+
+\end{document}

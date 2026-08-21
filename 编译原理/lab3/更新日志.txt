@@ -1,0 +1,62 @@
+更新内容（中文版）
+
+  - interfacesfrontendastast_defs.h22-53 扩充运算符枚举，加入复合赋值、按位异或取反、左右移以及前后置自增自减，方
+    便解析和遍历阶段区分所有表达式形式。
+  - interfacesfrontendastast_visitor.h18-26、frontendastexpr.h131-146、frontendastexpr.cpp72-89 新增
+    ConditionalExpr AST 节点（含析构实现），用于承载三目  表达式。
+  - 访问器体系同步支持新节点：打印接口与实现 (frontendastvisitorprinterast_printer.h35-43, frontendastvisitor
+    printerexpr_printer.cpp63-91) 以及语义检查器接口桩实现 (frontendastvisitorsementic_checkast_checker.h107-
+    115, frontendastvisitorsementic_checkexpr_checker.cpp47-60)。
+  - frontendparseryacc.y 的表达式语法大幅完善：
+      - 赋值层（416-439）支持 = 与所有 op=，按右结合解析，并汇入新增的 CONDITIONAL_EXPR 非终结符（487-494）。
+      - 加入三目运算、按位异或层、移位层，补齐完整优先级链（521-569）。
+      - 一元表达式（611-630）支持前后置 ++--，UNARY_OP（731-744）映射 ~ 到新运算符。
+      - NOCOMMA_EXPR 仅通过赋值非终结符传递，确保优先级与 CSysY 一致。
+  - frontendastvisitorprinterexpr_printer.cpp76-90 为条件表达式输出三子节点，保持 AST 打印清晰。
+
+  受影响文件
+
+  - interfaces\frontend\ast\ast_defs.h
+  - interfaces\frontend\ast\ast_visitor.h
+  - frontend\ast\expr.h
+  - frontend\ast\expr.cpp
+  - frontend\ast\visitor\printer\ast_printer.h
+  - frontend\ast\visitor\printer\expr_printer.cpp
+  - frontend\ast\visitor\sementic_check\ast_checker.h
+  - frontend\ast\visitor\sementic_check\expr_checker.cpp
+  - frontend\parser\yacc.y
+  - （通过 make lexer 重新生成了 parser 相关产物，仍未纳入版本控制）
+
+  测试
+
+  - bash -lc 'make lexer'（重新生成 yacc.cpp.h 和 location.hh；Flex 依旧提示 frontendparserlexer.l208 规则无法匹配的
+    旧警告）
+
+  现在解析器已能覆盖实验要求的全部算术逻辑位运算，并能正确处理三目运算与前后置 ++--，同时构建对应的 AST 节点。接下来
+  可在语义检查和后续代码生成阶段补充对新运算符的类型判定和 IR 生成。
+
+- 在 middleend/visitor/codegen/ast_codegen.h:121-136 为 ASTCodeGen 注册了 ConditionalExpr 的 visit 声明，确保继承的
+    Visitor 接口实现完整，不再被视为抽象类。
+  - 在 middleend/visitor/codegen/expr_codegen.cpp:92-105 增加了 ASTCodeGen::visit(FE::AST::ConditionalExpr&, Module*) 的
+    占位实现（当前仍是 TODO，但满足纯虚函数要求），因此 main.cpp 中可以实例化 ASTCodeGen。
+  - 重新编译验证：bash -lc 'make obj/main.o'，确认原先的 “abstract type” 报错已消失。
+
+  后续若要真正生成 IR，可在该新方法里补齐条件表达式的分支/值流逻辑。
+
+- selftset.sy 触发的 unexpected ASSIGN 实际源于我们还缺少 ^=, &=, |=, <<=, >>= 这些复合赋值；在 interfaces/frontend/
+    ast/ast_defs.h 新增了对应 Operator 枚举，在 frontend/parser/lexer.l 增加了词法规则，在 frontend/parser/yacc.y 为它们
+    各自补了产生式，这样 acc ^= ..., tmp &= ..., tmp <<= ... 等写法都能被识别。
+  - 为了解析 ?: 结果值，我们本轮还同步扩展了 ASTCodeGen 的接口（middleend/visitor/codegen/ast_codegen.h/
+    expr_codegen.cpp）——即使 IR 生成仍是 TODO，也不再因缺少 ConditionalExpr 的 visit 而在 main.cpp 处编译不过。
+  - 语法文件、词法文件改完后一定要重新编译整个工程（make），否则 bin/compiler 仍然是旧的可执行文件，和新 grammar 不匹
+    配；你遇到的 ++/^= 报错就是因为只生成了 yacc/lex 文件但没有重新链接。
+  - 重新 make 后，运行 ./bin/compiler -parser testcase/parser/selftset.sy 已能顺利通过；我也用更小的 ++ 示例（如 ++i、i+
+    +）验证过，现在解析器能正确处理。
+  - 受影响的源码包括：
+    interfaces/frontend/ast/ast_defs.h（新增运算符枚举）
+    frontend/parser/lexer.l（复合赋值符号的词法规则）
+    frontend/parser/yacc.y（新 token、赋值语法、后缀 ++/-- 调整）
+    middleend/visitor/codegen/ast_codegen.h 与 expr_codegen.cpp（补上 ConditionalExpr 的 visit 声明/桩实现）
+    重新运行 make 会自动更新 frontend/parser/yacc.cpp/.h 与 frontend/parser/lexer.cpp。
+
+  如再改动语法或词法文件，记得重复执行 make lexer（或直接 make）+ 全量构建，这样新的语法才会生效。

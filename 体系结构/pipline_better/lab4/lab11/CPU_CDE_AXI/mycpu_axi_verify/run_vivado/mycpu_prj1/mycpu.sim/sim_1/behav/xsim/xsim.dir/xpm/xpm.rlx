@@ -1,0 +1,7 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+D:/vivado/Vivado/2019.2/data/ip/xpm/xpm_VCOMP.vhd,1573109340,vhdl,D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/mycpu.ip_user_files/ipstatic/hdl/fifo_generator_v13_2_rfs.vhd,,,vcomponents,,,,,,,,
+D:/vivado/Vivado/2019.2/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv,1573109340,systemVerilog,,D:/vivado/Vivado/2019.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv,,xpm_cdc_array_single;xpm_cdc_async_rst;xpm_cdc_gray;xpm_cdc_handshake;xpm_cdc_low_latency_handshake;xpm_cdc_pulse;xpm_cdc_single;xpm_cdc_sync_rst,,,../../../../../../../cpu132_gettrace/rtl/CPU_gs132;../../../../mycpu.ip_user_files/ipstatic;../../../../mycpu.ip_user_files/ipstatic/hdl,,,,,
+D:/vivado/Vivado/2019.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv,1573109341,systemVerilog,,,,asym_bwe_bb;xpm_memory_base;xpm_memory_dpdistram;xpm_memory_dprom;xpm_memory_sdpram;xpm_memory_spram;xpm_memory_sprom;xpm_memory_tdpram,,,../../../../../../../cpu132_gettrace/rtl/CPU_gs132;../../../../mycpu.ip_user_files/ipstatic;../../../../mycpu.ip_user_files/ipstatic/hdl,,,,,

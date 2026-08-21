@@ -1,0 +1,19 @@
+#emojiDisplay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 2em; /*增大字体大小*/
+    color: #333;
+}
+
+#mapContainer {
+    width: 100%;
+    max-width: 960px;
+    margin: auto; /*居中显示地图容器*/
+    display: flex;
+    justify-content: center;
+}
+
+svg {
+    border: 1px solid #ddd; /*给地图添加边框以提高可见性*/
+}

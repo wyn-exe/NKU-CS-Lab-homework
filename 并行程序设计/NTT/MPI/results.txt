@@ -1,0 +1,59 @@
+多模数合并NTT（未优化）NTT_CRT_4mod：
+多项式乘法结果正确
+average latency for n = 4 p = 7340033 : 0.04388 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 7340033 : 643.352 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 104857601 : 644.462 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 469762049 : 372.949 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 1337006139375617 : 648.741 (us)
+
+mpi常规优化NTT_mpi:
+多项式乘法结果正确
+average latency for n = 4 p = 7340033 : 0.286341 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 7340033 : 377.441 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 104857601 : 376.443 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 469762049 : 100.943 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 1337006139375617 : 380.893 (us) 
+
+2x2多进程多线程NTT_mpi_pthread：
+多项式乘法结果正确
+average latency for n = 4 p = 7340033 : 1.96791 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 7340033 : 379.747 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 104857601 : 378.412 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 469762049 : 101.65 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 1337006139375617 : 381.584 (us)
+
+Barrett规约优化+mpi常规优化NTT_mpi_barrett：
+多项式乘法结果正确
+average latency for n = 4 p = 7340033 : 3.09968 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 7340033 : 343.904 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 104857601 : 333.709 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 469762049 : 57.8146 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 1337006139375617 : 338.284 (us) 
+
+Barrett规约优化+线程进程多级并行（2x2）NTT_mpi_pthread_barrett：
+多项式乘法结果正确
+average latency for n = 4 p = 7340033 : 0.944376 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 7340033 : 342.114 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 104857601 : 339.249 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 469762049 : 59.8133 (us) 
+多项式乘法结果正确
+average latency for n = 131072 p = 1337006139375617 : 343.106 (us)

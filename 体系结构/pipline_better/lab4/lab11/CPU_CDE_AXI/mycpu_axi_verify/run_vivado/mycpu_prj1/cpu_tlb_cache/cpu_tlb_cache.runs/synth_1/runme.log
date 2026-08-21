@@ -1,0 +1,662 @@
+
+*** Running vivado
+    with args -log cpu_with_tlb_cache.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source cpu_with_tlb_cache.tcl
+
+
+****** Vivado v2019.2 (64-bit)
+  **** SW Build 2708876 on Wed Nov  6 21:40:23 MST 2019
+  **** IP Build 2700528 on Thu Nov  7 00:09:20 MST 2019
+    ** Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+
+source cpu_with_tlb_cache.tcl -notrace
+Command: synth_design -top cpu_with_tlb_cache -part xc7a200tfbg676-2
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a200t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a200t'
+INFO: [Device 21-403] Loading part xc7a200tfbg676-2
+INFO: Launching helper process for spawning children vivado processes
+INFO: Helper process launched with PID 73932 
+WARNING: [Synth 8-6901] identifier 'multiplier' is used before its declaration [D:/pipline_better/lab5/labcode/mycpu/multiply.v:18]
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 1031.918 ; gain = 241.547
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'cpu_with_tlb_cache' [D:/pipline_better/lab5/labcode/mycpu/cpu_with_tlb_cache.v:9]
+INFO: [Synth 8-6157] synthesizing module 'tlb' [D:/pipline_better/lab5/labcode/lab13/tlb_verify/rtl/tlb/tlb.v:9]
+	Parameter TLBNUM bound to: 16 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'tlb' (1#1) [D:/pipline_better/lab5/labcode/lab13/tlb_verify/rtl/tlb/tlb.v:9]
+INFO: [Synth 8-6157] synthesizing module 'cache' [D:/pipline_better/lab5/labcode/lab16/cache_verify/rtl/cache/cache.v:9]
+	Parameter INDEX_WIDTH bound to: 8 - type: integer 
+	Parameter OFFSET_WIDTH bound to: 4 - type: integer 
+	Parameter WAY_NUM bound to: 2 - type: integer 
+	Parameter TAG_WIDTH bound to: 20 - type: integer 
+	Parameter LINE_SIZE bound to: 4 - type: integer 
+	Parameter SET_NUM bound to: 256 - type: integer 
+	Parameter IDLE bound to: 3'b000 
+	Parameter LOOKUP bound to: 3'b001 
+	Parameter MISS bound to: 3'b010 
+	Parameter REPLACE bound to: 3'b011 
+	Parameter REFILL bound to: 3'b100 
+WARNING: [Synth 8-5856] 3D RAM valid_array_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: [Synth 8-5856] 3D RAM dirty_array_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: [Synth 8-5856] 3D RAM data_array_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+WARNING: [Synth 8-5856] 3D RAM tag_array_reg  for this pattern/configuration is not supported. This will most likely be implemented in registers
+INFO: [Synth 8-6155] done synthesizing module 'cache' (2#1) [D:/pipline_better/lab5/labcode/lab16/cache_verify/rtl/cache/cache.v:9]
+INFO: [Synth 8-6157] synthesizing module 'fetch' [D:/pipline_better/lab5/labcode/mycpu/fetch.v:9]
+INFO: [Synth 8-6155] done synthesizing module 'fetch' (3#1) [D:/pipline_better/lab5/labcode/mycpu/fetch.v:9]
+INFO: [Synth 8-6157] synthesizing module 'decode' [D:/pipline_better/lab5/labcode/mycpu/decode.v:9]
+INFO: [Synth 8-6155] done synthesizing module 'decode' (4#1) [D:/pipline_better/lab5/labcode/mycpu/decode.v:9]
+INFO: [Synth 8-6157] synthesizing module 'exe' [D:/pipline_better/lab5/labcode/mycpu/exe.v:9]
+INFO: [Synth 8-6157] synthesizing module 'alu' [D:/pipline_better/lab5/labcode/mycpu/alu.v:8]
+INFO: [Synth 8-6157] synthesizing module 'adder' [D:/pipline_better/lab5/labcode/mycpu/adder.v:8]
+INFO: [Synth 8-6155] done synthesizing module 'adder' (5#1) [D:/pipline_better/lab5/labcode/mycpu/adder.v:8]
+INFO: [Synth 8-6155] done synthesizing module 'alu' (6#1) [D:/pipline_better/lab5/labcode/mycpu/alu.v:8]
+INFO: [Synth 8-6157] synthesizing module 'multiply' [D:/pipline_better/lab5/labcode/mycpu/multiply.v:8]
+INFO: [Synth 8-6155] done synthesizing module 'multiply' (7#1) [D:/pipline_better/lab5/labcode/mycpu/multiply.v:8]
+INFO: [Synth 8-6155] done synthesizing module 'exe' (8#1) [D:/pipline_better/lab5/labcode/mycpu/exe.v:9]
+INFO: [Synth 8-6157] synthesizing module 'mem' [D:/pipline_better/lab5/labcode/mycpu/mem.v:9]
+INFO: [Synth 8-226] default block is never used [D:/pipline_better/lab5/labcode/mycpu/mem.v:89]
+INFO: [Synth 8-226] default block is never used [D:/pipline_better/lab5/labcode/mycpu/mem.v:106]
+INFO: [Synth 8-6155] done synthesizing module 'mem' (9#1) [D:/pipline_better/lab5/labcode/mycpu/mem.v:9]
+INFO: [Synth 8-6157] synthesizing module 'wb' [D:/pipline_better/lab5/labcode/mycpu/wb.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'wb' (10#1) [D:/pipline_better/lab5/labcode/mycpu/wb.v:7]
+INFO: [Synth 8-6157] synthesizing module 'inst_rom' [D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.runs/synth_1/.Xil/Vivado-16604-wyn/realtime/inst_rom_stub.v:6]
+INFO: [Synth 8-6155] done synthesizing module 'inst_rom' (11#1) [D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.runs/synth_1/.Xil/Vivado-16604-wyn/realtime/inst_rom_stub.v:6]
+INFO: [Synth 8-6157] synthesizing module 'regfile' [D:/pipline_better/lab5/labcode/mycpu/regfile.v:8]
+WARNING: [Synth 8-6014] Unused sequential element rf_reg[0] was removed.  [D:/pipline_better/lab5/labcode/mycpu/regfile.v:27]
+INFO: [Synth 8-6155] done synthesizing module 'regfile' (12#1) [D:/pipline_better/lab5/labcode/mycpu/regfile.v:8]
+INFO: [Synth 8-6157] synthesizing module 'data_ram' [D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.runs/synth_1/.Xil/Vivado-16604-wyn/realtime/data_ram_stub.v:6]
+INFO: [Synth 8-6155] done synthesizing module 'data_ram' (13#1) [D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.runs/synth_1/.Xil/Vivado-16604-wyn/realtime/data_ram_stub.v:6]
+WARNING: [Synth 8-7023] instance 'data_ram_module' of module 'data_ram' has 11 connections declared, but only 10 given [D:/pipline_better/lab5/labcode/mycpu/cpu_with_tlb_cache.v:533]
+INFO: [Synth 8-6155] done synthesizing module 'cpu_with_tlb_cache' (14#1) [D:/pipline_better/lab5/labcode/mycpu/cpu_with_tlb_cache.v:9]
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[31] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[30] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[29] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[28] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[27] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[26] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[25] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[24] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[23] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[22] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[21] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[20] driven by constant 0
+WARNING: [Synth 8-3331] design wb has unconnected port MEM_WB_bus_r[80]
+WARNING: [Synth 8-3331] design exe has unconnected port ID_EXE_bus_r[206]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[31]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[30]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[29]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[28]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[27]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[26]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[25]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[24]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[23]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[22]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[21]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[20]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[19]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[18]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[17]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[16]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[15]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[14]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[13]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[12]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[11]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[10]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[1]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[0]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:01:09 ; elapsed = 00:01:11 . Memory (MB): peak = 2667.910 ; gain = 1877.539
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:16 ; elapsed = 00:01:19 . Memory (MB): peak = 2667.910 ; gain = 1877.539
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:01:16 ; elapsed = 00:01:19 . Memory (MB): peak = 2667.910 ; gain = 1877.539
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2920.488 ; gain = 7.180
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [d:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/data_ram/data_ram/data_ram_in_context.xdc] for cell 'data_ram_module'
+Finished Parsing XDC File [d:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/data_ram/data_ram/data_ram_in_context.xdc] for cell 'data_ram_module'
+Parsing XDC File [d:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/inst_rom/inst_rom/inst_rom_in_context.xdc] for cell 'inst_rom_module'
+Finished Parsing XDC File [d:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/inst_rom/inst_rom/inst_rom_in_context.xdc] for cell 'inst_rom_module'
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.029 . Memory (MB): peak = 3770.500 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.815 . Memory (MB): peak = 3770.500 ; gain = 0.000
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:02:12 ; elapsed = 00:02:09 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+INFO: [Synth 8-5580] Multithreading enabled for synth_design using a maximum of 2 processes.
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a200tfbg676-2
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'cache'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                    IDLE |                            00001 |                              000
+                  LOOKUP |                            10000 |                              001
+                    MISS |                            01000 |                              010
+                 REPLACE |                            00100 |                              011
+                  REFILL |                            00010 |                              100
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'one-hot' in module 'cache'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:03:08 ; elapsed = 00:03:08 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++------+------------------------+------------+----------+
+|      |RTL Partition           |Replication |Instances |
++------+------------------------+------------+----------+
+|1     |cache__GBM0             |           1|     40871|
+|2     |cache__GBM1             |           1|     16317|
+|3     |cache__GBM2             |           1|     14721|
+|4     |cache__GBM3             |           1|     36935|
+|5     |cache__GBM4             |           1|     21872|
+|6     |cache__GBM5             |           1|     33844|
+|7     |cache__GBM6             |           1|     41900|
+|8     |cache__GBM7             |           1|     34911|
+|9     |cache__GBM8             |           1|     11256|
+|10    |cache__GBM9             |           1|     33291|
+|11    |cache__GBM10            |           1|     11290|
+|12    |cache__GBM11            |           1|     12904|
+|13    |cache__GBM12            |           1|     16719|
+|14    |cache__GBM13            |           1|     30571|
+|15    |cache__GBM14            |           1|     27830|
+|16    |cache__GBM15            |           1|     34644|
+|17    |cache__GBM16            |           1|     42551|
+|18    |cache__GBM17            |           1|     39289|
+|19    |cache__GBM18            |           1|     12337|
+|20    |cache__GBM19            |           1|     18763|
+|21    |cache__GBM20            |           1|     40341|
+|22    |cache__GBM21            |           1|     21946|
+|23    |cache__GBM22            |           1|     34081|
+|24    |cache__GBM23            |           1|     42334|
+|25    |cache__GBM24            |           1|     32020|
+|26    |cache__GBM25            |           1|     10566|
+|27    |cache__GBM26            |           1|     12950|
+|28    |cache__GBM27            |           1|     17755|
+|29    |cache__GBM28            |           1|     30694|
+|30    |cache__GBM29            |           1|     28290|
+|31    |cache__GBM30            |           1|     34289|
+|32    |cache__GBM31            |           1|     42494|
+|33    |cpu_with_tlb_cache__GC0 |           1|     16106|
++------+------------------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     64 Bit       Adders := 1     
+	   3 Input     33 Bit       Adders := 1     
+	   2 Input     32 Bit       Adders := 5     
+	   2 Input     30 Bit       Adders := 2     
+	   2 Input      2 Bit       Adders := 2     
++---XORs : 
+	   2 Input     32 Bit         XORs := 1     
+	   2 Input      1 Bit         XORs := 2     
++---Registers : 
+	              207 Bit    Registers := 1     
+	              191 Bit    Registers := 1     
+	              155 Bit    Registers := 1     
+	               64 Bit    Registers := 2     
+	               32 Bit    Registers := 4136  
+	               20 Bit    Registers := 1024  
+	               19 Bit    Registers := 16    
+	                8 Bit    Registers := 18    
+	                5 Bit    Registers := 1     
+	                4 Bit    Registers := 2     
+	                2 Bit    Registers := 514   
+	                1 Bit    Registers := 2077  
++---Muxes : 
+	   2 Input    128 Bit        Muxes := 4     
+	   2 Input     64 Bit        Muxes := 3     
+	   2 Input     32 Bit        Muxes := 20601 
+	   4 Input     32 Bit        Muxes := 6     
+	   7 Input     32 Bit        Muxes := 1     
+	   2 Input     24 Bit        Muxes := 1     
+	   2 Input     20 Bit        Muxes := 514   
+	   2 Input      8 Bit        Muxes := 8264  
+	   4 Input      8 Bit        Muxes := 1     
+	   5 Input      5 Bit        Muxes := 2     
+	   2 Input      5 Bit        Muxes := 15    
+	   5 Input      4 Bit        Muxes := 1     
+	   2 Input      4 Bit        Muxes := 1     
+	   6 Input      4 Bit        Muxes := 1     
+	   2 Input      3 Bit        Muxes := 2     
+	   3 Input      3 Bit        Muxes := 1     
+	   7 Input      3 Bit        Muxes := 1     
+	   2 Input      2 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 3137  
+	   4 Input      1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module cpu_with_tlb_cache 
+Detailed RTL Component Info : 
++---Registers : 
+	              207 Bit    Registers := 1     
+	              191 Bit    Registers := 1     
+	              155 Bit    Registers := 1     
+	               64 Bit    Registers := 1     
+	                1 Bit    Registers := 5     
+Module cache 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input      2 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 2049  
+	               20 Bit    Registers := 512   
+	                4 Bit    Registers := 1     
+	                2 Bit    Registers := 257   
+	                1 Bit    Registers := 1025  
++---Muxes : 
+	   2 Input    128 Bit        Muxes := 2     
+	   2 Input     32 Bit        Muxes := 10279 
+	   4 Input     32 Bit        Muxes := 2     
+	   2 Input     20 Bit        Muxes := 256   
+	   2 Input      8 Bit        Muxes := 4132  
+	   5 Input      5 Bit        Muxes := 1     
+	   2 Input      5 Bit        Muxes := 5     
+	   2 Input      2 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 1538  
+Module tlb 
+Detailed RTL Component Info : 
++---Registers : 
+	               19 Bit    Registers := 16    
+	                8 Bit    Registers := 16    
+	                1 Bit    Registers := 16    
++---Muxes : 
+	   2 Input     20 Bit        Muxes := 2     
+	   2 Input      3 Bit        Muxes := 2     
+	   2 Input      1 Bit        Muxes := 20    
+Module fetch 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     30 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   4 Input     32 Bit        Muxes := 1     
+	   2 Input     32 Bit        Muxes := 2     
+Module decode 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 1     
+	   2 Input     30 Bit       Adders := 1     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 16    
+	   2 Input      5 Bit        Muxes := 3     
+	   5 Input      4 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 4     
+Module adder 
+Detailed RTL Component Info : 
++---Adders : 
+	   3 Input     33 Bit       Adders := 1     
+Module alu 
+Detailed RTL Component Info : 
++---XORs : 
+	   2 Input     32 Bit         XORs := 1     
+	   2 Input      1 Bit         XORs := 1     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 6     
+Module multiply 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     64 Bit       Adders := 1     
+	   2 Input     32 Bit       Adders := 2     
++---XORs : 
+	   2 Input      1 Bit         XORs := 1     
++---Registers : 
+	               64 Bit    Registers := 1     
+	               32 Bit    Registers := 1     
+	                1 Bit    Registers := 2     
++---Muxes : 
+	   2 Input     64 Bit        Muxes := 3     
+	   2 Input     32 Bit        Muxes := 3     
+	   2 Input      1 Bit        Muxes := 1     
+Module exe 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 2     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 6     
+	   2 Input      5 Bit        Muxes := 1     
+	   2 Input      4 Bit        Muxes := 1     
+Module mem 
+Detailed RTL Component Info : 
++---Registers : 
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   4 Input     32 Bit        Muxes := 1     
+	   2 Input     32 Bit        Muxes := 3     
+	   2 Input     24 Bit        Muxes := 1     
+	   4 Input      8 Bit        Muxes := 1     
+	   2 Input      5 Bit        Muxes := 1     
+	   6 Input      4 Bit        Muxes := 1     
+	   3 Input      3 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 1     
+	   4 Input      1 Bit        Muxes := 1     
+Module wb 
+Detailed RTL Component Info : 
++---Registers : 
+	               32 Bit    Registers := 5     
+	                8 Bit    Registers := 2     
+	                5 Bit    Registers := 1     
+	                1 Bit    Registers := 2     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 7     
+	   7 Input     32 Bit        Muxes := 1     
+	   7 Input      3 Bit        Muxes := 1     
+	   2 Input      1 Bit        Muxes := 4     
+Module regfile 
+Detailed RTL Component Info : 
++---Registers : 
+	               32 Bit    Registers := 31    
++---Muxes : 
+	   2 Input      1 Bit        Muxes := 31    
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 740 (col length:100)
+BRAMs: 730 (col length: RAMB18 100 RAMB36 50)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[31] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[30] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[29] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[28] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[27] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[26] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[25] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[24] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[23] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[22] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[21] driven by constant 0
+WARNING: [Synth 8-3917] design cpu_with_tlb_cache has port cpu_5_valid[20] driven by constant 0
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[31]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[30]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[29]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[28]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[27]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[26]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[25]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[24]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[23]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[22]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[21]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[20]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[19]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[18]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[17]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[16]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[15]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[14]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[13]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[12]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[11]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[10]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[1]
+WARNING: [Synth 8-3331] design cpu_with_tlb_cache has unconnected port mem_addr[0]
+WARNING: [Synth 8-3331] design exe has unconnected port ID_EXE_bus_r[206]
+warning: Removed RAM tlb_pfn0_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_pfn0_reg was removed. 
+warning: Removed RAM tlb_pfn1_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_pfn1_reg was removed. 
+warning: Removed RAM tlb_c0_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_c0_reg was removed. 
+warning: Removed RAM tlb_c1_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_c1_reg was removed. 
+warning: Removed RAM tlb_d0_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_d0_reg was removed. 
+warning: Removed RAM tlb_d1_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_d1_reg was removed. 
+warning: Removed RAM tlb_v0_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_v0_reg was removed. 
+warning: Removed RAM tlb_v1_reg due to inactive write enable
+WARNING: [Synth 8-6014] Unused sequential element tlb_v1_reg was removed. 
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\ID_EXE_bus_r_reg[76] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (WB_module/\cause_ip_r_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\EXE_MEM_bus_r_reg[74] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\MEM_WB_bus_r_reg[68] )
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:05:06 ; elapsed = 00:05:12 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++------+------------------------+------------+----------+
+|      |RTL Partition           |Replication |Instances |
++------+------------------------+------------+----------+
+|1     |cache__GBM0             |           2|     20358|
+|2     |cache__GBM1             |           2|      8550|
+|3     |cache__GBM2             |           2|      7418|
+|4     |cache__GBM3             |           2|     26587|
+|5     |cache__GBM4             |           2|     20094|
+|6     |cache__GBM5             |           2|     18218|
+|7     |cache__GBM6             |           2|     22531|
+|8     |cache__GBM7             |           2|     44401|
+|9     |cache__GBM8             |           2|      8939|
+|10    |cache__GBM9             |           2|     22767|
+|11    |cache__GBM10            |           2|      4757|
+|12    |cache__GBM11            |           2|      7366|
+|13    |cache__GBM12            |           2|      9903|
+|14    |cache__GBM13            |           2|     20316|
+|15    |cache__GBM14            |           2|      9582|
+|16    |cache__GBM15            |           2|     18701|
+|17    |cache__GBM16            |           2|     18067|
+|18    |cache__GBM17            |           2|     19598|
+|19    |cache__GBM18            |           2|      6369|
+|20    |cache__GBM19            |           2|      7014|
+|21    |cache__GBM20            |           2|     28741|
+|22    |cache__GBM21            |           2|     15688|
+|23    |cache__GBM22            |           2|     13714|
+|24    |cache__GBM23            |           2|     22567|
+|25    |cache__GBM24            |           2|     21855|
+|26    |cache__GBM25            |           2|      4374|
+|27    |cache__GBM26            |           2|      7232|
+|28    |cache__GBM27            |           2|      5183|
+|29    |cache__GBM28            |           2|     20797|
+|30    |cache__GBM29            |           2|     13981|
+|31    |cache__GBM30            |           2|     18534|
+|32    |cache__GBM31            |           2|     17580|
+|33    |cpu_with_tlb_cache__GC0 |           1|     10821|
++------+------------------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:05:15 ; elapsed = 00:05:22 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:05:16 ; elapsed = 00:05:23 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++------+------------------------+------------+----------+
+|      |RTL Partition           |Replication |Instances |
++------+------------------------+------------+----------+
+|1     |cpu_with_tlb_cache__GC0 |           1|     10818|
++------+------------------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:05:16 ; elapsed = 00:05:28 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++------+------------------------+------------+----------+
+|      |RTL Partition           |Replication |Instances |
++------+------------------------+------------+----------+
+|1     |cpu_with_tlb_cache__GC0 |           1|      5306|
++------+------------------------+------------+----------+
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+CRITICAL WARNING: [Synth 8-4442] BlackBox module data_ram_module has unconnected pin enb
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++------+--------------+----------+
+|      |BlackBox name |Instances |
++------+--------------+----------+
+|1     |inst_rom      |         1|
+|2     |data_ram      |         1|
++------+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |data_ram |     1|
+|2     |inst_rom |     1|
+|3     |BUFG     |     1|
+|4     |CARRY4   |   103|
+|5     |LUT1     |   131|
+|6     |LUT2     |    69|
+|7     |LUT3     |   226|
+|8     |LUT4     |   236|
+|9     |LUT5     |   617|
+|10    |LUT6     |  1299|
+|11    |MUXF7    |   384|
+|12    |MUXF8    |   126|
+|13    |FDRE     |  2018|
+|14    |FDSE     |     3|
+|15    |IBUF     |    21|
+|16    |OBUF     |   352|
++------+---------+------+
+
+Report Instance Areas: 
++------+--------------------+---------+------+
+|      |Instance            |Module   |Cells |
++------+--------------------+---------+------+
+|1     |top                 |         |  5682|
+|2     |  EXE_module        |exe      |   732|
+|3     |    multiply_module |multiply |   732|
+|4     |  IF_module         |fetch    |   553|
+|5     |  MEM_module        |mem      |    16|
+|6     |  WB_module         |wb       |   615|
+|7     |  rf_module         |regfile  |  2361|
++------+--------------------+---------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:05:18 ; elapsed = 00:05:30 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 1 critical warnings and 45 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:03:12 ; elapsed = 00:04:50 . Memory (MB): peak = 3770.984 ; gain = 1877.539
+Synthesis Optimization Complete : Time (s): cpu = 00:05:18 ; elapsed = 00:05:34 . Memory (MB): peak = 3770.984 ; gain = 2980.613
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.027 . Memory (MB): peak = 3770.984 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 613 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 3770.984 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+INFO: [Common 17-83] Releasing license: Synthesis
+48 Infos, 90 Warnings, 1 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:05:21 ; elapsed = 00:05:38 . Memory (MB): peak = 3770.984 ; gain = 3300.582
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 3770.984 ; gain = 0.000
+WARNING: [Constraints 18-5210] No constraints selected for write.
+Resolution: This message can indicate that there are no constraints for the design, or it can indicate that the used_in flags are set such that the constraints are ignored. This later case is used when running synth_design to not write synthesis constraints to the resulting checkpoint. Instead, project constraints are read when the synthesized design is opened.
+INFO: [Common 17-1381] The checkpoint 'D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.runs/synth_1/cpu_with_tlb_cache.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file cpu_with_tlb_cache_utilization_synth.rpt -pb cpu_with_tlb_cache_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Wed Jan  7 21:56:20 2026...

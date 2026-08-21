@@ -1,0 +1,5 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/mycpu.ip_user_files/ipstatic/hdl/generic_baseblocks_v2_1_vl_rfs.v,1764857283,verilog,,,,generic_baseblocks_v2_1_0_carry;generic_baseblocks_v2_1_0_carry_and;generic_baseblocks_v2_1_0_carry_latch_and;generic_baseblocks_v2_1_0_carry_latch_or;generic_baseblocks_v2_1_0_carry_or;generic_baseblocks_v2_1_0_command_fifo;generic_baseblocks_v2_1_0_comparator;generic_baseblocks_v2_1_0_comparator_mask;generic_baseblocks_v2_1_0_comparator_mask_static;generic_baseblocks_v2_1_0_comparator_sel;generic_baseblocks_v2_1_0_comparator_sel_mask;generic_baseblocks_v2_1_0_comparator_sel_mask_static;generic_baseblocks_v2_1_0_comparator_sel_static;generic_baseblocks_v2_1_0_comparator_static;generic_baseblocks_v2_1_0_mux;generic_baseblocks_v2_1_0_mux_enc;generic_baseblocks_v2_1_0_nto1_mux,,,../../../../../../../cpu132_gettrace/rtl/CPU_gs132;../../../../mycpu.ip_user_files/ipstatic;../../../../mycpu.ip_user_files/ipstatic/hdl,,,,,

@@ -1,0 +1,1078 @@
+\documentclass[a4paper]{article}
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+	basicstyle=\tiny,
+	numberstyle=\tiny,
+	keywordstyle=\color{blue!70},
+	commentstyle=\color{red!50!green!50!blue!50},
+	frame=single,
+	rulesepcolor=\color{red!20!green!20!blue!20},
+	escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%------------------------代码-------------------
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstset{
+	breaklines,%自动换行
+	basicstyle=\small,
+	escapeinside=``,
+	keywordstyle=\color{ blue!70} \bfseries,
+	commentstyle=\color{red!50!green!50!blue!50},%
+	stringstyle=\ttfamily,%
+	extendedchars=false,%
+	linewidth=\textwidth,%
+	numbers=left,%
+	numberstyle=\tiny \color{blue!50},%
+	frame=trbl%
+	rulesepcolor= \color{ red!20!green!20!blue!20}
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+
+%--------------------文档内容--------------------
+\begin{document}
+	\renewcommand{\contentsname}{目\ 录}
+	\renewcommand{\appendixname}{附录}
+	\renewcommand{\appendixpagename}{附录}
+	\renewcommand{\refname}{参考文献} 
+	\renewcommand{\figurename}{图}
+	\renewcommand{\tablename}{表}
+	\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+	
+	%-------------------------封面----------------
+	\begin{titlepage}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+			\vspace{20mm}
+			\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+			\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+			\textbf{\Huge\textbf{\kaishu{期末研究报告}}}
+			
+			\vspace{\fill}
+			
+			%         \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+			%         \HRule \\[0.9cm]
+			%         \HRule \\[2.0cm]
+			\centering
+			\textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+			\textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+			\textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+			
+			\vfill
+			{\Large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+	\renewcommand{\figurename}{图}
+	\renewcommand{\contentsname}{目录}  
+	\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+	% 生成目录
+	\clearpage
+	\tableofcontents
+	\newpage
+	
+	\section{引言}
+	
+	随着大数据时代的到来和计算需求的爆炸式增长，并行计算已成为现代高性能计算的核心技术。本学期的并行程序设计课程深入探讨了多种并行计算架构和编程模型，包括SIMD（单指令多数据）、Pthread\&OpenMP多线程并行、MPI多进程并行、GPU加速等。通过一系列递进式的实验，我们系统学习了各种并行编程技术，并以数论变换（NTT）多项式乘法作为核心算法载体，深入研究了不同并行优化策略的性能特征。
+	
+	数论变换作为快速傅里叶变换（FFT）在有限域上的对应算法，在密码学、信号处理、同态加密等领域有着广泛应用。其$O(n\log n)$的时间复杂度相比朴素$O(n^2)$算法具有巨大优势，但实际应用中仍需要通过并行优化来满足大规模计算需求。本期末报告将：
+	
+	\begin{enumerate}
+		\item 系统总结本学期各项并行编程实验的核心成果和技术要点
+		\item 展示综合多种并行技术的创新设计方案及其性能表现
+		\item 深入分析不同并行策略的适用场景和优化效果
+		\item 总结学习收获并展望未来发展方向
+	\end{enumerate}
+	
+	\section{前期实验总结与回顾}
+	
+	本学期通过一系列循序渐进的实验，我们系统掌握了主流的并行编程技术。每个实验都针对NTT多项式乘法这一核心算法，探索了不同层次的并行优化策略。
+	
+	\subsection{SIMD向量化优化实验}
+	
+	\subsubsection{实验目标与内容}
+	
+	SIMD（Single Instruction Multiple Data）是现代处理器提供的数据级并行能力，通过单条指令同时处理多个数据元素来提升计算效率。本实验的主要目标包括：
+	
+	\begin{itemize}
+		\item 理解SIMD指令集的工作原理和编程模型
+		\item 掌握ARM NEON和x86 AVX指令集的使用方法
+		\item 实现朴素多项式乘法和NTT算法的SIMD优化
+		\item 引入Montgomery模约简算法进一步提升性能
+	\end{itemize}
+	
+	\subsubsection{技术实现要点}
+	
+	\paragraph{朴素乘法的SIMD优化}
+	朴素多项式乘法的时间复杂度为$O(n^2)$，虽然效率不高，但其规则的访存模式适合SIMD优化。我们通过以下策略实现了优化：
+	
+	\begin{lstlisting}[language=C++, caption=朴素乘法SIMD优化核心代码]
+		void poly_multiply_neon(int *a, int *b, int *ab, int n, int p) {
+			for (int i = 0; i < n; ++i) {
+				int a_val = a[i];
+				int32x2_t a_low2 = vdup_n_s32(a_val);  // 复制两个 a[i]
+				
+				for (int j = 0; j + 3 < n; j += 4) {
+					// 加载 b[j], b[j+1], b[j+2], b[j+3]
+					int32x4_t b_vec = vld1q_s32(&b[j]);
+					// 向量化乘法和累加
+					// ...
+				}
+			}
+		}
+	\end{lstlisting}
+	
+	\paragraph{NTT的SIMD优化}
+	NTT算法的核心是蝶形运算，我们通过向量化蝶形操作实现了显著的性能提升：
+	
+	\begin{itemize}
+		\item 向量化位逆序置换
+		\item 并行处理多个蝶形运算单元
+		\item 使用Montgomery域内运算减少模运算开销
+	\end{itemize}
+	
+	\subsubsection{实验结果分析}
+	
+	\begin{table}[H]
+		\centering
+		\caption{SIMD优化实验结果（ARM平台，$n=131072$）}
+		\begin{tabular}{|l|c|c|c|}
+			\hline
+			\textbf{算法} & \textbf{p=7340033} & \textbf{p=104857601} & \textbf{p=469762049} \\
+			\hline
+			朴素乘法 & 95461 ms & 101199 ms & 105109 ms \\
+			\hline
+			朴素乘法+NEON & 58407 ms & 64439 ms & 68164 ms \\
+			\hline
+			NTT迭代 & 83.57 ms & 88.29 ms & 91.45 ms \\
+			\hline
+			NTT迭代+SIMD & 45.48 ms & 44.41 ms & 44.69 ms \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	实验结果表明：
+	\begin{itemize}
+		\item SIMD优化为朴素乘法带来了约39-45\%的性能提升
+		\item NTT算法本身相比朴素方法快约1000倍，体现了算法优化的重要性
+		\item SIMD优化的NTT相比基础版本进一步提升约50\%性能
+		\item Montgomery优化在大模数运算中效果更加明显
+	\end{itemize}
+	
+	\subsection{Pthread与OpenMP多线程优化实验}
+	
+	\subsubsection{实验目标与内容}
+	
+	多线程编程是利用多核CPU实现并行计算的重要手段。本实验探索了两种主流的多线程编程模型：
+	
+	\begin{enumerate}
+		\item \textbf{Pthread}：POSIX线程标准，提供底层的线程控制能力
+		\item \textbf{OpenMP}：基于编译器指令的高层并行编程模型
+	\end{enumerate}
+	
+	实验设计了两种并行化策略：
+	\begin{itemize}
+		\item \textbf{朴素并行}：将NTT蝶形运算的不同层级分配给多个线程
+		\item \textbf{CRT并行}：多模数中国剩余定理合并的并行化
+	\end{itemize}
+	
+	\subsubsection{技术实现要点}
+	
+	\paragraph{Pthread实现的关键设计}
+	-
+	
+	\begin{lstlisting}[language=C++, caption=Pthread多线程NTT核心结构]
+		struct ThreadArgs {
+			LL *a;
+			int len;
+			int op;
+			LL g;
+			LL p;
+			int thread_id;
+			int num_threads;
+			pthread_barrier_t *barrier;
+		};
+		
+		void* butterfly_worker(void* args) {
+			ThreadArgs* t = (ThreadArgs*)args;
+			// 每层蝶形运算
+			for (int h = 2; h <= len; h <<= 1) {
+				// 均分段到各线程
+				int segments = len / h;
+				int chunk = (segments + T - 1) / T;
+				int start_seg = id * chunk;
+				int end_seg = std::min(start_seg + chunk, segments);
+				
+				// 执行分配的蝶形运算
+				for (int seg = start_seg; seg < end_seg; seg++) {
+					// 蝶形运算实现
+				}
+				
+				// 同步到下一层
+				pthread_barrier_wait(barrier);
+			}
+		}
+	\end{lstlisting}
+	
+	\paragraph{OpenMP实现的优势}
+	
+	OpenMP通过编译器指令简化了并行编程：
+	
+	\begin{lstlisting}[language=C++, caption=OpenMP并行化NTT]
+		void NTT_Iteration_OpenMP(LL *a, int len, int op, LL g, LL p) {
+			for (int h = 2; h <= len; h <<= 1) {
+				int segments = len / h;
+				
+				// 并行处理每个segment
+				#pragma omp parallel for schedule(static)
+				for (int seg = 0; seg < segments; seg++) {
+					// 蝶形运算
+				}
+				// 隐式barrier同步
+			}
+		}
+	\end{lstlisting}
+	
+	\subsubsection{实验结果分析}
+	
+	\begin{table}[H]
+		\centering
+		\caption{多线程优化实验结果对比（$n=131072$）}
+		\begin{tabular}{|l|c|c|c|}
+			\hline
+			\textbf{实现方式} & \textbf{p=7340033} & \textbf{p=469762049} & \textbf{加速比} \\
+			\hline
+			单线程基准 & 83.57 ms & 91.45 ms & 1.00× \\
+			\hline
+			Pthread (8线程) & 29.18 ms & 31.46 ms & 2.86× \\
+			\hline
+			OpenMP (8线程) & 27.37 ms & 28.30 ms & 3.05× \\
+			\hline
+			\multicolumn{4}{|c|}{\textbf{CRT多模数合并}} \\
+			\hline
+			CRT基准 & 643.35 ms & 648.74 ms & 1.00× \\
+			\hline
+			CRT+Pthread & 370.79 ms & 374.91 ms & 1.73× \\
+			\hline
+			CRT+OpenMP & 137.03 ms & 138.97 ms & 4.67× \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	关键发现：
+	\begin{itemize}
+		\item OpenMP相比Pthread具有更好的性能和易用性
+		\item 多线程加速比受限于Amdahl定律，8线程仅获得约3倍加速
+		\item CRT并行化效果显著，因为不同模数计算完全独立
+		\item 小规模问题不适合多线程，线程开销可能导致负优化
+	\end{itemize}
+	
+	\subsection{MPI分布式并行实验}
+	
+	\subsubsection{实验目标与内容}
+	
+	MPI（Message Passing Interface）是分布式内存系统的标准编程模型。本实验探索了：
+	
+	\begin{itemize}
+		\item MPI基础并行：每个进程处理一个模数
+		\item MPI+Pthread混合并行：进程间和进程内两级并行
+		\item Barrett规约优化：减少模运算开销
+	\end{itemize}
+	
+	\subsubsection{技术实现要点}
+	
+	\paragraph{MPI任务分配策略}
+	-
+	
+	\begin{lstlisting}[language=C++, caption=MPI任务分配与结果收集]
+		void NTT_mpi(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+			int rank, size;
+			MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+			MPI_Comm_size(MPI_COMM_WORLD, &size);
+			
+			// 每个进程处理一个模数
+			if (rank < 4) {
+				int curr_mod = mods[rank];
+				// 本地NTT计算
+				NTT_Iteration_multiply(local_a, local_b, local_res, n, curr_mod);
+				
+				// 收集结果到rank 0
+				MPI_Gather(local_res, 2*n, MPI_INT, 
+				all_results, 2*n, MPI_INT, 0, MPI_COMM_WORLD);
+				
+				// 主进程执行CRT合并
+				if (rank == 0) {
+					// CRT合并四路结果
+				}
+			}
+			
+			// 广播最终结果
+			MPI_Bcast(ab, 2*n-1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+		}
+	\end{lstlisting}
+	
+	\paragraph{Barrett规约在MPI中的应用}
+	
+	Barrett规约通过预计算避免了昂贵的除法运算：
+	
+	\begin{lstlisting}[language=C++, caption=Barrett规约结构]
+		struct Barrett {
+			unsigned long long mod, im;
+			
+			Barrett(unsigned long long _mod) : mod(_mod) {
+				im = -1ULL / mod + 1;
+			}
+			
+			unsigned long long multiply(unsigned long long a, unsigned long long b) const {
+				unsigned long long z = a * b;
+				unsigned long long x = (unsigned __int128)z * im >> 64;
+				unsigned long long v = z - x * mod;
+				if (v >= mod) v += mod;
+				return v;
+			}
+		};
+	\end{lstlisting}
+	
+	\subsubsection{实验结果分析}
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				title={MPI优化方案性能对比 (n=131072, p=469762049)},
+				ybar,
+				bar width=0.6cm,
+				width=12cm,
+				height=8cm,
+				symbolic x coords={基准,MPI,MPI+Pthread,MPI+Barrett,MPI+P+B},
+				xtick=data,
+				ylabel={时间(μs)},
+				ymin=0,
+				ymax=400,
+				nodes near coords,
+				nodes near coords align={vertical},
+				]
+				\addplot coordinates {
+					(基准,372.95) 
+					(MPI,100.94) 
+					(MPI+Pthread,101.65) 
+					(MPI+Barrett,57.81) 
+					(MPI+P+B,59.81)
+				};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{MPI各优化方案的性能表现}
+	\end{figure}
+	
+	实验结论：
+	\begin{itemize}
+		\item MPI基础优化带来3.7倍加速，证明了分布式并行的有效性
+		\item Barrett规约额外提升43\%性能，在大模数运算中效果显著
+		\item MPI+Pthread混合并行在当前规模下优势不明显
+		\item 通信开销是MPI性能的主要瓶颈
+	\end{itemize}
+	
+	\subsection{GPU异构计算实验}
+	
+	\subsubsection{实验目标与内容}
+	
+	GPU凭借其大规模并行架构，在数值计算领域展现出巨大潜力。本实验实现了：
+	
+	\begin{enumerate}
+		\item GPU基础NTT：将CPU算法移植到GPU,并利用GPU加速优化
+		\item GPU+Barrett规约：优化模运算性能
+		\item GPU+Montgomery规约：进一步提升计算效率
+	\end{enumerate}
+	
+	\subsubsection{技术实现要点}
+	
+	\paragraph{GPU核函数设计}
+	-
+	
+	\begin{lstlisting}[language=C++, caption=GPU蝶形运算核函数]
+		__global__ void ntt_basic_kernel(LL *a, int len, int h, LL *w_table, LL p) {
+			// blockIdx.x 标识当前是第几个蝶形运算组
+			int j_base = blockIdx.x * h;
+			// threadIdx.x 负责组内的计算
+			for (int k = threadIdx.x; k < h / 2; k += blockDim.x) {
+				int idx1 = j_base + k;
+				int idx2 = j_base + k + h / 2;
+				LL w = w_table[k];
+				// 核心蝶形运算
+				unsigned __int128 product = (unsigned __int128)a[idx2] * w;
+				LL t = product % p;
+				a[idx2] = (a[idx1] - t + p) % p;
+				a[idx1] = (a[idx1] + t) % p;
+			}
+		}
+	\end{lstlisting}
+	
+	\paragraph{Montgomery规约GPU实现}
+	-
+	
+	\begin{lstlisting}[language=C++, caption=GPU Montgomery模乘]
+		__device__ ULL montgomery_reduce(unsigned __int128 T, const MontgomeryParams* params) {
+			ULL m = (ULL)T * params->n_prime;
+			unsigned __int128 t = (T + (unsigned __int128)m * params->mod) >> 64;
+			return (t >= params->mod) ? (t - params->mod) : t;
+		}
+	\end{lstlisting}
+	
+	\subsubsection{实验结果分析}
+	
+	\begin{table}[H]
+		\centering
+		\caption{GPU优化实验结果（单位：ms）}
+		\begin{tabular}{|l|c|c|c|c|}
+			\hline
+			\textbf{实现版本} & \textbf{n=4} & \textbf{n=131072} & \textbf{n=131072} & \textbf{n=131072} \\
+			& p=7340033 & p=7340033 & p=104857601 & p=469762049 \\
+			\hline
+			CPU Barrett & 0.011 & 61.502 & 61.710 & 61.815 \\
+			\hline
+			CPU Montgomery & 0.005 & 48.606 & 48.801 & 48.537 \\
+			\hline
+			GPU基础版本 & 124.330 & 24.406 & 26.197 & 24.817 \\
+			\hline
+			GPU Barrett & 2.424 & 18.537 & 17.851 & 18.183 \\
+			\hline
+			GPU Montgomery & 0.714 & 19.902 & 16.790 & 18.114 \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	关键发现：
+	\begin{itemize}
+		\item 大规模数据下GPU展现2-3倍加速效果
+		\item 小规模问题GPU出现严重负加速（启动开销占主导）
+		\item Barrett和Montgomery规约在GPU上都能带来30-50\%额外提升
+		\item GPU内存带宽是主要性能瓶颈
+	\end{itemize}
+	
+	\section{综合并行优化设计与创新}
+	
+	基于前期各项实验的经验积累，本次期末实验设计了三条综合并行优化路线，充分发挥不同并行技术的优势，实现了性能的进一步突破。
+	
+	\subsection{综合优化路线一：CPU多级优化路线}
+	
+	\subsubsection{设计思路}
+	
+	CPU优化路线采用渐进式优化策略，逐步引入更高级的优化技术：
+	
+	\begin{enumerate}
+		\item \textbf{Level 1 - 基础NTT}：实现标准的迭代式NTT算法
+		\item \textbf{Level 2 - Barrett优化}：引入Barrett规约减少模运算开销
+		\item \textbf{Level 3 - Barrett + SIMD}：结合向量化指令加速计算
+		\item \textbf{Level 4 - Barrett + SIMD + OpenMP}：利用多核并行和CRT
+	\end{enumerate}
+	
+	\subsubsection{关键技术实现}
+	
+	\paragraph{Level 3: Barrett + SIMD优化}
+	
+	这一层级的优化结合了算法优化和硬件加速：
+	
+	\begin{lstlisting}[language=C++, caption=Barrett+SIMD核心实现]
+		void NTT_Level3_Barrett_SIMD(const LL *a, const LL *b, LL *ab, int n, LL p) {
+			// 使用对齐的内存以提高SIMD效率
+			ULL *A = (ULL*)aligned_alloc(32, len * sizeof(ULL));
+			ULL *B = (ULL*)aligned_alloc(32, len * sizeof(ULL));
+			
+			// 预计算所有旋转因子
+			std::vector<std::vector<ULL>> w_tables;
+			for (int h = 2; h <= len; h <<= 1) {
+				std::vector<ULL> w_table(h/2);
+				ULL wn = barrett.power(3, (barrett.mod - 1) / h);
+				w_table[0] = 1;
+				for (int i = 1; i < h/2; i++) {
+					w_table[i] = barrett.multiply(w_table[i-1], wn);
+				}
+				w_tables.push_back(w_table);
+			}
+			
+			// SIMD优化的蝶形运算
+			// 处理2个元素为一组
+			for (; k + 2 <= h/2; k += 2) {
+				ULL w0 = w_table[k];
+				ULL w1 = w_table[k+1];
+				
+				ULL t0 = barrett.multiply(arr[j + k + h/2], w0);
+				ULL t1 = barrett.multiply(arr[j + k + 1 + h/2], w1);
+				
+				// 向量化的加减运算
+				// ...
+			}
+		}
+	\end{lstlisting}
+	
+	\paragraph{Level 4: 全系统优化}
+	
+	最高级别整合了所有CPU优化技术：
+	
+	\begin{lstlisting}[language=C++, caption=CPU全系统优化]
+		void NTT_Level4_Barrett_SIMD_OpenMP(const LL *a, const LL *b, LL *ab, int n, LL p) {
+			// 使用多模数CRT
+			static const LL mods[] = {998244353, 1004535809, 469762049, 167772161};
+			const int num_mods = 4;
+			
+			std::vector<std::vector<LL>> mod_results(num_mods, std::vector<LL>(N));
+			
+			// 并行处理每个模数
+			#pragma omp parallel for schedule(dynamic)
+			for (int mod_idx = 0; mod_idx < num_mods; mod_idx++) {
+				ULL curr_mod = mods[mod_idx];
+				Barrett barrett(curr_mod);
+				
+				// 使用Level 3的Barrett+SIMD实现
+				// ...
+			}
+			
+			// 并行CRT合并
+			#pragma omp parallel for
+			for (int i = 0; i < N; i++) {
+				ab[i] = crt4(mod_results[0][i], mod_results[1][i], 
+				mod_results[2][i], mod_results[3][i],
+				mods[0], mods[1], mods[2], mods[3], p);
+			}
+		}
+	\end{lstlisting}
+	
+	\subsubsection{性能分析}
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				title={CPU优化路线性能对比 (n=131072)},
+				xlabel={测试数据集},
+				ylabel={执行时间 (ms)},
+				xtick=data,
+				symbolic x coords={p=7340033, p=104857601, p=469762049},
+				ybar,
+				bar width=15pt,
+				legend pos=north west,
+				ymajorgrids=true,
+				]
+				
+				\addplot[fill=blue!30] coordinates {
+					(p=7340033, 216.833)
+					(p=104857601, 215.628)
+					(p=469762049, 152.764)
+				};
+				
+				\addplot[fill=green!30] coordinates {
+					(p=7340033, 132.279)
+					(p=104857601, 138.175)
+					(p=469762049, 145.241)
+				};
+				
+				\addplot[fill=red!30] coordinates {
+					(p=7340033, 88.015)
+					(p=104857601, 90.917)
+					(p=469762049, 93.367)
+				};
+				
+				\addplot[fill=orange!30] coordinates {
+					(p=7340033, 75.210)
+					(p=104857601, 74.113)
+					(p=469762049, 74.167)
+				};
+				
+				\legend{Level 1, Level 2, Level 3, Level4}
+				\end{axis}
+			\end{tikzpicture}
+		\caption{CPU多级优化路线性能提升效果}
+		\end{figure}
+		从实验结果可以看出：
+		\begin{itemize}
+			\item Barrett优化带来约39\%的性能提升
+			\item SIMD向量化额外提升33\%
+			\item OpenMP多线程最终达到2.88倍的总体加速比
+			\item 各优化技术相互配合，实现了性能的阶梯式提升
+		\end{itemize}
+		
+	\subsection{综合优化路线二：GPU多级优化路线}
+	
+	\subsubsection{设计思路}
+	GPU优化路线探索了不同的内存优化和并行策略：
+	\begin{enumerate}
+		\item \textbf{Level 1 - GPU基础版本}
+		\item \textbf{Level 2 - 固定内存优化}：使用pinned memory加速传输
+		\item \textbf{Level 3 - 流并行}：利用CUDA流实现计算与传输重叠
+	\end{enumerate}
+	
+	\subsubsection{关键技术实现}
+	\paragraph{Level 2: 固定内存优化}
+	固定内存可以显著提升CPU-GPU数据传输速度：
+	\begin{lstlisting}[language=C++, caption=固定内存优化实现]
+		void NTT_GPU_Level2_PinnedMemory(const LL *a, const LL *b, LL *ab, int n, LL p) {
+			// 使用固定内存加速传输
+			LL *h_A, *h_B;
+			cudaMallocHost(&h_A, len * sizeof(LL));
+			cudaMallocHost(&h_B, len * sizeof(LL));
+			// 预先计算并传输所有旋转因子
+			std::vector<std::vector<LL>> all_w_tables_forward;
+			std::vector<std::vector<LL>> all_w_tables_inverse;
+			
+			for (int h = 2; h <= len; h <<= 1) {
+				std::vector<LL> w_table(h/2);
+				LL wn = qpowll(3, (p - 1) / h, p);
+				w_table[0] = 1;
+				for (int i = 1; i < h/2; i++) {
+					w_table[i] = (w_table[i-1] * wn) % p;
+				}
+				all_w_tables_forward.push_back(w_table);
+			}
+			
+			// 一次性传输所有数据
+			cudaMemcpy(d_A, h_A, len * sizeof(LL), cudaMemcpyHostToDevice);
+			cudaMemcpy(d_B, h_B, len * sizeof(LL), cudaMemcpyHostToDevice);
+		}
+	\end{lstlisting}
+	
+	\paragraph{Level 3: 流并行优化}
+	CUDA流允许并发执行多个操作：
+	\begin{lstlisting}[language=C++, caption=流并行实现]
+		void NTT_GPU_Level3_Streams(const LL *a, const LL *b, LL *ab, int n, LL p) {
+			// 创建2个流分别处理A和B的NTT
+			cudaStream_t streamA, streamB;
+			cudaStreamCreate(&streamA);
+			cudaStreamCreate(&streamB);
+			// 异步传输
+			cudaMemcpyAsync(d_A, h_A, len * sizeof(LL), cudaMemcpyHostToDevice, streamA);
+			cudaMemcpyAsync(d_B, h_B, len * sizeof(LL), cudaMemcpyHostToDevice, streamB);
+			
+			// 异步执行位逆序
+			bit_reverse_kernel<<<gridSize, blockSize, 0, streamA>>>(d_A, len);
+			bit_reverse_kernel<<<gridSize, blockSize, 0, streamB>>>(d_B, len);
+			
+			// 正向NTT（并行处理A和B）
+			for (int h = 2; h <= len; h <<= 1) {
+				ntt_basic_kernel<<<butterflyGrid, butterflyBlock, 0, streamA>>>(
+				d_A, len, h, d_w_table_A, p);
+				ntt_basic_kernel<<<butterflyGrid, butterflyBlock, 0, streamB>>>(
+				d_B, len, h, d_w_table_B, p);
+			}
+			
+			// 等待两个流完成
+			cudaStreamSynchronize(streamA);
+			cudaStreamSynchronize(streamB);
+		}
+	\end{lstlisting}
+	
+	\subsubsection{性能分析}
+	\begin{table}[H]
+		\centering
+		\caption{GPU优化路线性能对比 (单位：ms)}
+		\begin{tabular}{|l|c|c|c|c|}
+			\hline
+			\textbf{优化级别} & \textbf{n=4} & \multicolumn{3}{c|}{\textbf{n=131072}} \\
+			\cline{3-5}
+			& p=7340033 & p=7340033 & p=104857601 & p=469762049 \\
+			\hline
+			Level 1: 基础版本 & 0.652 & 23.829 & 22.040 & 25.330 \\
+			\hline
+			Level 2: 固定内存 & 3.379 & 31.081 & 30.209 & 33.094 \\
+			\hline
+			Level 3: 流并行 & 3.150 & 24.660 & 21.332 & 21.420 \\
+			\hline
+		\end{tabular}
+	\end{table}
+	实验发现：
+	\begin{itemize}
+		\item 固定内存在当前实现中反而增加了开销，可能由于内存分配成本
+		\item 流并行在大规模数据上效果明显，特别是在p=469762049时
+		\item 小规模问题不适合GPU，启动开销占主导地位
+		\item GPU优化需要综合考虑计算密度和内存访问模式
+	\end{itemize}
+	\subsection{综合优化路线三：CPU-GPU异构协同计算}
+	\subsubsection{设计思路}
+	异构计算路线充分利用CPU和GPU的各自优势，实现任务的合理分配：
+	\begin{enumerate}
+		\item \textbf{Level 1 - CPU+GPU基础协同}：静态任务分配
+		\item \textbf{Level 2 - CPU(Barrett)+GPU}：CPU使用Barrett优化
+		\item \textbf{Level 3 - CPU(OpenMP)+GPU(流)}：双端并行优化
+		\item \textbf{Level 4 - 全系统协同}：Pthread+GPU多流+OpenMP
+	\end{enumerate}
+	\subsubsection{关键技术实现}
+	\paragraph{动态负载均衡}
+	根据问题规模动态调整CPU和GPU的任务分配：
+	\begin{lstlisting}[language=C++, caption=动态负载分配策略]
+		void NTT_Level2_CPU_Barrett_GPU(const LL *a, const LL *b, LL *ab, int n, LL p) {
+			static const ULL mods[] = {998244353, 1004535809, 469762049, 167772161};
+			const int num_mods = 4;
+			// 动态负载分配
+			int cpu_mods = (n < 50000) ? 3 : 2;
+			int gpu_mods = num_mods - cpu_mods;
+			
+			// CPU处理（使用Barrett优化）
+			std::thread cpu_thread([&]() {
+				for (int i = 0; i < cpu_mods; i++) {
+					ULL curr_mod = mods[i];
+					Barrett barrett(curr_mod);
+					cpu_ntt_barrett(A, len, 1, barrett);
+					// ...
+				}
+			});
+			
+			// GPU处理
+			std::vector<std::thread> gpu_threads;
+			for (int i = 0; i < gpu_mods; i++) {
+				int mod_idx = cpu_mods + i;
+				gpu_threads.emplace_back([&, mod_idx]() {
+					gpu_ntt_single_mod(a, b, all_results[mod_idx].data(), n, mods[mod_idx]);
+				});
+			}
+		}
+	\end{lstlisting}
+	
+	\paragraph{全系统协同优化}
+	最高级别整合了所有并行技术：
+	\begin{lstlisting}[language=C++, caption=全系统协同实现]
+		void NTT_Level4_Pthread_GPU_Full(const LL *a, const LL *b, LL *ab, int n, LL p) {
+			// CPU Pthread处理前2个模数
+			pthread_t threads[2];
+			ThreadTask tasks[2];
+			for (int i = 0; i < 2; i++) {
+				tasks[i] = {a, b, n, mods[i], &all_results[i]};
+				pthread_create(&threads[i], nullptr, cpu_ntt_thread_worker, &tasks[i]);
+			}
+			
+			// GPU并行处理后2个模数
+			std::thread gpu_thread1([&]() {
+				gpu_ntt_single_mod(a, b, all_results[2].data(), n, mods[2]);
+			});
+			
+			std::thread gpu_thread2([&]() {
+				gpu_ntt_single_mod(a, b, all_results[3].data(), n, mods[3]);
+			});
+			
+			// 等待所有任务完成
+			for (int i = 0; i < 2; i++) {
+				pthread_join(threads[i], nullptr);
+			}
+			gpu_thread1.join();
+			gpu_thread2.join();
+			
+			// CRT合并（使用OpenMP并行）
+			#pragma omp parallel for
+			for (int i = 0; i < N; i++) {
+				ab[i] = crt4(all_results[0][i], all_results[1][i], 
+				all_results[2][i], all_results[3][i],
+				mods[0], mods[1], mods[2], mods[3], p);
+			}
+		}
+	\end{lstlisting}
+	
+	\subsubsection{性能分析}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				title={CPU-GPU异构协同优化性能 (n=131072)},
+				ybar,
+				bar width=0.7cm,
+				width=14cm,
+				height=8cm,
+				symbolic x coords={基准,Level 1,Level 2,Level 3,Level 4},
+				xtick=data,
+				ylabel={执行时间 (ms)},
+				ymin=0,
+				nodes near coords,
+				nodes near coords align={vertical},
+				legend pos=north east,
+				]
+				\addplot[fill=blue!60] coordinates {
+					(基准,372.949)
+					(Level 1,606.657)
+					(Level 2,98.086)
+					(Level 3,84.111)
+					(Level 4,53.000)
+				};
+				
+				\addplot[fill=red!60] coordinates {
+					(基准,648.741)
+					(Level 1,768.682)
+					(Level 2,262.673)
+					(Level 3,107.447)
+					(Level 4,81.872)
+				};
+				
+				\legend{p=469762049, p=1337006139375617}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{异构协同计算各级优化效果}
+	\end{figure}
+	
+	关键发现：
+	\begin{itemize}
+		\item Level 1基础协同反而导致性能下降，说明简单的任务分配策略不够优化
+		\item Level 2引入Barrett优化后性能大幅提升，达到3.8倍加速
+		\item Level 3的OpenMP+GPU流带来额外15\%性能提升
+		\item Level 4全系统协同达到最佳性能，相比基准提升7.04倍
+		\item 大模数计算(p=1337006139375617)下异构计算优势更加明显
+	\end{itemize}
+	\subsection{综合优化效果总结}
+	\begin{table}[H]
+		\centering
+		\caption{三条优化路线最佳性能对比 (n=131072, p=469762049)}
+		\begin{tabular}{|l|c|c|c|}
+			\hline
+			\textbf{优化路线} & \textbf{最佳方案} & \textbf{执行时间} & \textbf{加速比} \\
+			\hline
+			基准（单线程NTT） & - & 91.45 ms & 1.00× \\
+			\hline
+			CPU优化路线 & Level 4 (Barrett+SIMD+OpenMP) & 74.17 ms & 1.23× \\
+			\hline
+			GPU优化路线 & Level 3 (流并行) & 21.42 ms & 4.27× \\
+			\hline
+			异构协同路线 & Level 4 (全系统协同) & 53.00 ms & 1.73× \\
+			\hline
+			\multicolumn{4}{|c|}{\textbf{大模数场景 (p=1337006139375617)}} \\
+			\hline
+			CRT基准 & - & 648.74 ms & 1.00× \\
+			\hline
+			异构协同路线 & Level 4 & 81.87 ms & 7.93× \\
+			\hline
+		\end{tabular}
+	\end{table}
+	\section{技术创新与贡献}
+	本次期末实验在前期工作基础上，实现了以下创新：
+	\subsection{算法层面创新}
+	\begin{enumerate}
+		\item \textbf{多级优化框架}：设计了渐进式的优化框架，每一级都在前一级基础上引入新的优化技术，便于分析各项技术的独立贡献。
+		\item \textbf{动态负载均衡}：根据问题规模和硬件特性动态调整CPU-GPU任务分配比例，实现了更好的资源利用率。
+		
+		\item \textbf{混合规约策略}：在不同计算阶段灵活选择Barrett或Montgomery规约，充分发挥各自优势。
+	\end{enumerate}
+	\subsection{系统层面创新}
+	\begin{enumerate}
+		\item \textbf{多粒度并行}：实现了指令级(SIMD)、线程级(OpenMP/Pthread)、进程级(MPI)和设备级(GPU)的全方位并行。
+		\item \textbf{异构协同计算}：设计了CPU-GPU协同计算框架，通过合理的任务划分和通信优化，实现了1+1>2的效果。
+	\end{enumerate}
+	
+	\section{性能分析与讨论}
+	\subsection{性能瓶颈分析}
+	通过实验数据和性能分析工具，我们识别了各种并行方案的主要瓶颈：
+	\subsubsection{CPU并行瓶颈}
+	\begin{itemize}
+		\item \textbf{内存带宽限制}：NTT的蝶形运算存在大量不规则内存访问，缓存命中率较低
+		\item \textbf{同步开销}：多线程间的barrier同步成为性能瓶颈，特别是在线程数较多时
+		\item \textbf{负载不均衡}：NTT不同层级的计算量差异导致线程空闲
+	\end{itemize}
+	\subsubsection{GPU并行瓶颈}
+	\begin{itemize}
+		\item \textbf{启动开销}：小规模问题下kernel启动开销占主导
+		\item \textbf{内存访问模式}：位逆序操作导致非合并内存访问
+		\item \textbf{线程分歧}：条件分支导致warp内线程执行路径不一致
+		\item \textbf{计算密度不足}：相对于内存操作，算术运算较少
+	\end{itemize}
+	\subsubsection{异构计算瓶颈}
+	\begin{itemize}
+		\item \textbf{通信开销}：CPU-GPU数据传输成为主要开销
+		\item \textbf{任务粒度}：过细的任务划分增加调度开销
+		\item \textbf{同步等待}：CPU和GPU计算速度不匹配导致等待
+	\end{itemize}
+	\subsection{优化策略效果分析}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				title={不同优化技术的性能贡献},
+				xlabel={优化技术},
+				ylabel={相对性能提升(\%)},
+				ybar,
+				bar width=0.8cm,
+				symbolic x coords={Barrett,SIMD,多线程,GPU,异构},
+				xtick=data,
+				nodes near coords,
+				ymajorgrids=true,
+				ymin=0,
+				ymax=350,
+				]
+				\addplot[fill=green!70] coordinates {
+					(Barrett,39)
+					(SIMD,33)
+					(多线程,205)
+					(GPU,327)
+					(异构,125)
+				};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{各项优化技术的独立贡献}
+	\end{figure}
+	
+	从实验结果可以得出：
+	\begin{itemize}
+		\item GPU在适合的问题规模下提供最大的性能提升（3.27倍）
+		\item 多线程并行是CPU优化的主要手段（2.05倍）
+		\item Barrett规约和SIMD提供稳定的性能改进（30-40\%）
+		\item 异构计算在特定场景下效果显著，特别是大模数计算
+	\end{itemize}
+	\subsection{适用场景分析}
+	根据实验结果，我们总结了不同优化方案的适用场景：
+	\begin{table}[H]
+		\centering
+		\caption{优化方案适用场景推荐}
+		\begin{tabular}{|l|l|l|}
+			\hline
+			\textbf{问题规模} & \textbf{推荐方案} & \textbf{原因} \\
+			\hline
+			小规模(n<1000) & CPU+SIMD & GPU启动开销过大 \\
+			\hline
+			中等规模(1000<n<100000) & CPU+OpenMP & 多线程效果明显 \\
+			\hline
+			大规模(n>100000) & GPU优化 & GPU并行度优势明显 \\
+			\hline
+			超大模数 & CPU-GPU异构 & CRT分解适合异构 \\
+			\hline
+			实时性要求高 & GPU流并行 & 计算传输重叠 \\
+			\hline
+			功耗受限 & CPU+SIMD & 能效比最优 \\
+			\hline
+		\end{tabular}
+	\end{table}
+	\section{学习总结与反思}
+	\subsection{技术收获}
+	通过本学期的学习和实践，我在以下方面获得了深刻的理解和实践经验：
+	\subsubsection{并行编程模型}
+	\begin{enumerate}
+		\item \textbf{SIMD编程}：
+		\begin{itemize}
+			\item 掌握了ARM NEON和x86 AVX指令集的使用
+			\item 理解了数据对齐、向量化循环优化等技巧
+			\item 学会了如何识别和改造适合SIMD的代码模式
+		\end{itemize}
+		\item \textbf{多线程编程}：
+		\begin{itemize}
+			\item 深入理解了Pthread的底层线程管理机制
+			\item 掌握了OpenMP的各种并行构造和调度策略
+			\item 学会了处理数据竞争、死锁等并发问题
+		\end{itemize}
+		
+		\item \textbf{分布式编程}：
+		\begin{itemize}
+			\item 理解了MPI的消息传递模型
+			\item 掌握了集合通信操作的使用场景
+			\item 学会了设计可扩展的分布式算法
+		\end{itemize}
+		
+		\item \textbf{GPU编程}：
+		\begin{itemize}
+			\item 深入理解了GPU的硬件架构和编程模型
+			\item 掌握了kernel优化、内存优化等技巧
+			\item 学会了分析和解决GPU性能瓶颈
+		\end{itemize}
+	\end{enumerate}
+	\subsubsection{算法优化}
+	\begin{enumerate}
+		\item \textbf{算法级优化的重要性}：NTT相比朴素算法的巨大性能提升让我深刻认识到，选择正确的算法比任何底层优化都重要。
+		\item \textbf{规约算法的价值}：Barrett和Montgomery规约展示了数学优化在实际工程中的巨大价值。
+		
+		\item \textbf{并行算法设计}：学会了如何分析算法的并行性，识别独立的计算任务，设计高效的并行方案。
+	\end{enumerate}
+	\subsubsection{系统思维}
+	\begin{enumerate}
+		\item \textbf{全栈优化}：从算法、编译器、硬件多个层面思考优化方案。
+		\item \textbf{性能建模}：学会了使用Amdahl定律、Roofline模型等工具分析性能上限。
+		
+		\item \textbf{权衡}：理解了性能、功耗、开发复杂度之间的权衡关系。
+	\end{enumerate}
+	\subsection{实践经验}
+	\subsubsection{调试技巧}
+	\begin{enumerate}
+		\item \textbf{并行调试困难}：并行程序的非确定性使得bug难以重现，学会了使用各种调试工具和技巧。
+		\item \textbf{性能分析工具}：掌握了VTune等性能分析工具的使用。
+		
+		\item \textbf{正确性验证}：建立完善的测试框架，确保优化不影响正确性。
+	\end{enumerate}
+	\subsubsection{工程实践}
+	\begin{enumerate}
+		\item \textbf{代码组织}：学会了如何组织大型并行程序，保持代码的可读性和可维护性。
+		\item \textbf{跨平台开发}：处理不同硬件平台的差异，编写可移植的代码。
+		
+		\item \textbf{性能调优流程}：建立了系统的性能优化流程：分析瓶颈→设计方案→实现验证→迭代改进。
+	\end{enumerate}
+	\subsection{反思与展望}
+	\subsubsection{不足之处}
+	\begin{enumerate}
+		\item \textbf{理论深度}：虽然掌握了各种并行技术的使用，但其实对根本原理、底层原理的理解还不够深入。
+		\item \textbf{大规模系统}：实验主要在单机或小规模集群上进行，缺乏大规模分布式系统的实践经验。
+		
+		\item \textbf{新技术探索}：对一些新兴的并行技术（如FPGA、神经网络加速器）了解不足。
+	\end{enumerate}
+	\subsubsection{未来学习方向}
+	\begin{enumerate}
+		\item \textbf{深入硬件架构}：进一步学习计算机体系结构，理解硬件设计对并行性能的影响。
+		\item \textbf{领域专用加速}：探索特定领域的专用加速技术。
+		
+		\item \textbf{新型并行范式}：学习数据流计算、近数据计算等新型并行计算范式。
+		
+		\item \textbf{实际应用}：将所学技术应用到实际项目中，解决真实的性能挑战。
+	\end{enumerate}
+	\section{结论}
+	本学期的并行程序设计课程让我全面掌握了现代并行计算的核心技术。通过NTT多项式乘法这一案例的深入研究，我不仅学会了各种并行编程技术的使用，更重要的是理解了并行优化的思维方式和方法论。
+	期末综合实验通过设计三条不同的优化路线，展示了如何综合运用多种并行技术实现最优性能。实验结果表明：
+	\begin{itemize}
+		\item 不同并行技术各有优势，需要根据具体场景选择
+		\item 多种技术的综合使用可以实现更好的效果
+		\item 算法优化和系统优化同等重要
+		\item 性能优化需要全栈思维和系统方法
+	\end{itemize}
+	这门课程不仅提升了我的编程能力，更培养了我的系统思维和工程素养。
+	并行计算作为支撑现代信息技术发展的基础，其重要性将随着数据规模的增长和应用需求的提升而不断凸显。掌握并行编程技术，不仅是技术发展的要求，更是时代赋予我们的使命。
+	
+	\section{链接}
+	\textbf{Gitee链接}  \href{https://gitee.com/sky_whale/parallel-programming-with-nku}{Gitee}
+	
+	\end{document}
+

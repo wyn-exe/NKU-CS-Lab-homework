@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}{% if anime %}编辑{% else %}新增{% endif %}番剧{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">{% if anime %}编辑{% else %}新增{% endif %}番剧</h3>
+        <form method="post">
+          <!-- 基本信息 -->
+          <div class="mb-3">
+            <label class="form-label">名称 *</label>
+            <input name="title" class="form-control" value="{{ anime.title or '' }}" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col">
+              <label class="form-label">年份 *</label>
+              <input name="year" type="number" class="form-control" value="{{ anime.year or '' }}" required>
+            </div>
+            <div class="col">
+              <label class="form-label">地区 *</label>
+              <input name="region" class="form-control" value="{{ anime.region or '' }}" required>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col">
+              <label class="form-label">播放量 *</label>
+              <input name="views" type="number" class="form-control" value="{{ anime.views or 0 }}" required>
+            </div>
+            <div class="col">
+              <label class="form-label">评分</label>
+              <input name="rating" type="number" step="0.1" class="form-control" value="{{ anime.rating or '' }}">
+            </div>
+          </div>
+
+          <!-- 声优输入（三个） -->
+          <div class="row mb-3">
+            {% set seiyuu_vals = linked_seiyuus if linked_seiyuus is defined else ['', '', ''] %}
+            {% for i in range(3) %}
+            <div class="col-4 mb-2">
+              <label class="form-label">声优 {{ i+1 }}</label>
+              <input name="seiyuu_name_{{ i+1 }}" class="form-control"
+                     placeholder="输入声优名称"
+                     value="{{ seiyuu_vals[i] or '' }}">
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- 标签选择 -->
+          <div class="row mb-3">
+            <div class="col-4"><label class="form-label">标签 1</label>
+              <select name="tag_1" class="form-select">
+                <option value="">— 无 —</option>
+                {% for t in all_tags %}<option value="{{ t.name }}">{{ t.name }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-4"><label class="form-label">标签 2</label>
+              <select name="tag_2" class="form-select">
+                <option value="">— 无 —</option>
+                {% for t in all_tags %}<option value="{{ t.name }}">{{ t.name }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-4"><label class="form-label">标签 3</label>
+              <select name="tag_3" class="form-select">
+                <option value="">— 无 —</option>
+                {% for t in all_tags %}<option value="{{ t.name }}">{{ t.name }}</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- 导演输入 -->
+          <div class="mb-3">
+            <label class="form-label">导演</label>
+            <input name="director_name" class="form-control"
+                   placeholder="输入导演名称"
+                   value="{{ (linked_dirs[0] if linked_dirs else '') if linked_dirs is defined else '' }}">
+          </div>
+          <!-- 制作单位输入 -->
+          <div class="mb-3">
+            <label class="form-label">制作单位</label>
+            <input name="studio_name" class="form-control"
+                   placeholder="输入制作单位名称"
+                   value="{{ (linked_studios[0] if linked_studios else '') if linked_studios is defined else '' }}">
+          </div>
+
+          <!-- 改编选项 -->
+           <fieldset class="mb-3">
+            <legend class="form-label">是否改编动画</legend>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_adapted" id="adapt_no" value="0" checked>
+              <label class="form-check-label" for="adapt_no">否</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_adapted" id="adapt_yes" value="1">
+              <label class="form-check-label" for="adapt_yes">是</label>
+            </div>
+          </fieldset>
+          <div id="adapt_fields" style="display:none;">
+            <div class="row mb-3">
+              <div class="col-md-5">
+                <label class="form-label">原作名称 *</label>
+                <input name="orig_title" class="form-control" placeholder="输入原作名称">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">原作者 *</label>
+                <input name="orig_author" class="form-control" placeholder="输入原作者姓名">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">地区</label>
+                <input name="orig_region" class="form-control" placeholder="可选">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">改编类型</label>
+              <input name="adapt_type" class="form-control" placeholder="漫画改/小说改/游戏改…">
+            </div>
+          </div>
+
+          <!-- 提交 -->
+          <button type="submit" class="btn btn-primary w-100">提交</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 切换原作输入区显示
+  document.querySelectorAll('input[name="is_adapted"]').forEach(rb => {
+    rb.addEventListener('change', e => {
+      document.getElementById('adapt_fields').style.display = e.target.value === '1' ? 'block' : 'none';
+    });
+  });
+</script>
+{% endblock %}

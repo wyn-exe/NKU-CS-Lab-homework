@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}制作单位统计{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-4">制作单位番剧数量</h2>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr><th>制作单位</th><th>番剧数量</th></tr>
+      </thead>
+      <tbody>
+        {% for row in counts %}
+        <tr>
+          <td>{{ row.studio_name }}</td>
+          <td>{{ row.anime_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

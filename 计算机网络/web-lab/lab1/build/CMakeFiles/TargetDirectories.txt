@@ -1,0 +1,9 @@
+D:/web/build/CMakeFiles/chat_common.dir
+D:/web/build/CMakeFiles/chat_server.dir
+D:/web/build/CMakeFiles/chat_client.dir
+D:/web/build/CMakeFiles/chat_client_gui.dir
+D:/web/build/CMakeFiles/rdt_common.dir
+D:/web/build/CMakeFiles/rdt_server.dir
+D:/web/build/CMakeFiles/rdt_client.dir
+D:/web/build/CMakeFiles/ALL_BUILD.dir
+D:/web/build/CMakeFiles/ZERO_CHECK.dir

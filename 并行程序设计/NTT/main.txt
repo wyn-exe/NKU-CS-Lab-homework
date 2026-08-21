@@ -1,0 +1,124 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <chrono>
+#include <cstring>
+#include <cuda_runtime.h>
+#include <device_launch_parameters.h>
+
+typedef long long LL;
+typedef unsigned long long ULL;
+
+// ================== 辅助函数 ==================
+void fRead(LL *a, LL *b, int *n, LL *p, int input_id){
+    std::string str1 = "./nttdata/";
+    std::string str2 = std::to_string(input_id);
+    std::string strin = str1 + str2 + ".in";
+    char data_path[strin.size() + 1];
+    std::copy(strin.begin(), strin.end(), data_path);
+    data_path[strin.size()] = '\0';
+    std::ifstream fin;
+    fin.open(data_path, std::ios::in);
+    fin>>*n>>*p;
+    for (int i = 0; i < *n; i++){
+        fin>>a[i];
+    }
+    for (int i = 0; i < *n; i++){   
+        fin>>b[i];
+    }
+}
+
+void fCheck(LL *ab, int n, int input_id){
+    std::string str1 = "./nttdata/";
+    std::string str2 = std::to_string(input_id);
+    std::string strout = str1 + str2 + ".out";
+    char data_path[strout.size() + 1];
+    std::copy(strout.begin(), strout.end(), data_path);
+    data_path[strout.size()] = '\0';
+    std::ifstream fin;
+    fin.open(data_path, std::ios::in);
+    for (int i = 0; i < n * 2 - 1; i++){
+        LL x;
+        fin>>x;
+        if(x != ab[i]){
+            std::cout<<"多项式乘法结果错误"<<std::endl;
+            return;
+        }
+    }
+    std::cout<<"多项式乘法结果正确"<<std::endl;
+    return;
+}
+LL a[300000], b[300000], ab[300000];
+int main(int argc, char *argv[]) {
+    int deviceCount;
+    cudaGetDeviceCount(&deviceCount);
+    if (deviceCount == 0) {
+        std::cout << "No CUDA devices found!" << std::endl;
+        return -1;
+    }
+    
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, 0);
+    std::cout << "GPU: " << deviceProp.name << std::endl;
+    std::cout << "SM数量: " << deviceProp.multiProcessorCount << std::endl;
+    std::cout << "最大线程数/块: " << deviceProp.maxThreadsPerBlock << std::endl;
+    std::cout << "最大网格大小: " << deviceProp.maxGridSize[0] << std::endl;
+    
+    int test_begin = 0;
+    int test_end = 3;
+    
+    typedef void (*NTTFunction)(const LL*, const LL*, LL*, int, LL);
+    NTTFunction ntt_functions[] = {
+        NTT_GPU_Basic,
+        NTT_CPU_Barrett_Multiply,
+        NTT_CPU_Montgomery_Multiply,
+        NTT_GPU_Barrett_Multiply,
+        NTT_GPU_Montgomery_Multiply
+    };
+    const char* method_names[] = {
+        "GPU基础版本(无规约优化)",
+        "CPU Barrett规约版本",
+        "CPU Montgomery规约版本", 
+        "GPU Barrett规约版本",
+        "GPU Montgomery规约版本"
+    };
+    
+    for(int i = test_begin; i <= test_end; ++i) {
+        int n_;
+        LL p_;
+        fRead(a, b, &n_, &p_, i);
+        
+        std::cout << "\n========== 测试数据集 " << i << " ===========" << std::endl;
+        std::cout << "n = " << n_ << ", p = " << p_ << std::endl;
+        
+        double times[5];
+        for (int method = 0; method < 5; method++) {
+            memset(ab, 0, sizeof(ab));
+            auto start = std::chrono::high_resolution_clock::now();
+            ntt_functions[method](a, b, ab, n_, p_);
+            auto end = std::chrono::high_resolution_clock::now();
+            
+            std::chrono::duration<double, std::milli> elapsed = end - start;
+            times[method] = elapsed.count();
+            
+            std::cout << method_names[method] << ": " << times[method] << " ms" << std::endl;
+            fCheck(ab, n_, i);
+        }
+        
+        std::cout << "\n========== 加速比分析 ===========" << std::endl;
+        std::cout << "GPU基础版本相对CPU Barrett规约的加速比: " 
+                  << times[1] / times[0] << "x" << std::endl;
+        std::cout << "GPU基础版本相对CPU Montgomery规约的加速比: " 
+                  << times[2] / times[0] << "x" << std::endl;
+        std::cout << "GPU Barrett规约相对CPU Barrett规约的加速比: " 
+                  << times[1] / times[3] << "x" << std::endl;
+        std::cout << "GPU Barrett规约相对GPU基础版本的加速比: " 
+                  << times[0] / times[3] << "x" << std::endl;
+        std::cout << "GPU Montgomery规约相对CPU Montgomery规约的加速比: " 
+                  << times[2] / times[4] << "x" << std::endl;
+        std::cout << "GPU Montgomery规约相对GPU基础版本的加速比: " 
+                  << times[0] / times[4] << "x" << std::endl;
+    }
+    
+    return 0;
+}

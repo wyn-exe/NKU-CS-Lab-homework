@@ -1,0 +1,19 @@
+-r
+D:\并行程序设计\Analysis\MatrixDotProduct\r009hs3
+--itt-config=frame
+--event-mux-factor=5
+--data-limit-mb=1000
+--disk-space-limit=0
+--mrte-type=java,dotnet
+--stack-unwind-limit=8388608
+--event-config=MEM_LOAD_RETIRED.L1_HIT:sa=1000003:precise=yes,MEM_LOAD_RETIRED.L1_MISS:sa=200003:precise=yes,MEM_LOAD_RETIRED.L2_HIT:sa=200003:precise=yes,MEM_LOAD_RETIRED.L2_MISS:sa=100021:precise=yes,MEM_LOAD_RETIRED.L3_HIT:sa=100021:precise=yes,MEM_LOAD_RETIRED.L3_MISS:sa=50021:precise=yes
+--platform-type=151
+--pmu-type=alderlake
+--uncore-sampling-interval=10
+--mrte-mode=auto
+--itt-config=task,event,counter
+--etw-config=clr
+--p-state-trigger=CPU_CLK_UNHALTED.REF_TSC
+--app-working-dir=D:\TDM-GCC\Project\inner product_Cache\bin\Debug
+--
+D:\TDM-GCC\Project\inner product_Cache\bin\Debug\inner product_Cache.exe

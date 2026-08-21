@@ -1,0 +1,19 @@
+\babel@toc {UKenglish}{}\relax 
+\contentsline {section}{\numberline {1}引言}{2}{section.1}%
+\contentsline {section}{\numberline {2}我国超算发展历史}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}向量处理器时代（1970年代末-1990年代初）}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}并行架构突破（1990年代-2000年代初）}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}异构计算崛起（2000年代-2010年代）}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}自主众核架构（2010年代末-2020年代初）}{3}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}E级超算与混合架构（2020年代至今）}{3}{subsection.2.5}%
+\contentsline {section}{\numberline {3}代表性超算并行体系结构剖析}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}天河二号}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}神威·太湖之光}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}曙光E级原型机}{4}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}神威E级超算}{5}{subsection.3.4}%
+\contentsline {section}{\numberline {4}国内外超算对比}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}国外超算概览——Frontier和富岳}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}国内外超算对比}{6}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}性能对比}{6}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}技术路线博弈}{6}{subsubsection.4.2.2}%
+\contentsline {section}{\numberline {5}我国超算未来展望}{6}{section.5}%

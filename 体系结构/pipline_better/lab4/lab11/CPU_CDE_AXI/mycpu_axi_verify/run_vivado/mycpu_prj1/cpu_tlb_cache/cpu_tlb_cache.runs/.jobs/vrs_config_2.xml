@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Runs Version="1" Minor="0">
+	<Run Id="inst_rom_synth_1" LaunchDir="D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.runs/inst_rom_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
+	<Parameters>
+		<Parameter Name="runs.monitorLSFJobs" Val="true" Type="bool"/>
+		<Parameter Name="runs.enableClusterConf" Val="true" Type="bool"/>
+	</Parameters>
+</Runs>
+

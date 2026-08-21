@@ -1,0 +1,66 @@
+This is BibTeX, Version 0.99d (TeX Live 2025)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: plain.bst
+Database file #1: reference.bib
+Warning--I didn't find a database entry for ""
+Too many commas in name 1 of "朱小谦,孟祥飞,菅晓东,等" for entry 2
+while executing---line 1049 of file plain.bst
+Too many commas in name 1 of "胡向东,柯希明,尹飞,等" for entry 3
+while executing---line 1049 of file plain.bst
+Too many commas in name 1 of "王一超,胡航,WILLIAM TANG,等" for entry 5
+while executing---line 1049 of file plain.bst
+Too many commas in name 1 of "高剑刚,卢宏生,何王全,等" for entry 6
+while executing---line 1049 of file plain.bst
+Warning--to sort, need author or key in 7
+Warning--to sort, need author or key in 8
+Too many commas in name 1 of "朱小谦,孟祥飞,菅晓东,等" for entry 2
+while executing---line 1090 of file plain.bst
+Too many commas in name 1 of "王一超,胡航,WILLIAM TANG,等" for entry 5
+while executing---line 1090 of file plain.bst
+Too many commas in name 1 of "胡向东,柯希明,尹飞,等" for entry 3
+while executing---line 1090 of file plain.bst
+Too many commas in name 1 of "高剑刚,卢宏生,何王全,等" for entry 6
+while executing---line 1090 of file plain.bst
+You've used 9 entries,
+            2118 wiz_defined-function locations,
+            533 strings with 5192 characters,
+and the built_in function-call counts, 1825 in all, are:
+= -- 164
+> -- 51
+< -- 0
++ -- 23
+- -- 14
+* -- 63
+:= -- 302
+add.period$ -- 25
+call.type$ -- 9
+change.case$ -- 29
+chr.to.int$ -- 0
+cite$ -- 11
+duplicate$ -- 88
+empty$ -- 201
+format.name$ -- 14
+if$ -- 402
+int.to.chr$ -- 0
+int.to.str$ -- 9
+missing$ -- 10
+newline$ -- 46
+num.names$ -- 14
+pop$ -- 72
+preamble$ -- 1
+purify$ -- 25
+quote$ -- 0
+skip$ -- 61
+stack$ -- 0
+substring$ -- 45
+swap$ -- 9
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 26
+warning$ -- 2
+while$ -- 14
+width$ -- 10
+write$ -- 85
+(There were 8 error messages)

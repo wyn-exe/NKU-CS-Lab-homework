@@ -1,0 +1,17 @@
+body { font-family: Arial, sans-serif; margin:0; padding:0; }
+header nav { background:#444; padding:10px; }
+header nav a { color:#fff; margin-right:1em; text-decoration:none; }
+main { padding:20px; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:8px; }
+#flash { list-style:none; padding:0; color:green; }
+/* 审计日志表格：让 <pre> 内容自动换行，取消横向滚动 */
+.table-responsive {
+    overflow-x: visible;  /* 让表格容器不再横向滚动 */
+  }
+  .table td pre {
+    white-space: pre-wrap;         /* 保留缩进但自动换行 */
+    word-break: break-word;        /* 单词内可断行 */
+    margin: 0;                     /* 去掉默认 pre 的边距 */
+  }
+  

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+  <defs>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6d28d9"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#g3)"/>
+  <polyline points="0,140 40,120 80,150 120,110 160,135 200,100 240,130 280,90 320,115" fill="none" stroke="#f8fafc" stroke-width="6" opacity="0.8"/>
+  <text x="20" y="32" font-size="18" fill="#f1f5f9" font-family="Segoe UI, Arial, sans-serif">HTTP Lab 3 - 3</text>
+</svg>

@@ -1,0 +1,18 @@
+\babel@toc {UKenglish}{}\relax 
+\contentsline {section}{\numberline {1}背景}{2}{section.1}%
+\contentsline {section}{\numberline {2}题目}{2}{section.2}%
+\contentsline {section}{\numberline {3}算法设计与分析}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}动态规划状态定义}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}状态转移方程}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}边界条件处理}{3}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}算法分析}{3}{subsection.3.4}%
+\contentsline {section}{\numberline {4}代码实现}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}核心算法实现}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}辅助功能模块}{5}{subsection.4.2}%
+\contentsline {section}{\numberline {5}测试数据与结果}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}测试策略}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}关键测试结果}{5}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}测试结果分析}{6}{subsection.5.3}%
+\contentsline {section}{\numberline {6}优化尝试}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}空间复杂度优化}{7}{subsection.6.1}%
+\contentsline {section}{\numberline {7}结论}{8}{section.7}%

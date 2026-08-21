@@ -1,0 +1,1257 @@
+% !TeX program = xelatex
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+	basicstyle=\tiny,
+	numberstyle=\tiny,
+	keywordstyle=\color{blue!70},
+	commentstyle=\color{red!50!green!50!blue!50},
+	frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+	escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pdflscape}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit,calc}
+\tikzset{
+	block/.style={
+		rectangle,
+		draw,
+		rounded corners=2pt,
+		align=center,
+		minimum height=1.2cm,
+		text width=3cm   % 控制文字换行
+	},
+	arrow/.style={-Latex, thick}
+}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+	language=Verilog, % 设置默认语言为Verilog
+	breaklines,%自动换行
+	basicstyle=\small\ttfamily, % 使用等宽字体
+	escapeinside=``,
+	keywordstyle=\color{ blue!70} \bfseries,
+	commentstyle=\color{red!50!green!50!blue!50},% 
+	stringstyle=\ttfamily,% 
+	extendedchars=false,% 
+	linewidth=\textwidth,% 
+	numbers=left,% 
+	numberstyle=\tiny \color{blue!50},% 
+	frame=trbl,% 
+	rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 软件工程作业报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+	\renewcommand{\contentsname}{目\ 录}
+	\renewcommand{\appendixname}{附录}
+	\renewcommand{\appendixpagename}{附录}
+	\renewcommand{\refname}{参考文献} 
+	\renewcommand{\figurename}{图}
+	\renewcommand{\tablename}{表}
+	\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+	
+	%-------------------------封面----------------
+	\begin{titlepage}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+			\vspace{20mm}
+				\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+				\textbf{\huge{\kaishu{软件工程作业二报告}}}\\[2.3cm]
+				\textbf{\Huge\textbf{\kaishu{智能城市生成系统需求分析报告}}}
+			
+			\vspace{\fill}
+			
+			% \textbf{\Large \textbf{软件工程实验报告}}\\[0.8cm]
+			% \HRule \\[0.9cm]
+			% \HRule \\[2.0cm]
+			\centering
+				\textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+				\textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+				\textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+			
+			\vfill
+			{\Large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+	\renewcommand{\figurename}{图}
+	\renewcommand{\contentsname}{目录}  
+	\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+	
+	
+	% 生成目录
+	\clearpage
+	\tableofcontents
+	\newpage
+	\setcounter{figure}{0} % 每章开始前重置图片计数器
+	
+	
+	\section{引言}
+	\subsection{编写目的}
+	本报告旨在对“智能城市生成系统”进行完整的需求分析，明确系统应实现的业务目标、功能边界、数据组织方式、非功能质量要求以及运行环境要求，为后续的软件设计、模块实现、接口联调、测试验证和最终交付提供统一依据。需求分析阶段的目标不是直接给出实现代码，而是尽可能准确地描述“系统应该做什么、怎样被使用、要达到什么质量水平”，从而避免后续开发过程中出现功能遗漏、角色职责混乱、接口不一致或性能不足等问题。
+	
+	对于智能城市生成系统而言，需求分析尤其重要。因为该系统不仅涉及传统的信息管理功能，还融合了 3D 建模、场景配置、布局编辑、生态元素生成、动态仿真以及大模型自然语言控制等多类能力，系统内部往往存在“主系统 + 插件系统 + 外部智能服务”协同工作的复杂结构。因此，只有在需求阶段把角色权限、业务流程、数据对象和系统约束梳理清楚，才能保证系统最终既具备可用性，也具备扩展性与工程可实施性。
+	\subsection{项目背景}
+	随着人工智能技术、自然语言处理技术、图像识别技术和三维建模技术的发展，传统城市建模方式正在由“人工手工搭建”逐渐转向“智能辅助生成”。在城市规划展示、数字孪生、智慧园区、文旅场景预演、教学演示和行业分析等领域，用户不仅希望能够快速生成基础城市环境，还希望系统能够理解自然语言指令，根据模板自动配置道路、树木、座椅、建筑、山峦、湖泊、车辆、人群等元素，并支持后续编辑和仿真。
+	
+	智能城市生成系统正是面向这一需求而设计。系统以场景建模师、行业分析师和系统管理员为核心用户，通过主系统界面与 Blender 插件系统协同工作，实现城市场景的创建、编辑、生成、调整、保存、导出和仿真。系统还计划接入大模型，实现多模态指令解析与自然语言驱动的场景建模，提升建模效率和交互智能化水平。
+	
+	\section{任务概述}
+	\subsection{任务目标}
+	本系统的总体目标是构建一个支持智能化城市场景生成与管理的平台，使用户能够在较少人工操作的情况下完成城市场景的创建、布局调整、生态配置和动态仿真。系统应能够支持多角色登录与权限分配，不同角色登录后看到不同的界面和操作入口；支持主系统与 Blender 插件之间的数据交互，完成场景数据的同步、编辑与渲染；支持 2D 和 3D 资产的加载、替换与联动配置；支持通过输入点集或导入草图来精确控制布局；支持利用大模型进行自然语言指令解析，并调用插件函数自动执行建模操作。
+	
+	从工程目标上看，系统不仅要“能生成”，还要“生成得快、改得方便、看得清楚、扩展容易、控制准确”。因此，系统应同时兼顾生成效率、交互体验、数据一致性和可扩展性，确保能够适应不同规模、不同复杂度的城市场景生成任务。
+	\subsection{用户特点}
+	系统主要面向三类用户。
+	
+	场景建模师是系统的核心生产角色，需要先在主系统中获得授权，再进入 Blender 插件环境执行城市建模与精细化编辑。他们通常具备一定建模经验，熟悉资产类型和空间布局规律，更关注模板联动、资产替换、布局控制和自然语言辅助建模的效率与可控性。该类用户希望系统在自动化生成的同时保留足够的人工干预能力。
+	
+	行业分析师是系统的需求与验收角色，主要职责不是直接进行复杂建模，而是调研智慧城市行业需求，形成插件功能标准，并基于生成结果开展验收评审。他们更关注场景是否满足既定标准、仿真结果是否可解释、导出结果是否支持分析汇报。因此，系统需要为行业分析师提供标准管理、验收任务配置、指标查看和评审结论记录等功能入口。
+	
+	系统管理员负责主系统后台运维、插件上架审核与用户权限分配，同时承担日志审计、运行监控和异常处置等职责。管理员一般不参与具体场景建模，但需要保证系统可用性、安全性和可追溯性，确保不同角色在规定边界内完成业务活动。
+	\subsection{假定与约束}
+	本系统在需求层面做出如下假定与约束。首先，系统采用主系统与 Blender 插件协同的架构，主系统负责用户管理、任务调度、参数配置和结果展示，插件负责与 Blender 建模环境进行交互与执行。其次，系统能够访问本地或远程资产库、模板库与场景库，并且这些资源在格式上保持一定规范，以便于自动加载与替换。再次，系统接入的大模型服务应具备稳定的可调用接口，能够接受文本或多模态输入并返回结构化指令结果,若外部 LLM 服务中断，系统应发出警告提示或降级为“规则模板 + 手动参数”模式，以保证核心生成能力可用。最后，系统默认运行环境具备较好的图形处理能力与网络连接能力，以支持 3D 预览、素材加载、模型调用和云端服务通信。
+	
+	在约束方面，系统需要兼容不同角色的权限边界，避免普通用户访问管理员级功能；需要保证场景修改的可回退性，避免自动生成导致不可控覆盖；需要在复杂场景下仍然保持可交互性，不能因为模型过大或仿真复杂而导致系统失去响应；需要保证自然语言指令的解析结果可解释，避免黑盒式错误生成。
+	
+	\section{业务描述}
+	\subsection{系统总业务流程图及其描述}
+	智能城市生成系统的总体业务流程可以概括为“登录认证—角色分发—场景创建—智能配置—布局编辑—生态生成—动态仿真—保存导出—管理维护”。用户首先通过账号登录系统，系统根据角色识别其权限，并加载对应功能界面。场景建模师登录后进入建模工作台执行场景生产；行业分析师登录后进入需求标准与验收评审工作台，配置验收指标并评估结果；系统管理员进入管理后台执行运维、插件审核和权限管理。
+	
+	在场景创建阶段，用户可以选择模板场景，也可以从空白场景开始构建。系统从资产库中加载道路、树木、座椅、建筑、车辆、行人、水体、山体等基础元素，并按照模板或用户指令生成初始布局。随后，用户可以通过手动输入点集、导入草图或输入自然语言指令对场景进行修改。系统将解析这些输入，并通过主系统调用 Blender 插件完成具体建模操作。完成基础布局后，系统进一步支持天气、天色、动态交通、人群流动等仿真调整，最后用户可以保存工程、导出模型或生成报告。
+	
+	该流程的核心特点在于“人机协同”。系统不是简单替代用户，而是通过自动化生成减少重复劳动，通过智能解析降低操作门槛，通过可视化预览和人工修正保留控制能力，从而达到效率与精度的平衡。
+	\begin{lstlisting}[caption={系统总业务流程图}]
+		用户登录
+		↓
+		身份认证与权限识别
+		↓
+		加载对应角色界面
+		↓
+		选择新建场景 / 打开场景
+		↓
+		选择模板或导入草图 / 输入点集 / 输入自然语言
+		↓
+		系统解析输入并生成场景参数
+		↓
+		调用 Blender 插件执行建模与更新
+		↓
+		预览场景并进行人工微调
+		↓
+		生成生态元素与动态仿真效果
+		↓
+		保存工程 / 导出模型 / 输出分析结果
+		↓
+		管理员记录日志与维护资源
+	\end{lstlisting}
+	该流程体现了系统从“用户输入”到“场景生成”再到“结果输出”的完整闭环。前半段是业务驱动阶段，重点在于输入识别、参数解析和权限控制；中间阶段是生成执行阶段，重点在于插件调用、资产替换和布局更新；后半段是结果确认阶段，重点在于可视化预览、保存导出和日志追踪。
+	\subsection{各个子业务流程图及其描述}
+	\paragraph{多角色登录与权限分配}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tikzpicture}[node distance=1.5cm]
+				\node[block] (a) {输入账号密码/单点登录};
+				\node[block, right=of a] (b) {身份认证};
+				\node[block, right=of b] (c) {角色识别};
+				\node[block, right=of c] (d) {分配权限策略};
+				\node[block, right=of d] (e) {加载对应UI与菜单};
+				\node[block, right=of e] (f) {进入角色工作台};
+				
+				\draw[arrow] (a) -- (b);
+				\draw[arrow] (b) -- (c);
+				\draw[arrow] (c) -- (d);
+				\draw[arrow] (d) -- (e);
+				\draw[arrow] (e) -- (f);
+			\end{tikzpicture}
+		}
+	\end{center}
+	用户输入账号和密码后，系统完成身份认证，并根据角色分配访问权限。场景建模师可访问资产加载、模板联动、布局控制和自然语言建模模块；行业分析师可访问行业需求标准管理、验收任务配置、指标查看与评审记录模块；系统管理员可访问用户管理、插件上架审核、权限配置和日志审计模块。权限并非仅控制页面可见性，还控制后端接口调用范围和数据读写范围。
+	
+	流程关键点在于“权限策略一体化”。若仅前端做隐藏而后端未做鉴权，系统将存在越权风险。因此需求规定，所有关键接口需进行角色校验，管理员可查看审计记录并追踪越权尝试。
+	
+	\paragraph{资产加载与模板联动配置}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tikzpicture}[node distance=1.5cm]
+				\node[block] (a) {选择城市场景模板};
+				\node[block, right=of a] (b) {系统加载默认参数};
+				\node[block, right=of b] (c) {用户选择树木/道路/座椅类型};
+				\node[block, right=of c] (d) {联动更新关联参数};
+				\node[block, right=of d] (e) {加载2D/3D资产并替换};
+				\node[block, right=of e] (f) {生成可预览场景版本};
+				
+				\draw[arrow] (a) -- (b);
+				\draw[arrow] (b) -- (c);
+				\draw[arrow] (c) -- (d);
+				\draw[arrow] (d) -- (e);
+				\draw[arrow] (e) -- (f);
+			\end{tikzpicture}
+		}
+	\end{center}
+	模板联动是提升效率的核心机制。系统预置若干场景模板，如现代商务区、校园片区、公园片区，每个模板绑定一组可编辑参数。用户修改关键选项后，系统自动联动相关子参数，减少重复配置成本并降低参数冲突概率。
+	
+	资产管理要求支持“加载、替换、版本回滚”。当用户替换资产时，系统需检查模型规格（比例、坐标、材质依赖），避免渲染错误或场景错位。替换后系统自动生成新版本，确保用户可在历史版本间切换比较。
+	
+	\paragraph{布局与生态控制}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tikzpicture}[node distance=1.5cm]
+				\node[block] (a) {输入手动点集/导入草图};
+				\node[block, right=of a] (b) {点线集提取与坐标标准化};
+				\node[block, right=of b] (c) {道路与地块布局计算};
+				\node[block, right=of c] (d) {生态元素生成: 山峦/湖泊/动态船只};
+				\node[block, right=of d] (e) {冲突检测与自动修正};
+				\node[block, right=of e] (f) {输出可编辑布局结果};
+				
+				\draw[arrow] (a) -- (b);
+				\draw[arrow] (b) -- (c);
+				\draw[arrow] (c) -- (d);
+				\draw[arrow] (d) -- (e);
+				\draw[arrow] (e) -- (f);
+			\end{tikzpicture}
+		}
+	\end{center}
+	布局控制需要同时支持“精确输入”和“视觉输入”。精确输入面向专业用户，通过点集实现道路或地块精确落点；视觉输入面向快速迭代，通过草图提取点线信息形成初始拓扑。系统在两类输入之上统一坐标标准，并执行约束校验，避免断路、重叠、穿模等问题。
+	
+	生态元素生成是场景自然性与可分析性的重要组成。系统需在城市周边自动布设山体、水域和动态船只等对象，并与地形、道路、水系约束保持一致。若出现生态元素与人工设施冲突，系统应自动给出修正建议或提供半自动修复方案。
+	
+	\paragraph{LLM 多模态指令解析与插件执行}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tikzpicture}[node distance=1.5cm]
+				\node[block] (a) {输入文本/图像/参数等多模态指令};
+				\node[block, right=of a] (b) {意图识别与任务分解};
+				\node[block, right=of b] (c) {插件函数检索与参数映射};
+				\node[block, right=of c] (d) {执行计划生成与安全校验};
+				\node[block, right=of d] (e) {自动调用插件函数链};
+				\node[block, right=of e] (f) {执行结果回传与可解释日志};
+				
+				\draw[arrow] (a) -- (b);
+				\draw[arrow] (b) -- (c);
+				\draw[arrow] (c) -- (d);
+				\draw[arrow] (d) -- (e);
+				\draw[arrow] (e) -- (f);
+			\end{tikzpicture}
+		}
+	\end{center}
+	该流程是本系统创新价值所在。系统不仅接收自然语言文本，还能结合草图、模板参数等多模态信息，形成可执行任务链，并自动调用插件函数完成建模过程。相较传统“用户手动逐步点击”，该机制显著提升复杂场景下的生成效率。
+	
+	为保障可控性，需求规定“执行前校验 + 执行后解释”双机制。执行前校验用于过滤高风险或不一致指令；执行后解释用于向用户展示“调用了哪些插件函数、传递了哪些参数、产生了哪些结果”，确保用户能够理解和追溯自动化决策。
+	
+	\paragraph{动态仿真与分析输出}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tikzpicture}[node distance=1.5cm]
+				\node[block] (a) {加载已生成场景};
+				\node[block, right=of a] (b) {配置车辆/人群规则};
+				\node[block, right=of b] (c) {设置天气/天色/时间参数};
+				\node[block, right=of c] (d) {运行动态仿真};
+				\node[block, right=of d] (e) {采集轨迹与统计指标};
+				\node[block, right=of e] (f) {导出报告与可视化结果};
+				
+				\draw[arrow] (a) -- (b);
+				\draw[arrow] (b) -- (c);
+				\draw[arrow] (c) -- (d);
+				\draw[arrow] (d) -- (e);
+				\draw[arrow] (e) -- (f);
+			\end{tikzpicture}
+		}
+	\end{center}
+	系统根据场景参数生成天色变化、天气效果、车辆轨迹、人群分布和生态动态，用户可在预览窗口中观察运行结果。如果结果符合要求，则保存工程并导出模型文件、截图或分析报告；如果不符合要求，则返回前一步继续调整。
+	
+	\section{数据需求}
+	\subsection{数据需求描述}
+	智能城市生成系统的数据需求主要包括用户数据、权限数据、场景数据、模板数据、资产数据、布局数据、草图数据、仿真数据、模型调用数据和日志数据。系统的数据组织应当围绕“场景工程”为核心对象展开，确保所有输入、处理与输出都能围绕同一个场景实例进行关联和追踪。
+	
+	用户数据用于描述系统访问者的身份信息、登录信息、角色类型与权限范围。场景数据用于描述场景工程的基本属性，包括场景名称、创建时间、当前版本、所属模板、所属用户和保存状态。模板数据用于描述标准化场景结构，如道路模板、园林模板、滨水模板等。资产数据用于描述各类 2D/3D 资源的类型、路径、格式、尺寸、可替换关系和联动规则。布局数据用于描述点集、线集、区域边界及其空间约束。草图数据用于记录导入图像及其识别结果。仿真数据用于记录天气、光照、交通流、人群流和生态运动参数。日志数据用于记录用户行为、插件调用和模型响应情况，便于审计和故障排查。
+	\subsection{数据流图}
+	智能城市生成系统的数据流图用于描述系统内部数据的流向、处理过程以及外部实体与系统之间的数据交互关系。结合系统的功能需求，本系统主要围绕用户认证、场景生成、资产加载、布局编辑、智能交互、动态仿真和结果输出等核心环节展开，形成从输入到处理再到输出的完整闭环。
+	\subsubsection{0层数据流图}
+	0层数据流图描述系统的整体边界以及系统与外部实体之间的数据交换关系。系统作为一个整体接收来自场景建模师、行业分析师和系统管理员的输入，同时与大模型服务和 Blender 插件系统进行交互，最终返回场景结果、验收结果和管理信息。
+	
+	\begin{figure}[htbp]
+		\centering
+		\resizebox{0.98\textwidth}{!}{
+			\begin{tikzpicture}[
+				font=\small,
+				ext/.style={
+					rectangle,
+					draw,
+					thick,
+					align=center,
+					minimum width=3.2cm,
+					minimum height=1.2cm,
+					text width=3.0cm
+				},
+				proc/.style={
+					rectangle,
+					draw,
+					rounded corners=3pt,
+					align=center,
+					minimum width=4.4cm,
+					minimum height=1.4cm,
+					text width=4.0cm
+				},
+				arrow/.style={-Latex, thick},
+				lab/.style={midway, fill=white, inner sep=1pt, font=\scriptsize, align=center}
+				]
+				
+				% 中心过程
+				\node[proc] (p0) at (0,0) {P0\\智能城市生成系统};
+				
+				% 外部实体
+				\node[ext] (u) at (-7,0) {场景建模师\\行业分析师};
+				\node[ext] (a) at (0,4.2) {系统管理员};
+				\node[ext] (l) at (7,1.7) {LLM服务};
+				\node[ext] (b) at (7,-2.1) {Blender插件系统};
+				
+				% 用户与系统
+				\draw[arrow] (u.east) -- node[lab, above] {登录 / 需求 / 输入} (p0.west);
+				\draw[arrow] (p0.west) -- node[lab, below] {结果 / 预览 / 反馈} (u.east);
+				
+				% 管理员与系统
+				\draw[arrow] (a.south) -- node[lab, right] {维护请求} (p0.north);
+				\draw[arrow] (p0.north) -- node[lab, left] {状态 / 日志} (a.south);
+				
+				% LLM 与系统
+				\draw[arrow] (p0.east) to[out=12,in=180] node[lab, above] {语义请求} (l.west);
+				\draw[arrow] (l.west) to[out=180,in=12] node[lab, below] {解析结果} (p0.east);
+				
+				% Blender 与系统
+				\draw[arrow] (p0.east) to[out=-18,in=180] node[lab, below] {建模命令} (b.west);
+				\draw[arrow] (b.west) to[out=180,in=-18] node[lab, above] {执行反馈} (p0.east);
+				
+			\end{tikzpicture}
+		}
+		\caption{智能城市生成系统0层数据流图}
+	\end{figure}
+
+	从0层数据流图可以看出，系统的外部输入主要来自三类用户和两个外部服务。场景建模师主要提供建模输入与编辑请求；行业分析师主要提供行业需求标准、验收规则与评审意见；系统管理员主要提供管理与运维请求；大模型服务负责将自然语言或多模态输入转换为结构化意图和参数；Blender 插件系统负责执行具体的三维建模和场景更新操作。系统最终将处理结果反馈给用户，从而形成完整交互闭环。
+	
+	\subsubsection{1层数据流图}
+	1层数据流图对系统内部主要处理过程进行展开，进一步说明用户输入如何被拆分、处理、存储与输出。本系统的核心处理过程包括：用户认证与权限管理、场景创建与模板管理、资产加载与替换、布局控制与草图识别、智能指令解析与插件调用、动态仿真与结果输出。
+	
+		\begin{figure}[htbp]
+			\centering
+			\resizebox{0.98\textwidth}{!}{
+				\begin{tikzpicture}[
+					font=\small,
+					ext/.style={
+						rectangle,
+						draw,
+						thick,
+						align=center,
+						minimum width=3.3cm,
+						minimum height=1.2cm,
+						text width=3.0cm
+					},
+					proc/.style={
+						rectangle,
+						draw,
+						rounded corners=3pt,
+						align=center,
+						minimum width=3.7cm,
+						minimum height=1.15cm,
+						text width=3.4cm
+					},
+					store/.style={
+						rectangle,
+						draw,
+						align=center,
+						minimum width=3.1cm,
+						minimum height=0.95cm,
+						text width=2.8cm,
+						inner sep=3pt,
+						path picture={
+							\draw[line width=0.8pt]
+							(path picture bounding box.north west) -- (path picture bounding box.north east);
+							\draw[line width=0.8pt]
+							(path picture bounding box.north west) -- (path picture bounding box.south west);
+							\draw[line width=0.8pt]
+							(path picture bounding box.south west) -- (path picture bounding box.south east);
+						}
+					},
+					arrow/.style={-Latex, thick},
+					lab/.style={midway, fill=white, inner sep=1pt, font=\scriptsize, align=center}
+					]
+					
+					% 外部实体
+					\node[ext] (user) at (-9,1.0) {场景建模师\\行业分析师};
+					\node[ext] (admin) at (-9,4.4) {系统管理员};
+					\node[ext] (llm) at (9,0.8) {LLM服务};
+					\node[ext] (blend) at (9,-2.4) {Blender插件系统};
+					
+					% 上层过程
+					\node[proc] (p1) at (-5,3.0) {P1\\用户认证与权限管理};
+					\node[proc] (p2) at (0,3.0) {P2\\场景创建与模板管理};
+					\node[proc] (p3) at (5,3.0) {P3\\资产加载与替换};
+					
+					% 下层过程
+					\node[proc] (p4) at (5,-1.0) {P4\\布局控制与草图识别};
+					\node[proc] (p5) at (0,-1.0) {P5\\智能指令解析与插件调用};
+					\node[proc] (p6) at (-5,-1.0) {P6\\动态仿真与结果输出};
+					
+					% 数据存储：上层
+					\node[store] (d1) at (-5,5.0) {D1\\用户与权限库};
+					\node[store] (d2) at (0,5.0) {D2\\场景与模板库};
+					\node[store] (d3) at (5,5.0) {D3\\资产库};
+					
+					% 数据存储：下层
+					\node[store] (d4) at (5,-3.1) {D4\\布局与草图库};
+					\node[store] (d5) at (0,-3.1) {D5\\仿真与日志库};
+					\node[store] (d6) at (-5,-3.1) {D6\\结果与版本库};
+					
+					% 用户与认证
+					\draw[arrow] (user.east) -- node[lab, above] {账号 / 请求} (p1.west);
+					\draw[arrow] (admin.east) -- node[lab, above] {维护请求} (p1.west);
+					
+					% 上层主流程
+					\draw[arrow] (p1.east) -- node[lab, above] {身份结果} (p2.west);
+					\draw[arrow] (p2.east) -- node[lab, above] {模板参数} (p3.west);
+					\draw[arrow] (p3.south) -- node[lab, right] {资产引用} (p4.north);
+					
+					% 下层主流程
+					\draw[arrow] (p4.west) -- node[lab, above] {布局结果} (p5.east);
+					\draw[arrow] (p5.west) -- node[lab, above] {仿真参数} (p6.east);
+					\draw[arrow] (p6.west) -- node[lab, below] {预览 / 报告} (user.south east);
+					
+					% LLM 与插件系统
+					\draw[arrow] (p5.east) to[out=15,in=180] node[lab, above] {语义请求} (llm.west);
+					\draw[arrow] (llm.west) to[out=180,in=15] node[lab, below] {解析结果} (p5.east);
+					
+					\draw[arrow] (p5.east) to[out=-15,in=180] node[lab, below] {插件命令} (blend.west);
+					\draw[arrow] (blend.west) to[out=180,in=-15] node[lab, above] {执行反馈} (p5.east);
+					
+					% 数据存储连接
+					\draw[arrow] (p1.north) -- node[lab, left] {读写} (d1.south);
+					\draw[arrow] (p2.north) -- node[lab, left] {读写} (d2.south);
+					\draw[arrow] (p3.north) -- node[lab, left] {读写} (d3.south);
+					
+					\draw[arrow] (p4.south) -- node[lab, right] {读写} (d4.north);
+					\draw[arrow] (p5.south) -- node[lab, right] {读写} (d5.north);
+					\draw[arrow] (p6.south) -- node[lab, right] {读写} (d6.north);
+					
+				\end{tikzpicture}
+			}
+			\caption{智能城市生成系统1层数据流图}
+		\end{figure}
+	
+	1层数据流图将系统拆分为六个主要处理过程。P1负责用户登录、角色识别和权限分配，并与用户库、权限库进行交互；P2负责场景工程初始化、模板选择和默认参数加载，并与场景库、模板库进行交互；P3负责 2D 与 3D 资产的检索、加载和替换，并与资产库保持数据同步；P4负责点集输入、草图识别、布局计算与生态元素规划，并将布局结果写入布局库；P5负责自然语言或多模态指令的解析、任务拆分与插件调用，并通过 LLM 服务和 Blender 插件系统完成智能交互；P6负责天气、天色、交通、人群等动态仿真，并将运行结果输出给用户，同时将仿真参数与日志写入相应数据存储。
+	
+	\subsubsection{数据流说明}
+	在系统运行过程中，数据流具有明显的阶段性和层次性。用户首先输入身份信息或登录请求，系统完成身份认证后分配权限并加载对应界面。随后，用户选择场景模板或创建新场景，系统从模板库和场景库读取基础参数，再从资产库中获取道路、树木、座椅、建筑等建模资源。若用户采用点集或草图方式进行布局设计，系统会对输入进行坐标标准化和几何提取，并将结果转化为可编辑的布局数据。
+	
+	在智能交互阶段，用户可以通过自然语言描述自己的建模意图，例如要求系统调整天气、增加车流、生成湖泊或在道路两侧布置座椅。系统将这类输入发送给大模型服务进行语义解析，然后把解析后的结构化结果映射为插件函数调用序列，由 Blender 插件系统实际执行。执行完成后，系统把结果反馈给用户，并将操作日志、仿真记录和状态信息保存到日志库中，便于后续追踪和维护。
+	
+	从数据组织角度来看，本系统的数据流体现了“输入数据—处理数据—存储数据—输出数据”的标准模式。不同处理模块之间通过结构化数据进行传递，保证了系统逻辑清晰、模块边界明确，也为后续的扩展、维护和测试提供了基础。
+
+	\subsection{数据字典}
+	数据字典是对数据流图中所有数据元素、数据流、数据存储和数据结构的统一说明。它用于明确系统中每一类数据的名称、含义、组成、来源、去向以及主要作用，从而避免在需求分析阶段出现术语不一致、字段含义模糊或数据边界不清的问题。智能城市生成系统涉及用户认证、场景建模、资产管理、布局控制、智能交互和动态仿真等多个环节，因此需要通过数据字典对关键数据对象进行规范化描述。
+	
+	\subsubsection{数据流条目}
+	
+	下面列出系统中较为核心的数据流条目。数据流条目主要用于说明数据在外部实体、处理过程和数据存储之间的流动内容。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{4.1cm} >{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{3.0cm}}
+		\caption{智能城市生成系统数据流条目表}\label{tab:dataflow_dict}\\
+		\toprule
+		数据流名称 & 含义说明 & 主要组成 & 来源 & 去向 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		数据流名称 & 含义说明 & 主要组成 & 来源 & 去向 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		登录信息 &
+		用户进入系统时提交的身份认证数据，用于判断是否允许访问系统。 &
+		账号、密码、验证码、登录方式、单点登录标识 &
+		场景建模师、行业分析师、系统管理员 &
+		用户认证与权限管理过程 \\
+		
+		建模与验收需求 &
+		用于描述场景构建目标和验收目标的业务输入，是系统执行建模与评审任务的直接依据。 &
+		场景类型、目标区域、编辑目标、验收指标、任务说明 &
+		场景建模师、行业分析师 &
+		场景创建与模板管理过程，智能指令解析过程，验收评审过程 \\
+		
+		草图/点集 &
+		用于描述空间布局、道路走向、地块边界或景观分布的几何输入数据。 &
+		坐标点、线段、区域边界、草图图像、标注信息 &
+		场景建模师 &
+		布局控制与草图识别过程 \\
+		
+		自然语言指令 &
+		用户通过自然语言表达的场景控制或验收修订需求。 &
+		文本指令、多模态提示、上下文信息 &
+		场景建模师、行业分析师 &
+		智能指令解析与插件调用过程 \\
+		
+		权限结果 &
+		系统根据用户身份和角色返回的访问控制结果。 &
+		角色类型、权限范围、可见菜单、可执行操作 &
+		用户认证与权限管理过程 &
+		场景建模师、行业分析师、系统管理员 \\
+		
+		场景预览 &
+		系统生成的可视化场景结果，用于确认布局和元素配置是否符合需求。 &
+		场景截图、三维视图、局部预览、视角参数 &
+		动态仿真与结果输出过程 &
+		场景建模师、行业分析师 \\
+		
+		仿真结果 &
+		系统运行动态仿真后生成的结果数据。 &
+		天气状态、天色状态、交通流、行人流、生态运动结果 &
+		动态仿真过程 &
+		场景建模师、行业分析师 \\
+		
+		管理请求 &
+		系统管理员发出的管理类操作请求。 &
+		用户维护、资源维护、日志查询、配置更新 &
+		系统管理员 &
+		用户认证与权限管理过程、系统管理过程 \\
+		
+		解析结果 &
+		LLM 对自然语言或多模态输入进行分析后返回的结构化信息。 &
+		意图类型、参数列表、任务分解、优先级、风险提示 &
+		LLM 服务 &
+		智能指令解析与插件调用过程 \\
+		
+		执行反馈 &
+		Blender 插件执行场景更新或建模指令后返回的状态信息。 &
+		执行状态、成功标识、错误原因、返回码、修改范围 &
+		Blender 插件系统 &
+		智能指令解析与插件调用过程，结果输出过程 \\
+		
+	\end{longtable}
+	
+	\subsubsection{数据存储条目}
+	
+	数据存储条目用于描述系统中需要长期保存、反复读写或在多个处理过程之间共享的数据集合。智能城市生成系统中的数据存储既包括传统的用户库、权限库和日志库，也包括与场景生成和建模任务密切相关的场景库、模板库、资产库、布局库和仿真库。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}p{3.8cm} >{\raggedright\arraybackslash}p{4.8cm} >{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{2.8cm}}
+		\caption{智能城市生成系统数据存储条目表}\label{tab:datastore_dict}\\
+		\toprule
+		编号 & 数据存储名称 & 含义说明 & 主要存放内容 & 读写过程 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		编号 & 数据存储名称 & 含义说明 & 主要存放内容 & 读写过程 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		D1 &
+		用户与权限库 &
+		保存系统用户账号信息、角色信息和权限分配规则，是身份认证和访问控制的基础。 &
+		用户编号、登录名、密码摘要、角色类型、权限列表、状态标识 &
+		P1 用户认证与权限管理 \\
+		
+		D2 &
+		场景与模板库 &
+		保存场景工程的基础信息以及标准化模板，是场景创建和快速复用的依据。 &
+		场景编号、场景名称、模板编号、模板结构、默认参数、版本信息 &
+		P2 场景创建与模板管理 \\
+		
+		D3 &
+		资产库 &
+		保存系统可用的二维和三维资源文件，是场景构建和替换的核心资源来源。 &
+		道路模型、树木模型、座椅模型、建筑模型、水体模型、人物模型、材质文件 &
+		P3 资产加载与替换 \\
+		
+		D4 &
+		布局与草图库 &
+		保存点集、线集、草图识别结果以及布局编辑中间数据，用于后续精细化调整。 &
+		点坐标、线段关系、区域边界、草图图像、识别标签、布局版本 &
+		P4 布局控制与草图识别 \\
+		
+		D5 &
+		仿真与日志库 &
+		保存动态仿真参数、运行记录以及系统调用日志，便于调试、审计和结果追踪。 &
+		天气参数、车辆规则、行人规则、运行日志、错误日志、任务记录 &
+		P5 智能指令解析与插件调用，P6 动态仿真与结果输出 \\
+		
+		D6 &
+		结果与版本库 &
+		保存最终输出结果和工程版本，用于后续恢复、导出和方案对比。 &
+		场景版本、导出文件、预览截图、仿真报告、回滚点、结果摘要 &
+		P6 动态仿真与结果输出 \\
+		
+	\end{longtable}
+	
+	\subsubsection{数据结构条目}
+	
+	数据结构条目用于说明系统中的核心数据对象由哪些字段组成，以及这些字段之间的逻辑关系。由于智能城市生成系统的业务范围较广，下面选取最关键的几个数据结构进行说明。
+	
+	\paragraph{1. 用户数据结构 User}
+	用户数据结构用于描述系统登录用户的基本信息和权限属性，是身份认证和角色分配的基础。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{用户数据结构}\label{tab:user_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		UserID & 用户唯一标识 & 字符串 & 系统自动生成，唯一标识一个用户 \\
+		UserName & 用户名 & 字符串 & 登录名或显示名 \\
+		PasswordHash & 密码摘要 & 字符串 & 存储加密后的密码信息 \\
+		RoleType & 角色类型 & 枚举 & 取值如建模师、分析师、管理员 \\
+		Status & 账号状态 & 枚举 & 取值如正常、冻结、注销 \\
+		CreateTime & 创建时间 & 时间戳 & 用于记录账号建立时间 \\
+		LastLoginTime & 最近登录时间 & 时间戳 & 用于审计和统计 \\
+	\end{longtable}
+	
+	\paragraph{2. 场景数据结构 Scene}
+	场景数据结构用于描述一个城市场景工程的基本属性、当前状态和版本信息。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{场景数据结构}\label{tab:scene_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		SceneID & 场景编号 & 字符串 & 场景工程的唯一标识 \\
+		SceneName & 场景名称 & 字符串 & 用户自定义名称 \\
+		TemplateID & 模板编号 & 字符串 & 关联场景模板库 \\
+		OwnerID & 所属用户编号 & 字符串 & 指示场景创建者 \\
+		SceneStatus & 场景状态 & 枚举 & 如编辑中、已保存、已导出 \\
+		VersionNo & 版本号 & 字符串/整数 & 用于版本控制与回滚 \\
+		CreateTime & 创建时间 & 时间戳 & 场景初次建立时间 \\
+		UpdateTime & 最近更新时间 & 时间戳 & 场景最近一次修改时间 \\
+	\end{longtable}
+	
+	\paragraph{3. 模板数据结构 Template}
+	模板数据结构用于保存标准化的场景组织模式，支持快速创建场景和联动配置。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{模板数据结构}\label{tab:template_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		TemplateID & 模板编号 & 字符串 & 模板唯一标识 \\
+		TemplateName & 模板名称 & 字符串 & 如公园模板、道路模板、滨水模板 \\
+		SceneType & 场景类型 & 枚举 & 用于区分不同应用场景 \\
+		DefaultAssetSet & 默认资产集合 & 列表 & 包括道路、树木、座椅等基础资产 \\
+		DefaultParamSet & 默认参数集合 & 结构体 & 包括尺寸、密度、样式、颜色等参数 \\
+		Description & 模板说明 & 文本 & 说明模板的适用范围与特点 \\
+	\end{longtable}
+	
+	\paragraph{4. 资产数据结构 Asset}
+	资产数据结构用于描述系统中的二维图元或三维模型资源，是场景构建的重要基础。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{资产数据结构}\label{tab:asset_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		AssetID & 资产编号 & 字符串 & 资产唯一标识 \\
+		AssetName & 资产名称 & 字符串 & 资产显示名称 \\
+		AssetType & 资产类型 & 枚举 & 如道路、树木、座椅、建筑、水体、人物 \\
+		AssetFormat & 文件格式 & 字符串 & 如 obj、fbx、blend、png、jpg 等 \\
+		AssetPath & 资源路径 & 字符串 & 本地或远程资源位置 \\
+		ScaleParam & 缩放参数 & 数值/向量 & 控制资产尺寸 \\
+		MaterialInfo & 材质信息 & 结构体 & 描述颜色、纹理、反光等信息 \\
+		EnableFlag & 可用标识 & 布尔值 & 指示资产是否可被当前版本使用 \\
+	\end{longtable}
+	
+	\paragraph{5. 布局数据结构 Layout}
+	布局数据结构用于保存由点集、线集和区域构成的空间布局信息，是精细化建模的核心数据。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{布局数据结构}\label{tab:layout_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		LayoutID & 布局编号 & 字符串 & 布局对象唯一标识 \\
+		PointSet & 点集数据 & 集合 & 保存关键控制点坐标 \\
+		LineSet & 线集数据 & 集合 & 保存道路或边界线段 \\
+		RegionSet & 区域集合 & 集合 & 保存地块、功能区或景观区范围 \\
+		ConstraintSet & 约束集合 & 集合 & 保存间距、对齐、遮挡等约束条件 \\
+		LayoutVersion & 布局版本号 & 字符串/整数 & 便于修改追踪与回退 \\
+	\end{longtable}
+	
+	\paragraph{6. LLM意图数据结构 Intent}
+	LLM意图数据结构用于保存自然语言或多模态输入解析后的结构化结果，支持插件调用和自动建模。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{LLM意图数据结构}\label{tab:intent_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		IntentID & 意图编号 & 字符串 & 结构化结果唯一标识 \\
+		IntentType & 意图类型 & 枚举 & 如天气调整、资产替换、布局修改、仿真控制 \\
+		TextInput & 原始输入文本 & 文本 & 用户的自然语言描述 \\
+		ParameterSet & 参数集合 & 结构体 & 对应具体操作参数 \\
+		Priority & 优先级 & 数值 & 指示执行顺序 \\
+		RiskFlag & 风险标识 & 布尔值 & 指示是否存在高风险操作 \\
+		ConfidenceScore & 置信度 & 数值 & 表示解析可信程度 \\
+	\end{longtable}
+	
+	\paragraph{7. 仿真数据结构 SimulationParam}
+	仿真数据结构用于描述场景运行过程中的天气、交通、人群和生态动态参数。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{仿真数据结构}\label{tab:sim_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		SimID & 仿真编号 & 字符串 & 仿真任务唯一标识 \\
+		WeatherType & 天气类型 & 枚举 & 如晴天、阴天、雨天、雾天 \\
+		SkyState & 天色状态 & 枚举 & 如白天、傍晚、夜晚 \\
+		TrafficRule & 交通规则 & 结构体 & 控制车辆运行轨迹与速度 \\
+		CrowdRule & 人群规则 & 结构体 & 控制行人密度与移动方式 \\
+		EcologyRule & 生态规则 & 结构体 & 控制山峦、湖泊、船只等元素表现 \\
+		Duration & 持续时间 & 数值 & 仿真运行的时长 \\
+	\end{longtable}
+	
+	\paragraph{8. 日志数据结构 LogRecord}
+	日志数据结构用于保存系统关键操作记录，便于审计、排错和性能分析。
+	
+	\begin{longtable}{>{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{4.1cm}}
+		\caption{日志数据结构}\label{tab:log_struct}\\
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		字段名 & 含义 & 类型 & 说明 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		LogID & 日志编号 & 字符串 & 日志记录唯一标识 \\
+		OperatorID & 操作用户编号 & 字符串 & 关联执行人或系统进程 \\
+		ActionType & 操作类型 & 枚举 & 如登录、建模、替换、解析、导出 \\
+		ActionTime & 操作时间 & 时间戳 & 记录执行时间 \\
+		ActionResult & 操作结果 & 枚举/文本 & 如成功、失败、警告 \\
+		DetailInfo & 详细信息 & 文本 & 保存错误原因或补充说明 \\
+	\end{longtable}
+	
+	\subsubsection{数据字典说明}
+	
+	通过上述数据流条目、数据存储条目和数据结构条目，可以看出智能城市生成系统的数据组织具有较强的层次性。用户类数据主要服务于认证与权限控制，场景类数据主要服务于工程创建与版本管理，资产类数据主要服务于场景构建与替换，布局类数据主要服务于几何编辑与草图识别，意图类数据主要服务于智能交互与插件调用，仿真类数据主要服务于动态模拟，日志类数据主要服务于系统维护和追踪。
+	
+	数据字典不仅帮助明确系统中各类数据的来源与去向，也为后续的软件设计、数据库设计、接口设计和测试用例设计提供了依据。通过统一的数据定义，系统能够在多角色、多模块、多服务协同的情况下保持一致的数据理解，从而提高系统的可维护性和可扩展性。
+	
+	\section{功能需求}
+	\subsection{功能划分}
+	功能需求划分遵循“业务闭环完整、角色职责清晰、模块边界稳定、可验收可追踪”的原则。结合课程作业要求与“智能城市生成系统设计要求”，系统功能可分为主系统基础能力、插件生成能力、智能交互能力、仿真与验收能力、管理与审计能力五大类。其中，主系统负责角色登录、权限控制与任务分发；插件系统负责场景构建与编辑执行；智能交互负责自然语言及多模态输入解析；仿真与验收负责动态模拟和评审输出；管理与审计负责插件上架审核、权限分配和运行追踪。
+	
+	与一般建模系统相比，本系统在功能划分上强调“主系统和 Blender 插件协同”。主系统不是单纯门户，而是任务组织中心与权限控制中心；插件系统不是独立工具，而是由主系统调度并可回传结果的执行端。通过这种划分，系统能够同时满足建模效率、评审可控和运维可管三方面要求。
+	
+	\subsubsection{按业务链路划分}
+	\begin{longtable}{>{\raggedright\arraybackslash}p{1.4cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.0cm}}
+		\caption{功能模块划分表}\label{tab:function_partition}\\
+		\toprule
+		编号 & 功能模块 & 主要职责 & 主要输入 & 主要输出 & 主要角色 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		编号 & 功能模块 & 主要职责 & 主要输入 & 主要输出 & 主要角色 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		F1 & 认证与权限模块 &
+		完成多角色登录、身份校验、权限分配和接口鉴权。 &
+		账号密码、单点登录票据、角色策略 &
+		会话令牌、角色菜单、权限范围 &
+		全角色 \\
+		
+		F2 & 主系统插件入口模块 &
+		提供“进入 Blender”交互入口并完成任务派发。 &
+		场景任务请求、项目版本号 &
+		插件任务单、执行状态 &
+		建模师 \\
+		
+		F3 & 资产管理模块 &
+		支持 2D/3D 资产导入、检索、加载、替换与版本化。 &
+		资产文件、资产元数据 &
+		可用资产引用、替换结果 &
+		建模师、管理员 \\
+		
+		F4 & 模板联动模块 &
+		根据模板编号或模板描述自动配置树木/道路/座椅参数。 &
+		模板编号、联动规则、自然语言模板指令 &
+		参数集、模板配置结果 &
+		建模师 \\
+		
+		F5 & 布局控制模块 &
+		支持点集线集输入与草图提取，实现道路布局精确控制。 &
+		点坐标、连接线、草图图像 &
+		标准化布局数据、冲突修正结果 &
+		建模师 \\
+		
+		F6 & 生态元素生成模块 &
+		生成山峦、湖水、河流、动态船只等生态化元素。 &
+		地形约束、场景边界、生态参数 &
+		生态对象集合、冲突报告 &
+		建模师 \\
+		
+		F7 & LLM交互模块 &
+		解析自然语言/多模态输入并映射为插件调用链。 &
+		文本指令、图像提示、上下文参数 &
+		结构化意图、函数调用计划 &
+		建模师、分析师 \\
+		
+		F8 & 动态仿真模块 &
+		模拟车辆与人群行为并支持天气/天色动态调整。 &
+		交通规则、人群规则、环境参数 &
+		轨迹结果、统计指标、仿真日志 &
+		建模师、分析师 \\
+		
+		F9 & 验收评审模块 &
+		支持行业需求标准定义、验收规则配置、评审结论记录。 &
+		评审标准、测试场景、指标阈值 &
+		验收结论、问题清单 &
+		分析师 \\
+		
+		F10 & 管理与审计模块 &
+		支持插件上架审核、用户权限分配、日志查询与告警。 &
+		插件包、用户策略、审计筛选条件 &
+		审核结果、权限变更记录、告警信息 &
+		管理员 \\
+		
+		F11 & 结果导出模块 &
+		导出场景模型、渲染图片/视频、仿真报告与版本快照。 &
+		场景版本、仿真结果、导出格式 &
+		可交付文件、导出记录 &
+		建模师、分析师 \\
+		
+	\end{longtable}
+	
+	\subsubsection{按角色职责划分}
+	\begin{longtable}{>{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{5.3cm} >{\raggedright\arraybackslash}p{5.6cm}}
+		\caption{角色与功能职责对应表}\label{tab:role_function}\\
+		\toprule
+		角色 & 主要职责与可执行任务 & 权限边界与限制 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		角色 & 主要职责与可执行任务 & 权限边界与限制 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		场景建模师 &
+		通过主系统获取授权并进入 Blender 插件执行建模；进行模板选择、资产替换、布局控制、生态元素生成、自然语言编辑；发起仿真任务并导出可视化成果。 &
+		不可执行用户权限变更、插件上架审批和全局配置修改；仅能读写授权项目范围内的数据。 \\
+		
+		行业分析师 &
+		调研智慧城市业务需求；制定插件功能标准和验收指标；基于仿真结果开展验收评审；输出评审意见与改进建议。 &
+		默认不执行底层建模脚本与系统运维操作；对场景修改以“验收修订请求”形式发起，不直接覆盖建模版本。 \\
+		
+		系统管理员 &
+		负责主系统后台运维、插件上架审核、用户权限分配、服务配置管理、日志审计和异常处置。 &
+		可管理系统配置但不作为业务生产者生成验收结论；关键管理操作需要二次确认与审计留痕。 \\
+		
+	\end{longtable}
+	
+	\subsection{功能描述}
+	为保证需求可实现、可测试、可验收，本节采用“需求编号（FR）+ 功能说明 + 验收要点”的形式描述。所有功能均围绕课程作业要求展开，并将“智能城市生成系统设计要求.pdf”中的基础功能项和创新功能项逐条映射。
+	
+	\subsubsection{FR-01 多角色登录与权限分配}
+	系统应支持场景建模师、行业分析师、系统管理员三类角色登录。用户登录成功后，系统必须根据角色动态加载不同 UI 界面与可操作菜单，体现多角色权限区分，而非仅展示同构界面。
+	
+	权限控制必须在前后端同时生效。前端负责交互可见性控制，后端负责接口鉴权和数据域鉴权，任何越权访问请求必须被拒绝并记录审计日志，防止“前端隐藏但后端可调用”的安全漏洞。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 三类角色分别登录后，菜单和按钮存在差异且符合职责范围。
+		\item 未授权角色访问敏感接口时，系统返回权限错误并写入日志。
+		\item 管理员可查看权限变更历史与异常登录记录。
+	\end{itemize}
+	
+	\subsubsection{FR-02 主系统与 Blender 插件系统交互入口}
+	主系统应在合适页面（如建模工作台）提供“进入 Blender”交互入口，用于模拟并实现从主系统跳转到插件系统的流程。该入口应携带必要上下文（项目ID、版本号、用户身份）以支持任务连续性。
+	
+	入口触发后，系统需展示任务状态（排队、执行中、成功、失败）和错误提示，避免用户在插件执行阶段处于无反馈等待状态。失败任务需要支持重试与错误定位，确保业务流程可恢复。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 在主系统中可见明确的插件入口按钮并可触发任务。
+		\item 跳转后任务上下文完整，执行结果可回传主系统。
+		\item 执行失败可查看原因并发起重试。
+	\end{itemize}
+	
+	\subsubsection{FR-03 插件基线选型与扩展机制}
+	插件实现应在 Icity、City Generator、SCGS 三种候选基础中选取一种作为 base，并在其基础上完成功能扩展。需求阶段需明确 base 选型理由、可扩展点与兼容边界，避免后续实现中出现“功能可实现但插件架构不支持”的问题。
+	
+	系统应维护插件函数注册信息，包括函数名、参数签名、风险级别和版本号，供 LLM 调用映射与管理员上架审核使用。高风险函数（如全量覆盖、批量删除）必须受控执行。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 报告中明确记录所选 base 插件与扩展点。
+		\item 新增功能可通过注册函数清单进行调用与追踪。
+		\item 管理员可审核插件包后再上架发布。
+	\end{itemize}
+	
+	\subsubsection{FR-04 2D/3D 资产扩充与替换}
+	系统应至少支持新增一种 2D 资产（如道路纹理贴图）和一种新类型 3D 资产（如路灯），并能够在场景中正确加载与替换。替换操作后需生成新版本，保证历史版本可回滚。
+	
+	资产加载过程中，系统应校验格式兼容性、比例参数、坐标系、材质依赖等约束。对不符合规范的资产，系统需给出明确错误信息并阻断写入，避免场景结构损坏。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 成功导入并在场景中使用新增 2D 与 3D 资产。
+		\item 资产替换后场景正常渲染，无明显比例和坐标异常。
+		\item 版本记录完整，可回退到替换前状态。
+	\end{itemize}
+	
+	\subsubsection{FR-05 场景模板选择与自动联动配置}
+	插件界面应提供模板选择输入框，支持通过模板编号触发参数联动。例如输入模板 0 后，可自动配置树木类型、道路纹理类型和座椅类型。该功能用于降低重复配置成本，提高建模效率。
+	
+	联动规则应可维护并支持冲突提示。若模板参数与当前场景约束冲突（如道路宽度与建筑间距不匹配），系统应提示冲突点并提供修正建议，而不是直接执行不合法配置。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 输入模板编号后可一次性完成多资产联动配置。
+		\item 联动结果可预览、可二次调整、可保存。
+		\item 参数冲突时系统能识别并提示。
+	\end{itemize}
+	
+	\subsubsection{FR-06 手动点集与连接线布局控制}
+	系统应设计布局输入框，支持手动输入点集和连接线集，对道路网络与地块边界进行精确控制。该能力用于满足专业建模师对空间结构可控性的要求，是模板化之外的重要精细化手段。
+	
+	布局计算阶段需执行几何合法性校验，包括重复点、断裂线、自交线、越界点等，并在异常时提供定位信息。布局结果应可视化展示并支持局部微调，不应只返回抽象参数。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 可通过输入点线集构建基础道路布局。
+		\item 系统能检测常见几何错误并给出定位。
+		\item 生成结果可编辑并可保存版本。
+	\end{itemize}
+	
+	\subsubsection{FR-07 草图自动提取点线并修改布局}
+	系统应支持从图像草图中自动提取点集与道路线集信息，用于快速构建或修正布局图。该功能面向“先画后建”的工作方式，能够显著降低初始布局成本。
+	
+	草图识别结果应输出置信度并支持人工校正。对于低置信区域，系统需要提示用户进行手工确认，避免识别误差直接传播到后续场景生成与仿真分析环节。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 导入草图后可生成可编辑的点线集结果。
+		\item 识别结果带有置信度并支持人工修订。
+		\item 修订后可回写布局并触发重建。
+	\end{itemize}
+	
+	\subsubsection{FR-08 地形/河流/船只等生态化元素生成}
+	系统应支持在城市周边生成山峦、湖水、河流等生态元素，并在水体区域中加入动态船只。生态元素生成应与道路、建筑等人工设施保持空间约束一致，避免穿插冲突。
+	
+	生态参数应可调节，包括生成范围、密度、风格和动态强度等。系统在自动生成后应提供冲突报告与修复建议，保证生态美观性与工程可编辑性兼顾。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 可生成山体、水体与动态船只，且效果可视化。
+		\item 自动检测生态对象与人工对象的冲突。
+		\item 生态参数可调整并可复用为模板。
+	\end{itemize}
+	
+	\subsubsection{FR-09 自然语言交互编辑}
+	系统应在插件界面提供自然语言输入框，支持通过文本指令动态调整场景环境，例如“将天色变暗”“切换为雨天模式”。该功能用于降低参数操作门槛，提高交互效率。
+	
+	自然语言解析执行前必须进行参数合法性校验。对歧义指令应触发澄清或采用安全默认值，不允许直接执行高风险修改。执行后需向用户反馈实际生效参数，保障可解释性。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 文本指令可成功触发天气或天色调整。
+		\item 歧义输入会触发提示而非盲目执行。
+		\item 执行结果可追溯到具体指令与参数。
+	\end{itemize}
+	
+	\subsubsection{FR-10 创新功能：LLM 多模态指令解析与插件函数自动调用}
+	系统应支持文本、草图、模板参数等多模态输入联合解析，自动生成插件函数调用链并执行建模任务。该功能是本系统创新点，目标是把复杂多步操作压缩为“描述意图 -> 自动规划 -> 自动执行”流程。
+	
+	自动调用过程必须提供可解释执行清单，至少包含函数名称、关键参数、调用顺序、执行状态和错误信息。系统还需支持失败回滚与重试，避免一次错误导致场景不可恢复。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 多模态输入可转化为结构化任务链并执行。
+		\item 系统展示完整调用清单，支持人工复核。
+		\item 执行失败时支持回滚到稳定版本。
+	\end{itemize}
+	
+	\subsubsection{FR-11 交通与人群动态模拟（社会规则约束）}
+	系统应支持在场景中加入汽车与人群等动态元素，轨迹必须满足基本社会规则，如道路可达、避碰、区域限行、速度阈值等。该要求确保仿真结果具有分析意义，而非随机动画展示。
+	
+	仿真模块应支持多轮参数对比实验，输出轨迹和统计指标（如平均速度、拥堵密度、区域滞留时间）。当规则冲突导致仿真失败时，系统需返回冲突说明并给出修复建议。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 能成功加入车辆和人群并运行动态仿真。
+		\item 轨迹符合预设社会规则，异常可被检测。
+		\item 可导出对比指标用于行业评审。
+	\end{itemize}
+	
+	\subsubsection{FR-12 行业需求标准制定与验收评审}
+	系统应为行业分析师提供标准制定与验收评审能力，包括需求条目管理、验收指标定义、评审任务发起、评审结论登记。该模块用于体现分析师的核心职责，避免其角色被弱化为“只看结果”。
+	
+	验收评审应绑定具体场景版本和仿真配置，保证“结论可复现、问题可追踪、整改可闭环”。分析师输出的问题清单应能回流给建模师并形成下一轮改进任务。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 分析师可创建验收标准并关联场景版本。
+		\item 评审结论可记录并可导出。
+		\item 评审问题可形成闭环整改任务。
+	\end{itemize}
+	
+	\subsubsection{FR-13 系统管理：后台运维、插件审核、权限分配}
+	系统应支持管理员执行主系统后台运维，包括用户生命周期管理、权限策略配置、插件上架审核、LLM 服务参数配置和系统日志审计。该模块是系统稳定运行与安全可控的基础。
+	
+	关键管理动作必须满足“二次确认 + 审计留痕”。例如权限提升、插件发布、全局配置修改等操作应记录操作者、时间、前后值与影响范围，支持后续追责与回滚。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 管理员可完成插件审核上架与权限配置。
+		\item 关键操作具备审计记录且可检索。
+		\item 异常情况可触发告警并支持处理闭环。
+	\end{itemize}
+	
+	\subsubsection{FR-14 渲染展示与成果导出}
+	在完成场景构造后，系统应支持渲染图像或视频进行展示，并导出场景文件、参数文件与分析结果。该要求直接对应作业说明中的成果展示要求，是最终交付环节。
+	
+	导出结果应保留版本关联关系，能够追溯到具体输入、模板、插件调用与仿真配置，确保报告中每个结论都有数据来源与生成路径。
+	
+	\paragraph{验收要点}
+	\begin{itemize}
+		\item 可导出至少一种图像和一种视频/动画结果。
+		\item 导出文件能关联到场景版本与任务记录。
+		\item 导出失败时有明确错误提示与重试机制。
+	\end{itemize}
+	
+	\section{性能 / 非功能需求}
+	非功能需求用于定义系统“做得多好”，是功能可落地的质量边界。结合课程要求，本系统重点从准确性、及时性、可扩充性、易用性、易维护性、标准性、先进性、安全与可靠性等方面提出约束。由于本系统涉及 LLM 与插件协同，非功能需求还应覆盖可解释性与降级能力，避免出现“能运行但不可控”的情况。
+	
+	\subsection{准确性}
+	系统应保证布局、参数、规则和指令解析的结果准确可用。对于点线布局和草图识别，系统需将输入映射到统一坐标系并执行合法性校验，避免因坐标偏移、断线和重叠导致场景结构错误。
+	
+	自然语言与多模态解析的准确性应通过“语义解析 + 规则校验 + 用户确认”三层机制保障。对关键参数（天气、交通密度、资产类型）应输出解释信息，减少黑盒误执行风险。
+	
+	\subsection{及时性}
+	系统应保证交互与任务执行的可感知响应。常规界面操作需要快速反馈，长时任务（如渲染、批量仿真）需要显示进度与预计时间，避免用户长时间无反馈等待。
+	
+	对于外部依赖（LLM服务、插件执行端）引起的延迟，系统应提供超时处理、任务排队和重试机制。若外部服务不可用，应及时提示并触发降级路径，保证核心功能持续可用。
+	
+	\subsection{可扩充性}
+	系统应支持新增资产类型、新模板规则、新仿真规则以及新模型服务，不应因局部扩展破坏主流程。插件函数需要通过注册表管理，避免散落在业务代码中形成强耦合。
+	
+	数据模型需保留版本号与扩展字段，以支持后续新增功能。接口演进应采用向后兼容策略，保证已有任务与历史数据在系统升级后仍可访问和复现。
+	
+	\subsection{易用性}
+	系统界面应体现角色差异化。建模师界面强调生成和编辑效率，分析师界面强调标准管理与评审效率，管理员界面强调可视化运维和审计能力，从而减少无关信息干扰。
+	
+	关键流程应提供默认值、错误提示和回退路径。对于草图识别、自然语言控制等不确定性较高的功能，应显式展示置信度或解释信息，帮助用户快速判断结果是否可信。
+	
+	\subsection{易维护性}
+	系统需要建立统一的日志规范、错误码规范与接口文档规范。出现故障时，应能快速定位到责任模块（主系统、插件系统或模型服务），降低排障成本。
+	
+	运维层面应支持配置集中管理、版本化管理与环境隔离。关键配置修改必须可追溯、可回滚，避免因人工误操作导致系统不可用或行为不一致。
+	
+	\subsection{标准性}
+	系统开发与交付应遵循统一的编码规范、命名规范和数据格式规范。跨模块数据交换建议采用结构化 JSON 协议，并对关键字段（时间、坐标、单位）采用统一标准。
+	
+	系统还应满足权限最小化、日志审计、资产授权等基本工程规范，保证需求、设计、实现、测试和交付文档之间的一致性和可审查性。
+	
+	\subsection{先进性}
+	系统在传统插件建模流程基础上引入 LLM 多模态解析与自动函数链调用，体现智能化编排能力。该能力能够减少重复操作，提升复杂任务下的生成效率与交互自然度。
+	
+	先进性不等于全自动。系统在引入智能能力的同时保留人工确认、执行解释和版本回滚机制，以实现“智能增强 + 工程可控”的平衡。
+	
+	\subsection{安全性与可靠性}
+	系统应遵循最小权限原则和安全默认值原则。权限变更、插件上架、关键配置修改等高风险操作必须经过二次确认并保留完整审计记录。
+	
+	系统应具备异常恢复能力，包括任务重试、失败回滚、服务降级和告警通知。即使外部 LLM 或插件端短时不可用，系统也应保持基础建模与模板配置能力，避免业务完全中断。
+	
+	\subsection{非功能指标汇总}
+	\begin{longtable}{>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{5.5cm} >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{3.2cm}}
+		\caption{关键非功能指标表}\label{tab:nfr_metrics}\\
+		\toprule
+		属性 & 指标说明 & 目标值（建议） & 验证方式 \\
+		\midrule
+		\endfirsthead
+		\toprule
+		属性 & 指标说明 & 目标值（建议） & 验证方式 \\
+		\midrule
+		\endhead
+		\bottomrule
+		\endfoot
+		
+		准确性 &
+		模板联动参数正确率、布局几何校验通过率 &
+		$\geq 95\%$ &
+		抽样比对 + 回归测试 \\
+		
+		及时性 &
+		普通界面交互响应时间 &
+		$\leq 2$ 秒 &
+		前端性能监测 \\
+		
+		及时性 &
+		中等复杂度场景首次生成时间 &
+		2--5 分钟 &
+		任务日志统计 \\
+		
+		可用性 &
+		主系统可用率（教学演示期间） &
+		$\geq 99\%$ &
+		监控平台统计 \\
+		
+		可扩充性 &
+		新增资产/模板接入影响范围 &
+		不修改核心主流程 &
+		变更评审 + 集成测试 \\
+		
+		可维护性 &
+		关键故障定位时长（MTTD） &
+		$\leq 30$ 分钟 &
+		演练与故障复盘 \\
+		
+		可靠性 &
+		任务失败后可恢复率（重试或回滚） &
+		$\geq 98\%$ &
+		异常注入测试 \\
+		
+		安全性 &
+		高风险管理操作审计覆盖率 &
+		$100\%$ &
+		日志抽查 \\
+		
+	\end{longtable}
+	
+	\section{系统运行要求}
+	系统运行要求用于约束部署环境、软硬件条件和运维边界，保证需求能够在真实课程环境中落地。考虑到本系统包含 Web 主系统、Blender 插件执行端和 LLM 服务调用链，运行要求需要覆盖图形计算、网络通信、服务协同和故障恢复四类条件。
+	
+	\subsection{硬件配置要求}
+	为保证中等规模城市场景的生成、预览与渲染效率，推荐执行端具备多核 CPU、充足内存与独立显卡。若使用单机演示环境，建议至少配置 16GB 内存与支持 3D 渲染的 GPU；若采用服务器 + 客户端分离部署，服务器侧建议 8 核以上 CPU、32GB 以上内存，并根据渲染/推理任务负载配置 GPU。
+	
+	客户端侧要求能稳定运行现代浏览器并支持基础图形显示。场景建模师使用终端建议配置 SSD 存储和中高端显卡，以提升资产加载和场景预览流畅度；行业分析师终端重点保证报表查看与仿真回放体验，硬件要求可适当低于建模终端。
+	
+	\subsection{软件配置要求}
+	主系统可部署在 Windows 或 Linux 稳定版本环境，需包含 Web 服务、任务调度、数据库和日志服务等基础组件。Blender 版本应与插件版本严格匹配，建议固定主版本并进行回归验证，防止因版本漂移导致脚本不兼容。
+	
+	系统需具备 Python 运行环境用于插件脚本执行与任务编排，具备可调用的 LLM API 或私有部署模型服务。数据存储建议采用关系型数据库保存核心业务数据，并结合对象存储管理大体积资源（模型、纹理、渲染视频）。
+	
+	\subsection{网络与运行环境要求}
+	主系统、插件执行端与 LLM 服务之间应保持稳定网络连接，接口调用需配置超时、重试、熔断和限流策略，避免单点故障级联影响。对于跨网段或跨机器部署，需配置统一认证机制和访问白名单。
+	
+	运行环境建议区分开发、测试、演示三个层级，使用独立配置文件与环境变量管理密钥、地址和资源路径。即使课程作业采用单环境，也应保留最基本的配置隔离能力，防止调试数据污染正式演示结果。
+	
+	\subsection{运行稳定性要求}
+	系统启动前应执行健康检查，包括数据库连通性、插件注册状态、LLM 服务可用性、资产索引完整性。运行过程中应持续采集核心指标（任务成功率、平均生成时长、接口错误率、资源占用率）并提供可视化监控。
+	
+	系统需支持定期备份与恢复，包括项目版本数据、仿真结果和审计日志。发生异常时，管理员应能基于日志快速定位问题，执行重试、回滚或降级操作，保证教学演示和作业交付的连续性。若外部 LLM 服务不可用，系统应退化到“模板 + 手动参数”模式，确保核心建模功能不间断。
+	
+	
+\end{document}

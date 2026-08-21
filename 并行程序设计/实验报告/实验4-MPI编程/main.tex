@@ -1,0 +1,753 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献} 
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+		\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+		\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+		\textbf{\Huge\textbf{\kaishu{MPI编程}}}
+
+		\vspace{\fill}
+    
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+    
+    \vfill
+    {\Large \today}
+    \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}  
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+%--------------------------目标--------------------------------
+\section{实验目标}
+本实验旨在基于快速数论变换（NTT）多项式乘法的基础实现，分别引入MPI多进程并行、MPI+Pthread多级并行、Barrett模约简优化等多种优化策略，通过对比朴素的多模数合并NTT（NTT\_CRT\_4mod）实现，评估各优化策略在不同规模多项式乘法任务下的性能提升效果。具体目标包括：
+\begin{enumerate}[1.]
+	\item 理解并实现基于MPI的常规并行NTT（NTT\_mpi），掌握进程间数据分发与收集的基本流程。
+	\item 在每个MPI进程内部引入Pthread多线程，实现2 \(\times\) 2级并行（NTT\_mpi\_pthread），探索进程与线程混合并行的协同效应。
+	\item 应用Barrett模约简技术，对NTT核心运算中的乘法与幂运算进行加速，构建NTT\_mpi\_barrett，以及进一步结合Pthread多级并行的NTT\_mpi\_pthread\_barrett。
+	\item 对比分析各方案在输入规模为 \(n=4\) 与 \(n=131072\)、不同模数下的运行时长与加速比，并与基础的NTT\_CRT\_4mod结果进行对比，揭示各优化方案的适用场景与性能瓶颈。
+\end{enumerate}
+%-------------------------配置----------------------------------
+\section{实验平台配置}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		平台$\backslash$ 处理器& 操作系统& 编译器\\
+		\midrule
+		ARM/华为鲲鹏处理器& OpenEuler& mpic++\\
+		\bottomrule
+	\end{tabular}
+	\caption{实验环境}
+	\label{table:t1}
+\end{table}
+%-------------------------实验内容----------------------------------
+\section{MPI常规优化}
+\subsection{设计思想}
+MPI 常规优化策略基于“每个进程处理一个模数”的思路，将四路模数分配给最多四个 MPI 进程并行计算。具体流程如下：
+\begin{enumerate}
+	\item \textbf{模块划分}：定义四个素数模数 \texttt{p1, p2, p3, p4}，将它们存入数组 \texttt{mods[]}。
+	\item \textbf{数据分发}：每个 rank 小于 4 的进程单独加载输入多项式数据，将其取模到对应模数空间。
+	\item \textbf{NTT 计算}：在本地进程中完成 NTT 正变换、点值乘、逆变换及归一化，得到当前模下的乘积结果。
+	\item \textbf{结果汇聚}：使用 \texttt{MPI\_Gather} 将各进程的局部结果收集到 rank 0 进程，并在 rank 0 上通过 CRT 完成四路合并。
+	\item \textbf{广播输出}：最终结果通过 \texttt{MPI\_Bcast} 发送给所有进程，保证一致性。
+\end{enumerate}
+
+\subsection{关键代码实现}
+\begin{lstlisting}[language=C++,caption={MPI常规优化核心函数 \texttt{NTT\_mpi}}]
+	void NTT_mpi(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+		int rank, size;
+		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+		MPI_Comm_size(MPI_COMM_WORLD, &size);
+		
+		static const int p1 = 998244353, p2 = 1004535809,
+		p3 = 469762049, p4 = 167772161;
+		const int mods[] = {p1, p2, p3, p4};
+		
+		// 每个进程处理一个模数
+		if (rank < 4) {
+			int curr_mod = mods[rank];
+			// 转换输入到当前模数
+			int *local_a = new int[n];
+			int *local_b = new int[n];
+			for (int i = 0; i < n; i++) {
+				local_a[i] = (a[i] % curr_mod + curr_mod) % curr_mod;
+				local_b[i] = (b[i] % curr_mod + curr_mod) % curr_mod;
+			}
+			
+			// 执行NTT乘法
+			int *local_res = new int[2*n];
+			NTT_Iteration_multiply(local_a, local_b, local_res, n, curr_mod);
+			
+			// 收集结果
+			int *all_results = nullptr;
+			if (rank == 0) all_results = new int[4 * (2*n)];
+			MPI_Gather(local_res, 2*n, MPI_INT, all_results, 2*n, MPI_INT, 0, MPI_COMM_WORLD);
+			
+			// 主进程执行CRT合并
+			if (rank == 0) {
+				for (int i = 0; i < 2*n-1; i++) {
+					ab[i] = crt4(all_results[i], all_results[i + 2*n],
+					all_results[i + 4*n], all_results[i + 6*n],
+					p1, p2, p3, p4, LLp);
+				}
+				delete[] all_results;
+			}
+			
+			delete[] local_a; delete[] local_b; delete[] local_res;
+		}
+		
+		// 广播最终结果
+		MPI_Bcast(ab, 2*n-1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+	}
+\end{lstlisting}
+实现特点：
+1. 使用MPI\_Comm\_rank和MPI\_Comm\_size获取进程信息
+
+2. 每个进程独立处理模转换和NTT计算
+
+3. MPI\_Gather收集中间结果，仅在主进程执行CRT合并
+
+4. MPI\_Bcast保证所有进程获得最终结果
+
+\section{多进程多线程多级并行（2×2）}
+\subsection{设计思想}
+在 MPI 常规优化的基础上，进程内再引入多线程并行，每个进程处理若干模数，每个模数分配一路线程完成 NTT 计算。总体流程：
+\begin{enumerate}
+	\item \textbf{模数划分}：根据进程数动态计算每个进程负责的模数列表（最多两模/进程）。
+	\item \textbf{线程调度}：针对每个模数，创建独立线程执行 NTT 正变换、点值乘、逆变换。
+	\item \textbf{结果收集}：采用 \texttt{MPI\_Gatherv} 收集不定长度的线程结果到 rank 0，并执行 CRT 合并。
+	\item \textbf{广播同步}：通过 \texttt{MPI\_Bcast} 分发最终合并后的多项式结果。
+\end{enumerate}
+
+\subsection{关键代码实现}
+\begin{lstlisting}[language=C++,caption={多级并行核心—\texttt{NTT\_mpi\_pthread}}]
+	struct MPINTTTask {
+		const LL* a;      // 原始输入a
+		const LL* b;      // 原始输入b
+		int    n;         // 多项式长度
+		std::vector<int> mods;  // 该线程负责的模数列表
+		std::vector<int*> results;  // 对应模数的结果数组
+	};
+	
+	void* thread_mpi_ntt_mul(void* arg) {
+		MPINTTTask* task = (MPINTTTask*)arg;
+		int n = task->n;
+		
+		for(size_t mid = 0; mid < task->mods.size(); mid++) {
+			int curr_mod = task->mods[mid];
+			int N = 2 * n - 1, len = 1;
+			while(len < N) len <<= 1;
+			int ni = qpow(len, curr_mod - 2, curr_mod);
+			
+			// 分配临时数组
+			int *A = new int[len]();
+			int *B = new int[len]();
+			
+			// 转换输入到当前模数
+			for(int i = 0; i < n; i++) {
+				A[i] = (int)((task->a[i] % curr_mod + curr_mod) % curr_mod);
+				B[i] = (int)((task->b[i] % curr_mod + curr_mod) % curr_mod);
+			}
+			
+			// NTT变换及点值乘法
+			NTT_Iteration(A, len, 1, g, curr_mod);
+			NTT_Iteration(B, len, 1, g, curr_mod);
+			for(int i = 0; i < len; i++) 
+			A[i] = (int)((1LL * A[i] * B[i]) % curr_mod);
+			NTT_Iteration(A, len, -1, g, curr_mod);
+			
+			// 保存结果
+			for(int i = 0; i < N; i++) {
+				task->results[mid][i] = (int)((1LL * A[i] * ni) % curr_mod);
+			}
+			
+			delete[] A;
+			delete[] B;
+		}
+		return nullptr;
+	}
+	
+	void NTT_mpi_pthread(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+		int rank, size;
+		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+		MPI_Comm_size(MPI_COMM_WORLD, &size);
+		
+		static const int p1 = 998244353, p2 = 1004535809,
+		p3 = 469762049, p4 = 167772161;
+		const int mods[] = {p1, p2, p3, p4};
+		const int num_mods = 4;
+		
+		// 每个进程处理的模数数量
+		int mods_per_process = (num_mods + size - 1) / size;
+		
+		// 计算当前进程负责的模数范围
+		int start_mod = rank * mods_per_process;
+		int end_mod = std::min(start_mod + mods_per_process, num_mods);
+		int local_mod_count = end_mod - start_mod;
+		
+		if (local_mod_count > 0) {
+			// 设置线程数（每个模数一个线程）
+			const int num_threads = local_mod_count;
+			std::vector<pthread_t> threads(num_threads);
+			std::vector<MPINTTTask> tasks(num_threads);
+			
+			// 为每个模数分配结果数组
+			std::vector<int*> local_results(local_mod_count);
+			for(int i = 0; i < local_mod_count; i++) {
+				local_results[i] = new int[2*n];
+			}
+			
+			// 创建线程任务
+			MPINTTTask task;
+			task.a = a;
+			task.b = b;
+			task.n = n;
+			
+			// 分配模数给当前进程的线程
+			for(int i = 0; i < local_mod_count; i++) {
+				task.mods.push_back(mods[start_mod + i]);
+				task.results.push_back(local_results[i]);
+			}
+			
+			// 创建线程执行NTT计算
+			pthread_t tid;
+			pthread_create(&tid, nullptr, thread_mpi_ntt_mul, &task);
+			pthread_join(tid, nullptr);
+			
+			// 收集所有进程的结果
+			std::vector<int> recv_counts(size);
+			std::vector<int> displs(size);
+			
+			// 计算每个进程需要发送的数据量
+			for(int i = 0; i < size; i++) {
+				int process_start = i * mods_per_process;
+				int process_end = std::min(process_start + mods_per_process, num_mods);
+				recv_counts[i] = (process_end - process_start) * (2*n);
+				displs[i] = process_start * (2*n);
+			}
+			
+			// 分配接收缓冲区
+			int* all_results = nullptr;
+			if(rank == 0) {
+				all_results = new int[num_mods * 2*n];
+			}
+			
+			// 收集所有结果到进程0
+			std::vector<int> send_buffer;
+			for(int i = 0; i < local_mod_count; i++) {
+				for(int j = 0; j < 2*n; j++) {
+					send_buffer.push_back(local_results[i][j]);
+				}
+			}
+			
+			MPI_Gatherv(send_buffer.data(), send_buffer.size(), MPI_INT,
+			all_results, recv_counts.data(), displs.data(), MPI_INT,
+			0, MPI_COMM_WORLD);
+			
+			// 进程0执行最终的CRT合并
+			if(rank == 0) {
+				for(int i = 0; i < 2*n-1; i++) {
+					ab[i] = crt4(all_results[i],
+					all_results[i + 2*n],
+					all_results[i + 4*n],
+					all_results[i + 6*n],
+					p1, p2, p3, p4, LLp);
+				}
+				delete[] all_results;
+			}
+			
+			// 广播最终结果给所有进程
+			MPI_Bcast(ab, 2*n-1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+			
+			// 清理内存
+			for(int i = 0; i < local_mod_count; i++) {
+				delete[] local_results[i];
+			}
+		}
+	}
+\end{lstlisting}
+实现特点：
+1. 使用MPI+pthread混合编程模型
+
+2. 每个MPI进程内部创建线程处理分配到的模数计算
+
+3. 动态任务分配确保负载均衡
+
+4. 保持与MPI常规优化相同的结果收集和广播机制
+
+\section{Barrett规约优化}
+\subsection{Barrett规约设计}
+Barrett规约是一种通过预计算来加速模运算的技术，其核心思想是用乘法和移位代替耗时的除法运算。
+
+1. \textbf{数学原理}：对于模数$p$，预计算$\mu = ⌊2^{2k}/p⌋$，其中$k$是$p$的二进制位数。对于任意$x< p^2$，有：
+$$x \mod p = x - ⌊(x·μ)/2^{2k}⌋·p$$
+
+2. \textbf{实现优化}：
+- 使用128位整数计算提高精度
+
+- 通过移位操作替代除法
+
+- 一次校正步骤确保结果准确
+
+3. \textbf{核心设计}：
+\begin{lstlisting}[language=C++]
+	struct Barrett {
+		unsigned long long mod, im;
+		
+		// 初始化Barrett，计算-⌊2^64/mod⌋
+		Barrett(unsigned long long _mod) : mod(_mod) {
+			im = -1ULL / mod + 1;
+		}
+		
+		// Barrett模乘优化
+		unsigned long long multiply(unsigned long long a, unsigned long long b) const {
+			// 计算 a * b mod m
+			unsigned long long z = a * b;
+			unsigned long long x = (unsigned __int128)z * im >> 64;
+			unsigned long long v = z - x * mod;
+			if (v >= mod) v += mod;
+			return v;
+		}
+		
+		// 快速幂的Barrett优化版本
+		unsigned long long power(unsigned long long base, unsigned long long exp) const {
+			unsigned long long result = 1;
+			base %= mod;
+			while (exp > 0) {
+				if (exp & 1) 
+				result = multiply(result, base);
+				base = multiply(base, base);
+				exp >>= 1;
+			}
+			return result;
+		}
+	};
+	
+	void NTT_Iteration_Barrett(int *a, int len, int op, int g, const Barrett& barrett) {
+		// 位逆序置换
+		for (int i = 1, j = 0; i < len - 1; i++) {
+			for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+			if (i < j) std::swap(a[i], a[j]);
+		}
+		
+		// 蝴蝶操作
+		for (int h = 2; h <= len; h <<= 1) {
+			// 计算原根
+			unsigned long long wn = barrett.power(
+			op == 1 ? g : barrett.power(g, barrett.mod - 2), 
+			(barrett.mod - 1) / h
+			);
+			
+			// 对每个长度为h的段进行变换
+			for (int j = 0; j < len; j += h) {
+				unsigned long long w = 1;
+				for (int k = j; k < j + h/2; k++) {
+					unsigned long long t = barrett.multiply(a[k + h/2], w);
+					a[k + h/2] = a[k] - t;
+					if (a[k + h/2] < 0) a[k + h/2] += barrett.mod;
+					a[k] = a[k] + t;
+					if (a[k] >= barrett.mod) a[k] -= barrett.mod;
+					w = barrett.multiply(w, wn);
+				}
+			}
+		}
+	}
+\end{lstlisting}
+
+\subsection{Barrett规约+MPI常规优化}
+将Barrett规约应用于MPI常规优化方案：
+
+\begin{lstlisting}[language=C++]
+	void NTT_mpi_barrett(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+		int rank, size;
+		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+		MPI_Comm_size(MPI_COMM_WORLD, &size);
+		
+		static const int p1 = 998244353, p2 = 1004535809,
+		p3 = 469762049, p4 = 167772161;
+		const int mods[] = {p1, p2, p3, p4};
+		
+		// 初始化Barrett实例
+		Barrett barrett_mods[] = {
+			Barrett(p1), Barrett(p2),
+			Barrett(p3), Barrett(p4)
+		};
+		
+		// 每个进程处理一个模数
+		if (rank < 4) {
+			int *local_a = new int[n];
+			int *local_b = new int[n];
+			int *local_res = new int[2*n];
+			int curr_mod = mods[rank];
+			const Barrett& curr_barrett = barrett_mods[rank];
+			
+			// 转换输入到当前模数
+			for (int i = 0; i < n; i++) {
+				local_a[i] = a[i] % curr_mod;
+				local_b[i] = b[i] % curr_mod;
+			}
+			
+			// 使用Barrett优化的NTT乘法
+			int N = 2 * n - 1, len = 1;
+			while (len < N) len <<= 1;
+			unsigned long long ni = curr_barrett.power(len, curr_mod - 2);
+			
+			int *A = new int[len]();
+			int *B = new int[len]();
+			
+			for (int i = 0; i < n; i++) {
+				A[i] = local_a[i];
+				B[i] = local_b[i];
+			}
+			
+			NTT_Iteration_Barrett(A, len, 1, g, curr_barrett);
+			NTT_Iteration_Barrett(B, len, 1, g, curr_barrett);
+			
+			for (int i = 0; i < len; i++) 
+			A[i] = curr_barrett.multiply(A[i], B[i]);
+			
+			NTT_Iteration_Barrett(A, len, -1, g, curr_barrett);
+			
+			for (int i = 0; i < N; i++)
+			local_res[i] = curr_barrett.multiply(A[i], ni);
+			
+			// 收集所有结果
+			int *all_results = nullptr;
+			if (rank == 0)
+			all_results = new int[4 * (2*n)];
+			
+			MPI_Gather(local_res, 2*n, MPI_INT,
+			all_results, 2*n, MPI_INT,
+			0, MPI_COMM_WORLD);
+			
+			// 进程0执行CRT合并
+			if (rank == 0) {
+				for (int i = 0; i < 2*n-1; i++) {
+					ab[i] = crt4(all_results[i], 
+					all_results[i + 2*n],
+					all_results[i + 4*n],
+					all_results[i + 6*n],
+					p1, p2, p3, p4, LLp);
+				}
+				delete[] all_results;
+			}
+			
+			delete[] A;
+			delete[] B;
+			delete[] local_a;
+			delete[] local_b;
+			delete[] local_res;
+		}
+		
+		// 广播最终结果
+		MPI_Bcast(ab, 2*n-1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+	}
+\end{lstlisting}
+
+\subsection{Barrett规约+线程进程多级并行}
+将Barrett规约与2×2多级并行方案结合：
+
+\begin{lstlisting}[language=C++]
+	struct MPINTTBarrettTask {
+		const LL* a;
+		const LL* b;
+		int n;
+		std::vector<int> mods;
+		std::vector<Barrett> barrett_mods;
+		std::vector<int*> results;
+	};
+	void* thread_mpi_ntt_barrett_mul(void* arg) {
+		MPINTTBarrettTask* task = (MPINTTBarrettTask*)arg;
+		int n = task->n;
+		
+		for(size_t mid = 0; mid < task->mods.size(); mid++) {
+			int curr_mod = task->mods[mid];
+			const Barrett& curr_barrett = task->barrett_mods[mid];
+			
+			int N = 2 * n - 1, len = 1;
+			while(len < N) len <<= 1;
+			unsigned long long ni = curr_barrett.power(len, curr_mod - 2);
+			
+			int *A = new int[len]();
+			int *B = new int[len]();
+			
+			for(int i = 0; i < n; i++) {
+				A[i] = task->a[i] % curr_mod;
+				B[i] = task->b[i] % curr_mod;
+			}
+			
+			NTT_Iteration_Barrett(A, len, 1, g, curr_barrett);
+			NTT_Iteration_Barrett(B, len, 1, g, curr_barrett);
+			
+			for(int i = 0; i < len; i++) 
+			A[i] = curr_barrett.multiply(A[i], B[i]);
+			
+			NTT_Iteration_Barrett(A, len, -1, g, curr_barrett);
+			
+			for(int i = 0; i < N; i++) 
+			task->results[mid][i] = curr_barrett.multiply(A[i], ni);
+			
+			delete[] A;
+			delete[] B;
+		}
+		return nullptr;
+	}
+	void NTT_mpi_pthread_barrett(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+		int rank, size;
+		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+		MPI_Comm_size(MPI_COMM_WORLD, &size);
+		
+		static const int p1 = 998244353, p2 = 1004535809,
+		p3 = 469762049, p4 = 167772161;
+		const int mods[] = {p1, p2, p3, p4};
+		const int num_mods = 4;
+		
+		// 初始化所有Barrett实例
+		std::vector<Barrett> barrett_mods;
+		for(int i = 0; i < num_mods; i++) {
+			barrett_mods.emplace_back(mods[i]);
+		}
+		
+		int mods_per_process = (num_mods + size - 1) / size;
+		int start_mod = rank * mods_per_process;
+		int end_mod = std::min(start_mod + mods_per_process, num_mods);
+		int local_mod_count = end_mod - start_mod;
+		
+		if (local_mod_count > 0) {
+			std::vector<int*> local_results(local_mod_count);
+			for(int i = 0; i < local_mod_count; i++) {
+				local_results[i] = new int[2*n];
+			}
+			
+			// 创建任务
+			MPINTTBarrettTask task;
+			task.a = a;
+			task.b = b;
+			task.n = n;
+			
+			// 分配模数和对应的Barrett实例
+			for(int i = 0; i < local_mod_count; i++) {
+				task.mods.push_back(mods[start_mod + i]);
+				task.barrett_mods.push_back(barrett_mods[start_mod + i]);
+				task.results.push_back(local_results[i]);
+			}
+			
+			// 创建线程执行计算
+			pthread_t tid;
+			pthread_create(&tid, nullptr, thread_mpi_ntt_barrett_mul, &task);
+			pthread_join(tid, nullptr);
+			
+			// 收集结果
+			std::vector<int> recv_counts(size);
+			std::vector<int> displs(size);
+			
+			for(int i = 0; i < size; i++) {
+				int process_start = i * mods_per_process;
+				int process_end = std::min(process_start + mods_per_process, num_mods);
+				recv_counts[i] = (process_end - process_start) * (2*n);
+				displs[i] = process_start * (2*n);
+			}
+			
+			int* all_results = nullptr;
+			if(rank == 0) {
+				all_results = new int[num_mods * 2*n];
+			}
+			
+			std::vector<int> send_buffer;
+			for(int i = 0; i < local_mod_count; i++) {
+				for(int j = 0; j < 2*n; j++) {
+					send_buffer.push_back(local_results[i][j]);
+				}
+			}
+			
+			MPI_Gatherv(send_buffer.data(), send_buffer.size(), MPI_INT,
+			all_results, recv_counts.data(), displs.data(), MPI_INT,
+			0, MPI_COMM_WORLD);
+			
+			// CRT合并
+			if(rank == 0) {
+				for(int i = 0; i < 2*n-1; i++) {
+					ab[i] = crt4(all_results[i],
+					all_results[i + 2*n],
+					all_results[i + 4*n],
+					all_results[i + 6*n],
+					p1, p2, p3, p4, LLp);
+				}
+				delete[] all_results;
+			}
+			
+			MPI_Bcast(ab, 2*n-1, MPI_LONG_LONG, 0, MPI_COMM_WORLD);
+			
+			for(int i = 0; i < local_mod_count; i++) {
+				delete[] local_results[i];
+			}
+		}
+	}
+\end{lstlisting}
+%-------------------------结果分析----------------------------------
+\section{测试结果与分析}
+\subsection{实验结果表格}
+\begin{table}[H]
+	\centering
+	\caption{不同方法在 \(n=131072\)、各模数下的平均延迟与加速比}
+	\begin{tabularx}{\textwidth}{@{}lXXXX@{}}
+		\toprule
+		方法 & \(7.3\times10^6\) & \(1.05\times10^8\) & \(4.7\times10^8\) & \(1.3\times10^{15}\) \\
+		\midrule
+		NTT\_CRT\_4mod & 643.35 & 644.46 & 372.95 & 648.74 \\
+		NTT\_mpi & 377.44 (1.71×) & 376.44 (1.71×) & 100.94 (3.70×) & 380.89 (1.70×) \\
+		NTT\_mpi\_pthread & 379.75 (1.69×) & 378.41 (1.70×) & 101.65 (3.67×) & 381.58 (1.70×) \\
+		NTT\_mpi\_barrett & 343.90 (1.87×) & 333.71 (1.93×) & 57.81 (6.45×) & 338.28 (1.92×) \\
+		NTT\_mpi\_pthread\_barrett & 342.11 (1.88×) & 339.25 (1.90×) & 59.81 (6.23×) & 343.11 (1.89×) \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+\subsection{结果分析}
+1. \textbf{整体加速效果}：所有优化方案相比朴素多模数NTT都有显著加速，最大加速比达到6.45倍(MPI+Barrett方案在p3模数下)。
+
+2. \textbf{MPI优化效果}：MPI常规优化相比朴素方案在大规模数据(n=131072)上平均加速1.7倍，证明多进程并行化的有效性。
+
+3. \textbf{多级并行分析}：2×2多级并行与纯MPI方案性能接近，说明在核心数相同的情况下，混合并行优势不明显，但为更大规模并行提供了扩展性。
+
+4. \textbf{Barrett优化效果}：Barrett规约带来显著性能提升，特别是在大模数运算中(p3模数下MPI+Barrett比纯MPI快43\%)，验证了Barrett规约在模运算中的优势。
+
+5. \textbf{小规模数据}：在小规模(n=4)时，并行方案因通信开销表现不如朴素方案，这是预期的行为。
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			title={各方案性能对比(n=131072,p3)},
+			ybar,
+			bar width=0.5cm,
+			width=12cm,
+			height=6cm,
+			symbolic x coords={朴素,MPI,2×2,MPI+B,2×2+B},
+			xtick=data,
+			ylabel={时间(us)},
+			nodes near coords,
+			nodes near coords align={vertical},
+			]
+			\addplot coordinates {(朴素,372.949) (MPI,100.943) (2×2,101.650) (MPI+B,57.814) (2×2+B,59.813)};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{各优化方案在n=131072,p=469762049下的性能对比}
+\end{figure}
+%-------------------------实验总结----------------------------------
+\section{结论}
+通过本实验，我们实现了多种MPI并行优化的NTT多项式乘法算法，得出以下结论：
+
+1. MPI并行化能有效加速NTT计算，在本次实验中带来稳定的1.7×加速。
+
+2. 多级并行(MPI+Pthread)在当前测试规模下优势不明显，但在更大规模或更多计算核心的场景下有扩展潜力。
+
+3. Barrett规约与并行计算的结合能带来显著的额外性能提升，特别是在大模数运算场景。
+
+4. 最优方案(MPI+Barrett)相比朴素多模数NTT实现了最高6.45倍的加速，验证了并行计算与算法优化结合的价值。
+
+
+\section{链接}
+\textbf{Gitee链接}  \href{https://gitee.com/sky_whale/parallel-programming-with-nku}{Gitee}
+
+\end{document}

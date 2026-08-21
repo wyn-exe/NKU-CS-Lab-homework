@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1747930131 source:d:\tdm-gcc\project\sum_2\main.cpp
+	<iostream>
+	<windows.h>
+	<cmath>
+	<cstring>
+

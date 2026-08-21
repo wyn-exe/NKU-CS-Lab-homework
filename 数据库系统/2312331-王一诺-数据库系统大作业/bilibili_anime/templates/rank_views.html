@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}播放量 Top10{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-4">播放量 Top10</h2>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr><th>排名</th><th>番剧</th><th>播放量</th></tr>
+      </thead>
+      <tbody>
+        {% for a in top %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><a href="{{ url_for('detail', anime_id=a.anime_id) }}">{{ a.title }}</a></td>
+          <td>{{ a.views }}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

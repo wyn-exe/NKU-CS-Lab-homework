@@ -1,0 +1,21 @@
+\babel@toc {UKenglish}{}\relax 
+\contentsline {section}{\numberline {1}实验要求}{2}{section.1}%
+\contentsline {section}{\numberline {2}实验原理}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}零知识证明基本思想}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Schnorr 协议与 Fiat-Shamir 变换}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}将三次方程转化为曲线点关系}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}实现方案说明}{3}{subsection.2.4}%
+\contentsline {section}{\numberline {3}实验过程}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}导入库并设置公开参数}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}实现椭圆曲线基础运算}{3}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}实现哈希编码和 Fiat-Shamir 挑战}{5}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}实现 Chaum-Pedersen 子证明}{6}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}实现 Alice 的证明生成算法}{7}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}实现验证者的证明验证算法}{8}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}运行正确样例}{9}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}篡改测试与错误见证测试}{10}{subsection.3.8}%
+\contentsline {section}{\numberline {4}实验结果分析}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}正确性分析}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}可靠性分析}{12}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}零知识性分析}{12}{subsection.4.3}%
+\contentsline {section}{\numberline {5}结论与实践心得}{12}{section.5}%

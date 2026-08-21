@@ -1,0 +1,5 @@
+D:/web/lab2/build/CMakeFiles/rudp.dir
+D:/web/lab2/build/CMakeFiles/rudp_sender.dir
+D:/web/lab2/build/CMakeFiles/rudp_receiver.dir
+D:/web/lab2/build/CMakeFiles/ALL_BUILD.dir
+D:/web/lab2/build/CMakeFiles/ZERO_CHECK.dir

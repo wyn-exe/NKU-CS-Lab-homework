@@ -1,0 +1,10 @@
+^D:\WEB\BUILD\CMAKEFILES\2FD9D3400EDA97A49DB3C6475787CFF8\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/web -BD:/web/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/web/build/NetworkLabs.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

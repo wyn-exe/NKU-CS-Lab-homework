@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#g1)"/>
+  <circle cx="70" cy="60" r="40" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="250" cy="150" r="60" fill="rgba(255,255,255,0.25)"/>
+  <text x="20" y="30" font-size="18" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif">HTTP Lab 3 - 1</text>
+</svg>

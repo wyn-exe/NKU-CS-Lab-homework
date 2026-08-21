@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}审计日志{% endblock %}
+{% block content %}
+<h2 class="mb-4">操作审计日志</h2>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th><th>表名</th><th>操作</th><th>记录ID</th>
+        <th>旧数据</th><th>新数据</th><th>时间</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log.audit_id }}</td>
+        <td>{{ log.table_name }}</td>
+        <td>{{ log.operation }}</td>
+        <td>{{ log.record_id }}</td>
+        <td><pre>{{ log.old_data or '' }}</pre></td>
+        <td><pre>{{ log.new_data or '' }}</pre></td>
+        <td>{{ log.changed_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

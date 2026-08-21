@@ -1,0 +1,22 @@
+\babel@toc {UKenglish}{}\relax 
+\contentsline {section}{\numberline {1}实验要求}{2}{section.1}%
+\contentsline {section}{\numberline {2}指令相关与流水线冲突}{2}{section.2}%
+\contentsline {section}{\numberline {3}阻塞译码级}{2}{section.3}%
+\contentsline {section}{\numberline {4}旁路前递}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}前递路径设计}{3}{subsection.4.1}%
+\contentsline {paragraph}{执行级}{4}{section*.3}%
+\contentsline {paragraph}{访存级}{5}{section*.4}%
+\contentsline {paragraph}{写回级}{5}{section*.5}%
+\contentsline {paragraph}{顶层}{5}{section*.6}%
+\contentsline {subsection}{\numberline {4.2}前递结果的多路选择}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}流水线控制信号调整}{6}{subsection.4.3}%
+\contentsline {section}{\numberline {5}仿真结果与分析}{7}{section.5}%
+\contentsline {paragraph}{addi \$1,\$0,1}{8}{section*.9}%
+\contentsline {paragraph}{sll \$2,\$1,4}{8}{section*.10}%
+\contentsline {paragraph}{addu \$3,\$2,\$1}{8}{section*.11}%
+\contentsline {paragraph}{srl \$4,\$2,2}{9}{section*.12}%
+\contentsline {paragraph}{slti \$25,\$4,5}{9}{section*.13}%
+\contentsline {paragraph}{bgez \$25,+0xE}{9}{section*.14}%
+\contentsline {paragraph}{结论}{9}{section*.15}%
+\contentsline {section}{\numberline {6}关于mfc0}{9}{section.6}%
+\contentsline {section}{\numberline {7}总结感想}{11}{section.7}%

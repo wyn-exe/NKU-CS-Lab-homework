@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}播放量历史 - {{ anime_id }}{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-4">番剧 {{ anime_id }} 播放量变动历史</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+      <thead>
+        <tr><th>时间</th><th>旧播放量</th><th>新播放量</th></tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.changed_at }}</td>
+          <td>{{ log.old_views|int }}</td>
+          <td>{{ log.new_views|int }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

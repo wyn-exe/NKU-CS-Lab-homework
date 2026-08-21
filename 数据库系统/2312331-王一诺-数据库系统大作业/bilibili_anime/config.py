@@ -1,0 +1,6 @@
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '20050224NUOqaq'
+MYSQL_DB = 'bilibili_anime'
+MYSQL_CURSORCLASS = 'DictCursor'
+SECRET_KEY = 'a_very_secret_key'

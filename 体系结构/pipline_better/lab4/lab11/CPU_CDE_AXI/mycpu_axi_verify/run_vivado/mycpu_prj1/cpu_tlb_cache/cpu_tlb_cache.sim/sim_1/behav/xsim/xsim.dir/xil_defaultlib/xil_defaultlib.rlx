@@ -1,0 +1,22 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.sim/sim_1/behav/xsim/glbl.v,1573089660,verilog,,,,glbl,,,,,,,,
+D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/data_ram/sim/data_ram.v,1767679058,verilog,,D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/inst_rom/sim/inst_rom.v,,data_ram,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/cpu_tlb_cache/cpu_tlb_cache.srcs/sources_1/ip/inst_rom/sim/inst_rom.v,1767679549,verilog,,D:/pipline_better/lab5/labcode/mycpu/adder.v,,inst_rom,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/lab13/tlb_verify/rtl/tlb/tlb.v,1767617883,verilog,,D:/pipline_better/lab5/labcode/mycpu/wb.v,,tlb,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/lab16/cache_verify/rtl/cache/cache.v,1767617969,verilog,,D:/pipline_better/lab5/labcode/mycpu/cpu_with_tlb_cache.v,,cache,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/adder.v,1761121208,verilog,,D:/pipline_better/lab5/labcode/mycpu/alu.v,,adder,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/alu.v,1761121219,verilog,,D:/pipline_better/lab5/labcode/lab16/cache_verify/rtl/cache/cache.v,,alu,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/cpu_with_tlb_cache.v,1767618084,verilog,,D:/pipline_better/lab5/labcode/mycpu/decode.v,,cpu_with_tlb_cache,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/decode.v,1763557741,verilog,,D:/pipline_better/lab5/labcode/mycpu/exe.v,D:/pipline_better/lab5/labcode/mycpu/exception_defines.vh,decode,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/exception_defines.vh,1763448290,verilog,,,,,,,,,,,,
+D:/pipline_better/lab5/labcode/mycpu/exe.v,1763451440,verilog,,D:/pipline_better/lab5/labcode/mycpu/fetch.v,D:/pipline_better/lab5/labcode/mycpu/exception_defines.vh,exe,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/fetch.v,1761052588,verilog,,D:/pipline_better/lab5/labcode/mycpu/mem.v,,fetch,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/mem.v,1763305011,verilog,,D:/pipline_better/lab5/labcode/mycpu/multiply.v,D:/pipline_better/lab5/labcode/mycpu/exception_defines.vh,mem,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/multiply.v,1761054956,verilog,,D:/pipline_better/lab5/labcode/mycpu/regfile.v,,multiply,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/regfile.v,1761055187,verilog,,D:/pipline_better/lab5/labcode/lab13/tlb_verify/rtl/tlb/tlb.v,,regfile,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/tb_cpu_with_tlb_cache.v,1767696488,verilog,,,,tb_cpu_with_tlb_cache,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/tb_cpu_with_tlb_cache_improved.v,1767793194,verilog,,,,tb_cpu_with_tlb_cache_improved,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,
+D:/pipline_better/lab5/labcode/mycpu/wb.v,1763470385,verilog,,D:/pipline_better/lab5/labcode/mycpu/tb_cpu_with_tlb_cache_improved.v,D:/pipline_better/lab5/labcode/mycpu/exception_defines.vh,wb,,,../../../../../../../../../../../lab5/labcode/mycpu,,,,,

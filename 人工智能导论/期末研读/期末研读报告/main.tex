@@ -1,0 +1,375 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+	basicstyle=\tiny,
+	numberstyle=\tiny,
+	keywordstyle=\color{blue!70},
+	commentstyle=\color{red!50!green!50!blue!50},
+	frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+	escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+% \usepackage{minted} % Commented out as it might not be essential for this text-heavy report
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+\usepackage{amsmath} % For math environments like align
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 图像生成模型技术演进研读报告}%加粗\bfseries % Changed from 并行程序设计实验报告
+\lfoot{}
+\cfoot{\thepage} % Changed to just current page number for simplicity, can be \thepage\ of \pageref{LastPage} if needed
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+	\renewcommand{\contentsname}{目\ 录}
+	\renewcommand{\appendixname}{附录}
+	\renewcommand{\appendixpagename}{附录}
+	\renewcommand{\refname}{参考文献} 
+	\renewcommand{\figurename}{图}
+	\renewcommand{\tablename}{表}
+	\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+	
+	%-------------------------封面----------------
+	\begin{titlepage}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+			\vspace{20mm}
+			\textbf{\huge{\kaishu{《人工智能导论》探究报告}}}\\[2.3cm]
+			\textbf{\Huge\textbf{\kaishu{图像生成}}}
+			
+			\vspace{\fill}
+			
+			% \textbf{\Large \textbf{人工智能导论期末研读报告}}\\[0.8cm]
+			% \HRule \\[0.9cm]
+			% \HRule \\[2.0cm]
+			\begin{table}[h]
+				\centering
+				\large
+				\begin{tabular}{ll}
+					\textbf{姓名：王一诺   \quad  学号:2312331} \quad GAN  \\
+					\textbf{姓名：王羿淼    \quad  学号:2310419} \quad EBM \\
+					\textbf{姓名：张继冰    \quad  学号:2312324} \quad PixelCNN++ \\
+				\end{tabular}
+			\end{table}
+			
+			\vfill
+			{\Large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+	\renewcommand{\figurename}{图}
+	\renewcommand{\contentsname}{目录}  
+	% \cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数 % This was in preamble, should be in \pagestyle{fancy} if needed there
+	
+	
+	% 生成目录
+	\clearpage
+	\tableofcontents
+	\newpage
+	\setcounter{page}{1} % Reset page numbering for the main content
+	
+	\section*{\kaishu{引言}}
+	\kaishu{图像生成，作为深度学习皇冠上的明珠之一，不仅推动了计算机视觉的边界，也深刻影响着艺术创作、数据增强乃至科学研究等多个领域。其核心挑战在于如何让机器理解并模仿高维、复杂且充满细微结构变化的真实图像数据分布。本报告精心挑选了四篇在图像生成领域具有里程碑意义的论文，旨在系统性地梳理出一条从经典范式独立发展到前沿思想交叉融合的技术演进主线。我们将逐一深入剖析生成对抗网络（GANs）、自回归模型（Autoregressive Models）和能量模型（EBMs）这三大经典范式在其发展关键时期的代表性工作，理解其核心机制、理论贡献与固有局限。随后，我们将重点聚焦于近年来异军突起的扩散模型（Diffusion Models），分析其如何巧妙地借鉴并超越前人智慧，最终形成对该领域核心思想、技术瓶颈以及未来发展趋势的深刻洞察与全面理解。}
+	
+	\section{\kaishu{论文研读分析}}
+	
+	\subsection{\kaishu{论文一：《Generative Adversarial Nets》—— 对抗生成网络的开山之作}}
+	
+	\subsubsection{\kaishu{核心思想}}
+	\kaishu{Ian Goodfellow等人在2014年提出的这篇论文，彻底改变了生成模型的设计范式。其核心思想——\textbf{对抗性训练 (Adversarial Training)}——源于博弈论中的二人零和博弈。}
+	
+	\begin{itemize}
+		\item \kaishu{\textbf{生成器 (Generator, G)}}：\kaishu{其目标是学习从一个简单的先验噪声分布（通常是高斯分布或均匀分布）$p_z(z)$到真实数据分布$p_{\text{data}}(x)$的映射。它可以被看作一个函数$G(z; \theta_g)$，其中$\theta_g$是其网络参数。G的任务是生成尽可能逼真的样本$x_{\text{fake}} = G(z)$，使得判别器无法区分其真伪。}
+		\item \kaishu{\textbf{判别器 (Discriminator, D)}}：\kaishu{其目标是学习区分真实样本和G生成的伪造样本。它是一个二分类器$D(x; \theta_d)$，输出样本$x$来自真实数据分布的概率。D的训练目标是最大化对真实样本和伪造样本的分类准确率，即最大化$\log D(x_{\text{real}}) + \log(1 - D(G(z)))$。}
+	\end{itemize}
+	
+	\kaishu{整个训练过程可以表示为一个\textbf{最小-最大博弈 (minimax game)}：}
+	\[ \min_G \max_D V(D, G) = \mathbb{E}_{x \sim p_{\text{data}}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))] \]
+	
+	\kaishu{这个公式的含义是：判别器D试图最大化其区分能力（V），而生成器G则试图最小化判别器D的区分能力，即让$D(G(z))$尽可能接近1（判别器认为G生成的样本是真的），从而使$\log(1 - D(G(z)))$尽可能小（因为$\log$函数在(0,1]上单调递增，而$1-x$单调递减）。}
+	
+	\kaishu{理论上，当G和D达到纳什均衡时，G能够完美复制真实数据分布，即$p_g = p_{\text{data}}$，此时判别器D对于任何输入都无法做出有效判断，即$D(x) = 1/2$。}
+	
+	\subsubsection{\kaishu{关键贡献}}
+	\begin{itemize}
+		\item \kaishu{\textbf{革命性的训练框架}}：\kaishu{首次将博弈论思想引入生成模型训练，创造性地通过两个网络的对抗来驱动学习。这使得模型可以直接从数据中学习生成机制，而无需预先假设数据的具体概率形式，也避免了传统方法中难以处理的配分函数或复杂的采样过程。}
+		\item \kaishu{\textbf{端到端学习与高效性}}：\kaishu{整个框架可以通过标准的反向传播算法进行训练，G和D的参数可以交替更新。这使得GANs的实现相对简单，并且能够利用GPU进行高效计算。}
+		\item \kaishu{\textbf{生成高质量、高锐度样本}}：\kaishu{相比于当时其他主流生成模型（如变分自编码器VAE），GANs生成的图像通常具有更高的视觉保真度和锐度，更少出现模糊现象。这得益于判别器的“火眼金睛”，它迫使生成器去关注图像的精细纹理和结构。}
+		\item \kaishu{\textbf{催生了大量后续研究}}：\kaishu{GANs的提出引发了生成模型研究的爆炸式增长，涌现了如DCGAN, StyleGAN, BigGAN等众多改进模型，并在图像修复、超分辨率、风格迁移等领域取得了巨大成功。}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{模型局限}}
+	\begin{itemize}
+		\item \kaishu{\textbf{训练不稳定与模式崩溃 (Mode Collapse)}}：
+		\begin{itemize}
+			\item \kaishu{\textbf{原因}}：\kaishu{minimax博弈的优化目标是非凸的，寻找纳什均衡非常困难。如果判别器D过于强大，G的梯度可能会消失；如果G的更新过快，可能会找到一些能够轻易欺骗当前D的“捷径”，但这些捷径往往只对应真实数据分布中的少数几个模式，导致生成样本缺乏多样性。}
+			\item \kaishu{\textbf{表现}}：\kaishu{生成器反复生成非常相似的几个样本，无法捕捉到真实数据分布的全部模式。}
+		\end{itemize}
+		\item \kaishu{\textbf{梯度消失/爆炸}}：\kaishu{与深度神经网络训练中常见的问题类似，如果网络设计不当或优化器选择不佳，可能会导致梯度过小难以更新或过大导致训练发散。论文中提到，早期训练G时，最小化$\log(1 - D(G(z)))$比最大化$\log D(G(z))$更容易导致梯度饱和，因此后续研究常采用后者作为G的优化目标。}
+		\item \kaishu{\textbf{缺乏有效的评估指标}}：\kaishu{由于GAN没有显式的似然函数，如何客观、定量地评估生成样本的质量和多样性一直是个难题。早期的评估依赖主观观察，后续发展了Inception Score (IS)、Fréchet Inception Distance (FID)等指标，但这些指标也并非完美，各有其局限性。}
+		\item \kaishu{\textbf{超参数敏感}}：\kaishu{GAN的训练对学习率、batch size、网络结构等超参数非常敏感，调参过程往往需要大量的经验和实验。}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{在本课题中的定位}}
+	\kaishu{GAN是本次研读的\textbf{开创性起点}。它代表了一种以\textbf{感知逼真度}为核心驱动力的生成模型范式。它向我们展示了，即使不直接对概率密度进行建模，也能通过巧妙的间接方式学习生成高质量数据。然而，GAN的训练不稳定性和模式崩溃等问题，也为后续研究（包括我们后续要讨论的EBMs和扩散模型如何从理论上提供更稳定的训练框架）留下了巨大的改进空间。理解GAN的成功与挑战，有助于我们更好地体会其他范式（如自回归模型对精确性的追求，以及扩散模型如何试图兼顾两者）的动机和价值。}
+	
+	\subsection{\kaishu{论文二：《PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications》—— 精巧的自回归与显式似然建模}}
+	
+	\subsubsection{\kaishu{核心思想}}
+	\kaishu{自回归模型的核心是将高维数据的联合概率分布$p(x) = p(x_1, x_2, \dots, x_n)$通过概率的链式法则分解为一系列一维条件概率的乘积：$p(x) = p(x_1) \cdot p(x_2|x_1) \cdot \dots \cdot p(x_n|x_1, \dots, x_{n-1})$。对于图像而言，$x_i$代表图像中的第$i$个像素（通常按光栅扫描顺序排列）。这意味着每个像素的生成都依赖于其所有“历史”像素。}
+	
+	\kaishu{PixelCNN系列模型使用卷积神经网络（CNN）来参数化这些条件概率分布$p(x_i | x_{<i})$。为了保证这种依赖关系（即$x_i$的预测只依赖于$x_1, \dots, x_{i-1}$），它们采用了\textbf{掩码卷积 (Masked Convolution)}。掩码卷积通过在卷积核上应用一个特定的二进制掩码，确保在计算$x_i$的输出时，卷积操作只看到其上下文区域（即历史像素），而不会“看到未来”。}
+	
+	\kaishu{PixelCNN++在此基础上进行了关键改进，解决了原版PixelCNN在输出层和建模能力上的一些不足：}
+	\begin{itemize}
+		\item \kaishu{\textbf{离散化Logistic混合似然 (Discretized Logistic Mixture Likelihood)}}：
+		\begin{itemize}
+			\item \kaishu{原版PixelCNN对每个颜色通道（R, G, B通常取值0-255）使用一个256类的Softmax输出。这意味着输出层需要预测$256 \times 3$个值（如果独立建模通道）或者更多（如果通道间有依赖），参数量巨大，且忽略了像素值的序数特性（例如，值128与127、129更接近，而与0、255较远，Softmax无法捕捉这种关系）。}
+			\item \kaishu{PixelCNN++假设每个子像素的真实连续值$v$服从一个由$K$个Logistic分布组成的混合模型：$v \sim \sum_{k=1}^K \pi_k \cdot \text{Logistic}(\mu_k, s_k)$。然后，观察到的离散像素值$x$是通过对$v$进行舍入得到的。其概率$P(x|\pi, \mu, s)$可以通过计算连续混合Logistic分布在区间 $[x - 0.5, x + 0.5]$ (对于0和255有特殊处理) 上的累积分布函数(CDF)差值得到。}
+			\[ P(x|\pi, \mu, s) = \sum_{k=1}^K \pi_k [\sigma((x + 0.5 - \mu_k)/s_k) - \sigma((x - 0.5 - \mu_k)/s_k)] \]
+			\kaishu{其中$\sigma$是Logistic Sigmoid函数。}
+			\item \kaishu{这种方式大大减少了输出参数（每个子像素只需要预测混合系数$\pi_k$，每个混合分量的均值$\mu_k$和尺度$s_k$，例如K=5或10），自然地建模了像素值的顺序性，并且实验证明训练更快，性能更好。}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{关键贡献}}
+	\begin{itemize}
+		\item \kaishu{\textbf{显著提升似然分数和生成质量}}：\kaishu{通过引入离散化Logistic混合模型，PixelCNN++在CIFAR-10等标准数据集上取得了当时最先进的负对数似然（NLL）分数，生成的样本也比之前的自回归模型更清晰、更自然。}
+		\item \kaishu{\textbf{架构创新与优化}}：
+		\begin{itemize}
+			\item \kaishu{\textbf{条件化整个像素而非子像素}}：\kaishu{简化了模型结构，使得模型先预测R通道，然后基于R预测G，再基于R和G预测B，这种依赖关系比原版PixelCNN中更复杂的子像素依赖更易于管理。}
+			\item \kaishu{\textbf{下采样与上采样结构}}：\kaishu{引入了类似U-Net的结构，通过下采样层来捕捉图像的全局、多尺度信息，再通过上采样层恢复分辨率，这有助于模型学习长距离依赖。}
+			\item \kaishu{\textbf{短路连接 (Short-cut Connections)}}：\kaishu{在网络的对称部分之间添加了跳跃连接，帮助信息在不同层级间流动，缓解了深层网络的梯度消失问题，加速了优化。}
+			\item \kaishu{\textbf{Dropout正则化}}：\kaishu{有效防止了模型在训练数据上的过拟合，提升了泛化能力和生成样本的视觉质量。}
+		\end{itemize}
+		\item \kaishu{\textbf{推动了显式密度模型的发展}}：\kaishu{PixelCNN++的成功证明了，通过精心设计的架构和输出分布，显式密度模型不仅能在评估指标上表现出色，也能生成具有竞争力的样本，为后续基于流的模型（Flow-based models）和扩散模型（它们也具有可计算似然）的发展提供了信心。}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{ 模型局限}}
+	\begin{itemize}
+		\item \kaishu{\textbf{生成速度极慢 (Sequential Sampling)}}：
+		\begin{itemize}
+			\item \kaishu{\textbf{根本原因}}：\kaishu{自回归模型的本质决定了其生成过程必须是串行的。要生成第$i$个像素，必须先生成前$i-1$个像素。对于一张例如256x256的图像，需要进行$256 \times 256$次网络前向传播（如果每个像素独立生成）或者类似数量级的串行步骤。}
+			\item \kaishu{\textbf{影响}}：\kaishu{这使得PixelCNN++难以应用于需要实时或快速生成大量样本的场景，例如交互式应用或大规模数据增强。}
+		\end{itemize}
+		\item \kaishu{\textbf{感受野有限与长距离依赖捕捉的挑战}}：\kaishu{尽管PixelCNN++通过下采样等结构试图扩大感受野，但标准的卷积操作在捕捉非常长距离的像素依赖方面仍然存在固有的困难。这可能导致生成图像在全局一致性上不如一些全局潜在变量模型（如VAE、GAN的某些变体）。}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{在本课题中的定位}}
+	\kaishu{PixelCNN++代表了与GAN追求感知真实性相对的，以\textbf{数学精确性（显式似然）}为核心的生成模型范式。它向我们展示了如何通过巧妙的建模来直接优化数据的对数似然，并获得优秀的密度估计和高质量样本。它最大的局限性——生成速度慢——直接激发了后续对并行自回归模型、基于流的模型以及最终扩散模型的研究，这些模型试图在保持或逼近显式似然能力的同时，提升采样效率。PixelCNN++的成功也强调了良好输出分布设计（如离散化逻辑斯蒂混合）对模型性能的重要性，这一点在后续扩散模型的噪声预测目标中也有所体现。}
+	
+	
+	\subsection{\kaishu{论文三：《How to Train Your Energy-Based Models》—— 能量模型的理论与实践指南}}
+	
+	\subsubsection{\kaishu{核心思想}}
+	\kaishu{能量模型（EBMs）提供了一种极其灵活的方式来参数化概率分布。其核心在于定义一个\textbf{能量函数 $E_\theta(x)$}}，\kaishu{它将输入数据$x$映射到一个标量“能量值”。能量越低，对应的数据点$x$的概率越高。概率密度函数定义为：}
+	\[ p_\theta(x) = \frac{\exp(-E_\theta(x))}{Z_\theta} \]
+	\kaishu{其中，$Z_\theta = \int \exp(-E_\theta(x)) dx$ 是归一化常数或配分函数，它确保整个分布的积分为1。}
+	
+	\kaishu{EBM的主要魅力在于其\textbf{建模的自由度}：几乎任何神经网络都可以用作能量函数$E_\theta(x)$，不需要像其他模型那样在输出层强制进行归一化（如Softmax）或满足特定结构约束（如流模型的雅可比行列式易于计算）。然而，这种灵活性也带来了核心挑战：\textbf{$Z_\theta$通常是难以计算的 }}，\kaishu{因为它涉及到对整个高维数据空间（例如所有可能的图像）的积分。}
+	
+	\kaishu{这篇论文系统地总结了现代EBMs训练中绕过直接计算$Z_\theta$或其梯度的主要策略：}
+	\begin{itemize}
+		\item \kaishu{\textbf{基于MCMC的最大似然估计 (Contrastive Divergence and its variants)}}：
+		\begin{itemize}
+			\item \kaishu{对数似然的梯度可以写成：$\nabla_\theta \log p_\theta(x) = -\nabla_\theta E_\theta(x) + \mathbb{E}_{x' \sim p_\theta(x')}[\nabla_\theta E_\theta(x')]$。}
+			\item \kaishu{第一项（“正相”）直接在真实数据上计算。第二项（“负相”）需要从当前模型$p_\theta(x')$中采样。由于直接从$p_\theta(x')$采样困难，通常使用马尔可夫链蒙特卡洛（MCMC）方法，如\textbf{Langevin Dynamics}，从一个初始分布（例如真实数据点或噪声）开始运行有限步来近似采样。}
+			\item \kaishu{\textbf{Langevin Dynamics采样}}：$x_{k+1} = x_k - (\alpha/2) \nabla_x E_\theta(x_k) + \sqrt{\alpha} \eta_k$，其中$\eta_k$是高斯噪声。它利用能量函数的梯度引导样本向低能量区域移动。
+			\item \kaishu{\textbf{对比散度 (Contrastive Divergence, CD-k)}}：MCMC链从真实数据点开始，只运行k步，这是一种有偏但计算效率更高的近似。
+		\end{itemize}
+		\item \kaishu{\textbf{分数匹配 (Score Matching, SM)}}：
+		\begin{itemize}
+			\item \kaishu{\textbf{核心}}：\kaishu{不直接匹配概率密度$p_\theta(x)$和$p_{\text{data}}(x)$，而是匹配它们的\textbf{对数概率梯度}，即\textbf{分数函数 (score function)}}：$s_\theta(x) = \nabla_x \log p_\theta(x)$ 和 $s_{\text{data}}(x) = \nabla_x \log p_{\text{data}}(x)$。
+			\item \kaishu{对于EBMs，模型的分数函数是$s_\theta(x) = -\nabla_x E_\theta(x)$，计算非常简单，\textbf{不依赖于 $Z_\theta$}}。
+			\item \kaishu{SM的目标函数是最小化Fisher散度。}
+			\item \kaishu{通过分部积分，在一定正则条件下，上述目标函数可以等价地改写为：$J(\theta) = \mathbb{E}_{x \sim p_{\text{data}}(x)}[ \text{tr}(\nabla_x s_\theta(x)) + (1/2) \|s_\theta(x)\|_2^2 ]$ 。这个形式\textbf{不再需要未知的 $s_{\text{data}}(x)$}}，\kaishu{只需要模型分数函数及其雅可比行列式的迹。}
+			\item \kaishu{\textbf{去噪分数匹配 (Denoising Score Matching, DSM)}}：\kaishu{SM的原始形式在高维数据上计算$\text{tr}(\nabla_x s_\theta(x))$（Hessian的迹）代价高。DSM表明，如果先对数据加入少量噪声$x_{\text{perturbed}} = x_{\text{data}} + \text{noise}$，然后学习预测干净数据$x_{\text{data}}$，其目标函数可以简化，避免计算Hessian的迹，从而扩展到高维。}
+			\item \kaishu{\textbf{切片分数匹配 (Sliced Score Matching, SSM)}}：\kaishu{另一种避免计算Hessian迹的方法，通过将高维分数向量投影到随机的一维方向上，然后匹配这些投影后的标量分数。}
+		\end{itemize}
+		\item \kaishu{\textbf{噪声对比估计 (Noise Contrastive Estimation, NCE)}}：
+		\begin{itemize}
+			\item \kaishu{将无监督的密度估计问题转化为一个监督的二分类问题。}
+			\item \kaishu{构造一个混合数据集，其中包含来自真实数据分布$p_{\text{data}}(x)$的样本（标签为1）和来自一个易于采样的已知噪声分布$p_n(x)$的样本（标签为0）。}
+			\item \kaishu{训练一个分类器来区分这两类样本。对于EBM，其未归一化的密度$\exp(-E_\theta(x))$可以作为分类器的一部分。通过这种对比学习，模型参数$\theta$和归一化常数$Z_\theta$（可以作为一个可学习参数或固定为1，让$E_\theta(x)$去吸收它）可以被估计出来。}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{关键贡献}}
+	\begin{itemize}
+		\item \kaishu{\textbf{EBM训练方法的系统化和现代化}}：\kaishu{为研究者和实践者提供了一个关于如何有效训练EBMs的清晰、全面的指南，并阐明了各种方法（MCMC-MLE, SM, NCE）背后的理论、优缺点以及它们之间的联系。}
+		\item \kaishu{\textbf{突出了分数匹配的理论和实用价值}}：\kaishu{详细解释了分数匹配的原理，特别是其如何巧妙地避免了配分函数的计算。强调了DSM和SSM作为可扩展到高维数据的SM变体的重要性。这为后续扩散模型直接建立在（去噪）分数匹配思想之上铺平了道路。}
+		\item \kaishu{\textbf{连接了不同训练范式}}：\kaishu{例如，论文中讨论了分数匹配与对比散度在特定MCMC采样器（如Langevin Dynamics）和小步长极限下的联系。}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{模型局限}}
+	\begin{itemize}
+		\item \kaishu{\textbf{MCMC采样效率与混合性}}：\kaishu{基于MCMC的训练（如CD）和从EBMs采样生成新数据，都严重依赖MCMC算法的效率和混合性（即MCMC链能否快速探索整个数据空间并收敛到平稳分布）。对于高维、多模态的数据分布（如复杂场景的图像），MCMC链很容易陷入某个局部模式，导致采样偏差和模型训练不足。}
+		\item \kaishu{\textbf{分数匹配的挑战}}：
+		\begin{itemize}
+			\item \kaishu{原始SM的计算复杂度（Hessian的迹）使其难以直接应用于高维数据。}
+			\item \kaishu{即使是DSM或SSM，也可能在数据分布的低密度区域（模式之间的“空隙”）遇到困难，因为这些区域缺乏足够的真实数据样本来准确估计分数函数。}
+			\item \kaishu{分数匹配主要学习局部梯度信息，可能难以准确捕捉分布的全局归一化和不同模式间的相对权重。}
+		\end{itemize}
+		\item \kaishu{\textbf{NCE对噪声分布的依赖}}：\kaishu{NCE的性能很大程度上取决于所选择的噪声分布$p_n(x)$。如果噪声分布与真实数据分布差异过大或过于简单，学习效果可能不佳。}
+		\item \kaishu{\textbf{所有方法的共同挑战：评估}}：\kaishu{与GANs类似，EBMs通常也没有易于计算的似然函数，评估模型的好坏（除了在训练集上的能量表现）仍然依赖于生成样本的质量、MCMC采样得到的近似似然，或间接的评估指标。}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{在本课题中的定位}}
+	\kaishu{这篇论文不仅让我们深入了解了具有高度灵活性的EBMs，更重要的是，它系统地介绍了\textbf{分数匹配}这一关键技术。EBMs的分数函数$s_\theta(x) = -\nabla_x E_\theta(x)$可以直接从能量函数得到，这一特性使得分数匹配非常适合EBMs。理解分数匹配，特别是去噪分数匹配（DSM），如何使得模型能够在不知道$Z_\theta$的情况下学习数据的（加噪）对数概率梯度，是理解下一篇DDPM论文的关键。DDPM的核心思想可以被看作是在一系列不同噪声水平上进行DSM，从而逐步从纯噪声中恢复出数据。因此，这篇EBM论文为我们从经典模型范式平稳过渡到现代扩散模型提供了必要的理论储备和概念框架。}
+	
+	
+	\subsection{\kaishu{论文四：《Denoising Diffusion Probabilistic Models》 (DDPM)—— 融合多范式思想的生成模型新王者}}
+	
+	\subsubsection{\kaishu{核心思想}}
+	\kaishu{DDPM引入了一种受非平衡热力学启发的生成模型，其核心在于一个逐步加噪的前向过程和一个学习的逐步去噪的反向过程。}
+	
+	\begin{itemize}
+		\item \kaishu{\textbf{前向扩散过程 (Forward Diffusion Process) $q(x_t | x_{t-1})$}}：
+		\begin{itemize}
+			\item \kaishu{这是一个固定的、马尔可夫的加噪过程，不需要学习。}
+			\item \kaishu{从一个真实数据样本$x_0 \sim q(x_0)$开始，在$T$个离散时间步内，逐步向图像中添加少量高斯噪声。}
+			\item $q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1 - \beta_t} x_{t-1}, \beta_t \mathbf{I})$，\kaishu{其中$\beta_t$是一个小的正常数，控制每一步加入噪声的量（方差）。}
+			\item \kaishu{这个过程的一个重要特性是，给定$x_0$，任意时刻$t$的加噪样本$x_t$的分布$q(x_t | x_0)$可以直接以闭合形式计算。}
+			\item \kaishu{当$T$足够大且$\beta_t$序列设计得当时，$x_T$几乎完全变成一个与$x_0$无关的标准高斯噪声。}
+		\end{itemize}
+		\item \kaishu{\textbf{反向去噪过程 (Reverse Denoising Process) $p_\theta(x_{t-1} | x_t)$}}：
+		\begin{itemize}
+			\item \kaishu{这是模型需要学习的部分，也是一个马尔可夫过程，旨在逆转前向的加噪过程。}
+			\item \kaishu{它从一个纯高斯噪声$x_T \sim \mathcal{N}(0, \mathbf{I})$开始，通过一个神经网络（参数为$\theta$），在$T$个时间步内逐步去除噪声，最终生成一个样本$x_0$。}
+			\item $p_\theta(x_{t-1} | x_t) = \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t))$。
+			\item \kaishu{论文证明，如果$\beta_t$足够小，这个反向条件概率也是高斯分布。DDPM选择固定反向过程的方差$\Sigma_\theta(x_t, t)$为一个与$\beta_t$相关的常数（例如$\beta_t \mathbf{I}$或$\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t \mathbf{I}$），只学习其均值$\mu_\theta(x_t, t)$。}
+			\item \kaishu{关键在于，均值$\mu_\theta(x_t, t)$可以通过神经网络来参数化，使其预测在给定$x_t$和时间步$t$时，前一步$x_{t-1}$的均值。}
+		\end{itemize}
+	\end{itemize}
+	
+	\kaishu{\textbf{训练目标}}：
+	\kaishu{模型通过最大化对数似然的变分下界 (Evidence Lower Bound, ELBO) 来训练。经过一系列推导，这个ELBO可以简化为一个非常直观的形式：在训练的每一步，随机采样一个数据点$x_0$，一个时间步$t$，以及一个噪声$\epsilon \sim \mathcal{N}(0, \mathbf{I})$。然后构造加噪样本$x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon$。神经网络$\epsilon_\theta(x_t, t)$的任务是\textbf{从$x_t$中预测出原始加入的噪声$\epsilon$}}。\kaishu{其损失函数通常是简单的均方误差 (MSE)。}
+	
+	\subsubsection{\kaishu{与其他范式的思想融合}}
+	\kaishu{DDPM的成功并非偶然，它巧妙地融合并发展了先前生成模型范式的核心思想：}
+	\begin{itemize}
+		\item \kaishu{\textbf{与EBMs/分数匹配的深刻联系}}：
+		\begin{itemize}
+			\item \kaishu{Sohl-Dickstein等人(2015)最早将扩散思想引入生成模型，并指出了与能量模型的关系。Song \& Ermon (2019, 2020)的工作（Score-Based Generative Models）明确了扩散过程与\textbf{分数匹配}的等价性。}
+			\item \kaishu{DDPM中学习预测噪声$\epsilon_\theta(x_t, t)$的目标，在数学上与学习在不同噪声尺度下的\textbf{条件分数函数 $\nabla_{x_t} \log q(x_t | x_0)$}(或者等价地，$\nabla_{x_t} \log q(x_t)$ )是紧密相关的。具体来说，最优的噪声预测器$\epsilon_\theta^*(x_t, t)$与$x_t$的条件分数函数成正比：$\epsilon_\theta^*(x_t, t) = -\sqrt{1 - \bar{\alpha}_t} \nabla_{x_t} \log q(x_t)$ (在$q(x_t)$是$q(x_t|x_0)$的边缘分布的意义下)。}
+			\item \kaishu{这相当于在多个噪声水平上进行\textbf{去噪分数匹配 (DSM)}}。\kaishu{前向加噪过程确保了即使是原始数据分布中的低密度区域，在加噪后也会有样本覆盖，从而缓解了传统SM在这些区域难以估计分数的问题。}
+		\end{itemize}
+		\item \kaishu{\textbf{与自回归模型的相似性（显式似然）与区别（并行性）}}：
+		\begin{itemize}
+			\item \kaishu{DDPM的整个过程是一个定义良好的概率模型，其对数似然的ELBO是可以计算的。这意味着DDPM像自回归模型一样，可以进行严谨的定量评估和模型比较。}
+			\item \kaishu{然而，与自回归模型逐像素/逐元素生成的严格串行性不同，DDPM在每个时间步是对整个图像（或其隐空间表示）进行操作。虽然采样仍然是迭代的（需要$T$步），但每一步的计算可以高度并行化。这使得DDPM在处理高维数据时比传统自回归模型更具优势。}
+		\end{itemize}
+		\item \kaishu{\textbf{媲美甚至超越GAN的生成质量与训练稳定性}}：
+		\begin{itemize}
+			\item \kaishu{DDPM及其后续变体（如Improved DDPM, ADM）生成的图像在FID等指标上达到了SOTA水平，视觉质量非常高，既真实又多样。}
+			\item \kaishu{其训练过程基于简单的MSE损失，比GAN的minimax博弈稳定得多，不易出现模式崩溃。训练目标清晰，收敛性更好。}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{关键贡献与局限}}
+	\begin{itemize}
+		\item \kaishu{\textbf{开创性的生成范式}}：\kaishu{提供了一个全新的、基于迭代去噪的生成模型框架，统一了高质量生成、稳定训练和可计算似然。}
+		\item \kaishu{\textbf{简化的训练目标}}：\kaishu{将复杂的似然最大化问题巧妙地转化为在各个噪声水平上预测噪声的监督学习任务，极大地降低了实现的复杂度。}
+		\item \kaishu{\textbf{理论基础坚实}}：\kaishu{与分数匹配的紧密联系为其提供了强大的理论支撑，解释了其为何能有效学习数据分布。}
+		\item \kaishu{\textbf{主要局限：采样速度慢}}：
+		\begin{itemize}
+			\item \kaishu{\textbf{原因}}：\kaishu{标准DDPM需要进行$T$（通常为1000或数千）次完整的神经网络前向传播才能生成一个样本，即使每步计算可以并行，总的串行步骤数也很多。}
+			\item \kaishu{\textbf{影响}}：\kaishu{这限制了其在需要低延迟生成的应用中的部署。}
+			\item \kaishu{\textbf{后续改进方向}}：\kaishu{大量后续工作致力于加速DDPM的采样，例如：更短的采样步数（DDIM, Analytic-DPM），知识蒸留（Progressive Distillation），在隐空间进行扩散（Latent Diffusion Models）等。}
+		\end{itemize}
+	\end{itemize}
+	
+	\subsubsection{\kaishu{在本课题中的定位}}
+	\kaishu{DDPM是本次研读的\textbf{集大成者}。它并非凭空出现，而是站在了EBMs（尤其是分数匹配理论）、自回归模型（可计算似然的追求）和GANs（对高质量生成的极致追求）等前辈的肩膀上。}
+	\begin{itemize}
+		\item \kaishu{它从EBM和分数匹配中汲取了\textbf{学习数据梯度（分数）的核心思想}，并通过多尺度加噪解决了传统分数匹配的困难。}
+		\item \kaishu{它保留了类似自回归模型的\textbf{概率建模严谨性}，允许进行定量评估。}
+		\item \kaishu{它达到了甚至超越了GAN的\textbf{生成质量}，同时克服了GAN训练不稳定的主要痛点。}
+	\end{itemize}
+	\kaishu{DDPM的出现标志着生成模型领域的一个重要转折点，即\textbf{通过学习数据分布的梯度（分数函数）或等价的去噪函数，可以构建出兼具多种优点的强大生成模型}}。\kaishu{它为后续大量的研究（如条件生成、可控生成、多模态生成等）提供了一个坚实且富有潜力的基础框架。理解DDPM，需要回顾和整合前面三种模型范式的核心洞见。}
+	
+	\section{\kaishu{总结与收获}}
+	
+	\kaishu{通过对《Generative Adversarial Nets》、《PixelCNN++》、《How to Train Your Energy-Based Models》以及《Denoising Diffusion Probabilistic Models》这四篇里程碑式论文的深入研读，我们不仅一定程度上了解了各类模型的核心机制与技术细节，更重要的是，我们得以清晰地勾勒出图像生成模型领域从范式分立、各自探索，到思想碰撞、交叉融合，最终走向更高层次统一的技术演进。}
+	
+	\subsection{\kaishu{各范式对比总结}}
+	\begin{table}[H]
+		\centering
+		\caption{\kaishu{各生成模型范式对比总结}}
+		\label{tab:model_comparison}
+		\resizebox{\textwidth}{!}{%
+			\begin{tabular}{@{}l|p{2.5cm}|p{2cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{2cm}|p{2.5cm}|p{2.5cm}@{}}
+				\toprule
+				\textbf{\kaishu{模型范式}} & \textbf{\kaishu{核心思想/目标}} & \textbf{\kaishu{生成质量 (主观)}} & \textbf{\kaishu{采样速度}} & \textbf{\kaishu{训练稳定性}} & \textbf{\kaishu{似然可计算性}} & \textbf{\kaishu{训练数据效率/需求}} & \textbf{\kaishu{主要优点}} & \textbf{\kaishu{主要缺点}} \\
+				\midrule
+				\textbf{\kaishu{GAN}} & \kaishu{对抗博弈，最小化JS散度 (隐式)} & \kaishu{很高 (锐利，但可能缺乏多样性)} & \kaishu{非常快 (一步前向传播)} & \kaishu{差 (模式崩溃，梯度消失/爆炸，超参敏感)} & \kaishu{否} & \kaishu{通常需要较多数据以避免判别器过拟合} & \kaishu{生成锐利图像，采样快，模型结构灵活} & \kaishu{训练不稳定，模式崩溃，评估困难} \\
+				\midrule
+				\textbf{\kaishu{PixelCNN++}} & \kaishu{自回归，最大化显式对数似然} & \kaishu{较好 (有时略模糊，但多样性好)} & \kaishu{极慢 (逐像素串行生成)} & \kaishu{好} & \kaishu{是 (精确计算)} & \kaishu{对数据量相对不那么敏感} & \kaishu{精确似然，良好多样性，稳定训练} & \kaishu{采样极慢，长距离依赖捕捉仍有挑战} \\
+				\midrule
+				\textbf{\kaishu{EBM}} & \kaishu{能量函数定义分布 (非归一化)，通过MCMC/SM/NCE学习} & \kaishu{取决于采样方法和能量函数设计 (可高可低)} & \kaishu{慢 (依赖MCMC采样) 或中等 (若有高效近似采样)} & \kaishu{中等 (MCMC混合性，SM低密度区问题，NCE噪声选择)} & \kaishu{否 (配分函数Z难解)} & \kaishu{相对灵活} & \kaishu{极高的模型设计自由度} & \kaishu{训练和采样通常困难，评估难} \\
+				\midrule
+				\textbf{\kaishu{DDPM}} & \kaishu{迭代去噪，最大化ELBO (与多尺度分数匹配等价)} & \kaishu{极高 (真实、多样、细节丰富)} & \kaishu{慢 (多步迭代去噪)} & \kaishu{好 (基于MSE损失，稳定收敛)} & \kaishu{是 (通过ELBO近似)} & \kaishu{通常需要较多数据和计算资源进行有效训练} & \kaishu{生成质量SOTA，训练稳定，可计算似然，理论清晰} & \kaishu{采样速度慢 (原始版本)} \\
+				\bottomrule
+			\end{tabular}%
+		}
+	\end{table}
+	
+	
+	\subsection{\kaishu{技术演进的脉络与收获}}
+	\begin{itemize}
+		\item \kaishu{\textbf{目标驱动的演进：从“看起来真”到“数学上对”，再到“既真又对”的统一}}
+		\begin{itemize}
+			\item \kaishu{\textbf{GANs的革命}}：\kaishu{首先，GANs的出现将生成模型的目标从传统的最大化似然（追求对数据分布$p(x)$的\textbf{数学精确描述}）大胆地转向了生成在\textbf{感知上无法与真实数据区分}的样本。它通过一个“图灵测试”式的对抗机制，直接优化生成样本的“真实感”，从而绕开了复杂似然函数的直接建模，带来了图像锐度和视觉效果的巨大飞跃。}
+			\item \kaishu{\textbf{显式模型的坚守与精进}}：\kaishu{与此同时，以PixelCNN++为代表的自回归模型则在显式似然的道路上持续深耕。它们证明了通过精巧的结构设计（如掩码卷积、改进的输出分布），直接优化对数似然不仅可以在评估指标上取得高分，也能生成高质量的样本，并为模型提供了可解释性和可比较性。}
+			\item \kaishu{\textbf{EBMs的理论深度}}：\kaishu{EBMs以其极致的灵活性提供了一个更广阔的理论框架，分数匹配等思想的提出，为后续模型在不知道归一化常数的情况下学习数据分布的本质特征（如梯度）提供了可能。}
+			\item \kaishu{\textbf{DDPM的集大成}}：\kaishu{扩散模型，特别是DDPM，则巧妙地站在了这些巨人的肩膀上。它通过迭代去噪这一看似简单的过程，实现了惊人的效果。}
+		\end{itemize}
+		\item \kaishu{\textbf{对未来研究的启示与感悟}}
+		\begin{itemize}
+			\item \kaishu{\textbf{持续的权衡与优化}}：\kaishu{尽管扩散模型取得了巨大成功，但其采样速度慢的固有缺陷仍然是当前研究的焦点。这深刻地提醒我们，在机器学习乃至所有工程科学领域，通常不存在一劳永逸，而是在多个目标（如生成质量、采样效率、训练成本、模型可控性、可解释性等）之间进行持续的权衡与优化。DDPM的后续工作，如DDIM、Analytic-DPM、Latent Diffusion Models、Consistency Models等，都是在这种权衡思想驱动下的创新。}
+			\item \kaishu{\textbf{交叉融合是创新的强大引擎}}：\kaishu{DDPM的成功是多学科思想（非平衡热力学）、不同生成模型范式（EBM的分数匹配、VAE的变分推断思想、类自回归的迭代生成）以及深度学习架构（U-Net）有机结合的典范。这启示我们，未来的重大突破很可能继续源于对不同领域知识和现有技术优点的深刻理解、批判性吸收和创造性融合。例如，如何将GAN的快速采样特性、EBM的灵活建模能力与扩散模型的稳定训练和高质量生成更好地结合，仍然是充满机遇的研究方向。}
+			\item \kaishu{\textbf{理论与实践的相辅相成}}：\kaishu{从GAN的经验性成功到DDPM背后坚实的理论基础（与分数匹配的等价性），我们可以看到理论指导实践、实践反哺理论的良性循环。对模型工作原理的深刻理论理解，不仅能解释其成功，更能指导未来的改进方向。}
+			\item \kaishu{\textbf{“大道至简”的可能性}}：\kaishu{DDPM的训练目标最终可以简化为一个非常直观的“预测噪声”的监督学习任务，这体现了复杂问题简单化解的智慧。未来或许会有更简洁、更本质的生成模型原理等待我们去发掘。}
+		\end{itemize}
+	\end{itemize}
+	\kaishu{总而言之，本次对四篇经典论文的研读，不仅使我们系统地掌握了图像生成领域从早期探索到当前前沿的核心技术和发展脉络，更重要的是，它提供了一个观察科学研究如何通过范式竞争、思想借鉴、理论深化和技术迭代，不断逼近问题本质、拓展认知边界的绝佳窗口。这条演进之路充满了挑战、惊喜与智慧的光芒，激励着我们继续在人工智能的星辰大海中探索前行。}
+	
+\end{document}

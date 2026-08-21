@@ -1,0 +1,5 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/mycpu.ip_user_files/ipstatic/hdl/axi_crossbar_v2_1_vl_rfs.v,1764857283,verilog,,,,axi_crossbar_v2_1_21_addr_arbiter;axi_crossbar_v2_1_21_addr_arbiter_sasd;axi_crossbar_v2_1_21_addr_decoder;axi_crossbar_v2_1_21_arbiter_resp;axi_crossbar_v2_1_21_axi_crossbar;axi_crossbar_v2_1_21_crossbar;axi_crossbar_v2_1_21_crossbar_sasd;axi_crossbar_v2_1_21_decerr_slave;axi_crossbar_v2_1_21_si_transactor;axi_crossbar_v2_1_21_splitter;axi_crossbar_v2_1_21_wdata_mux;axi_crossbar_v2_1_21_wdata_router,,,../../../../../../../cpu132_gettrace/rtl/CPU_gs132;../../../../mycpu.ip_user_files/ipstatic;../../../../mycpu.ip_user_files/ipstatic/hdl,,,,,

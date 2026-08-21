@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}制作单位{% endblock %}
+{% block content %}
+<h2 class="mb-4">制作单位</h2>
+<ul class="list-group">
+  {% for s in studios %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href="{{ url_for('studio_detail', studio_name=s.name) }}">{{ s.name }}</a>
+      <span class="badge bg-secondary rounded-pill">{{ s.flagship_work }}</span>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2019.2 (64-bit)
+# SW Build 2708876 on Wed Nov  6 21:40:23 MST 2019
+# IP Build 2700528 on Thu Nov  7 00:09:20 MST 2019
+# Start of session at: Sun Dec 28 21:36:30 2025
+# Process ID: 19840
+# Current directory: D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/tlb-cache/tlb-cache.runs/synth_1
+# Command line: vivado.exe -log pipeline_cpu_display.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source pipeline_cpu_display.tcl
+# Log file: D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/tlb-cache/tlb-cache.runs/synth_1/pipeline_cpu_display.vds
+# Journal file: D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/tlb-cache/tlb-cache.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source pipeline_cpu_display.tcl -notrace

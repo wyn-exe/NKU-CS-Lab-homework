@@ -1,0 +1,427 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献} 
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+		\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+		\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+		\textbf{\Huge\textbf{\kaishu{CPU架构编程}}}
+
+		\vspace{\fill}
+    
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+    
+    \vfill
+    {\Large \today}
+    \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}  
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+%--------------------------配置--------------------------------
+\section{实验平台配置}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		配置$\backslash$需求& 编译& 程序开发& 性能测试\\
+		\midrule
+		X86&TDM-GCC& Code::Blocks& VTune\\
+		\toprule
+		CPU型号& CPU主频& L1/L2/L3 Cash\\
+		\midrule
+		Intel Core i9-14900HX& 2200MHz&2.1MB/32MB/36MB\\
+		\bottomrule
+	\end{tabular}
+	\caption{实验环境}
+	\label{table:t1}
+\end{table}
+%-------------------------实验一----------------------------------
+\section{实验一：n×n矩阵与向量内积}
+\subsection{算法设计}
+平凡算法按列访问矩阵元素，但C/C++中矩阵是行主存储，导致跨行跳跃访问，破坏了空间局部性。每次加载的Cache Line（如64B含8个double元素）仅用1个元素后失效，剩余7个浪费，频繁触发Cache Miss。优化算法改为按行访问，每一步外层循环为所有列累加一个行元素与向量的乘积，使得每次加载的Cache Line被完全利用，显著提升缓存命中率，充分发挥Cache容量优势。
+\subsubsection{平凡算法设计思路}
+核心逻辑：逐列遍历矩阵元素，每一步外层循环计算一列与向量的内积。
+
+访存模式：矩阵按列访问（C/C++中矩阵为行主存储），导致空间局部性差，频繁触发Cache Miss。
+\subsubsection{Cache优化算法设计思路}
+核心逻辑：逐行遍历矩阵元素，每一步外层循环为所有列的部分内积累加一个乘法结果。
+
+访存模式：矩阵按行访问，与行主存储匹配，充分利用空间局部性，减少Cache Miss。
+\subsection{编程实现}
+\begin{lstlisting}[title=高精度计时测试函数,frame=trbl,language={C++}]
+  void measure_time(void (*func)(), const char* name) {
+  	LARGE_INTEGER head, tail, freq;
+  	QueryPerformanceFrequency(&freq);
+  	QueryPerformanceCounter(&head);
+  	for (int i = 0; i < 100; i++) { //重复执行100次以减小误差
+  		func();
+  	}
+  	QueryPerformanceCounter(&tail);
+  	double time = (tail.QuadPart - head.QuadPart) * 1000.0 / freq.QuadPart;
+  	cout << name << "总用时" <<time << " ms ;" << "平均时间: " << time / 100 << " ms" << endl;
+  }
+\end{lstlisting}
+\begin{lstlisting}[title=平凡算法：逐列访问,frame=trbl,language={C++}]
+	void naive_column_dot() {
+		for (int i = 0; i < N; i++) {
+			col_sum[i] = 0.0;
+			for (int j = 0; j < N; j++) {
+				col_sum[i] += matrix[j][i] * vector[j]; //列主序访问
+			}
+		}
+	}
+\end{lstlisting}
+\begin{lstlisting}[title=Cache优化算法：逐行访问,frame=trbl,language={C++}]
+	void cache_optimized_dot() {
+		for (int i = 0; i < N; i++) {
+			col_sum[i] = 0.0;
+		}
+		for (int j = 0; j < N; j++) {
+			double v = vector[j];
+			for (int i = 0; i < N; i++) {
+				col_sum[i] += matrix[j][i] * v; //行主序访问
+			}
+		}
+	}
+\end{lstlisting}
+\subsection{性能测试}
+\subsubsection{测试结果（不同规模对比）}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		矩阵规模 (N)& 平凡算法平均时间 (ms)& Cache优化算法平均时间 (ms)	& 性能提升倍数\\
+		\midrule
+		64& 0.004146& 0.002851& 1.454x\\
+		128&0.020798& 0.014062& 1.479x\\
+		256& 0.081279& 0.049874& 1.630x\\
+		512& 0.383206& 0.131796& 2.908x\\
+		1024& 5.17423& 0.425339& 12.165x\\
+		2048& 16.7796& 2.47687& 6.775x\\
+		4096& 87.6138& 9.34169& 9.379x\\
+		8192& 503.446& 36.9761& 13.615x\\
+		10000& 520.511& 50.6183& 10.283x\\
+		\bottomrule
+	\end{tabular}
+	\caption{测试结果}
+	\label{table:t2}
+\end{table}
+\subsubsection{关键观察与尝试解释}
+根据实验数据与三级缓存配置（L1:2.1MB，L2:32MB，L3:36MB），结合矩阵内存占用（8N²字节），可以对实验结果做出一定分析和尝试解释。
+
+当矩阵规模较小时（如N=64，内存占用32KB），数据完全容纳于L1 Cache（2.1MB）。此时，平凡算法（逐列访问）与优化算法（逐行访问）的时间差距较小。然而，平凡算法的跨列访问模式导致Cache Line利用率较低，引发L1 Miss率升高。尽管数据完全在L1中，这种低效的局部性仍会导致流水线停滞。优化算法通过连续的行主序访问，使Cache Line高效利用，减少Miss次数，性能差距逐步扩大。
+
+当矩阵规模增至N=512（内存占用2MB）时，数据仍可完全保留在L1 Cache中，但平凡算法的跨列访问开始引发L1 Cache冲突，性能差距拉大至2.9倍。当N=1024（内存占用8MB）时，数据进入L2 Cache（32MB），平凡算法的访存模式彻底暴露缺陷：跨行跳跃访问导致L2 Cache Line无法有效复用，L2 Miss率飙升，每次Miss需从L3加载数据（延迟约40ns），CPI增大。而优化算法凭借行主序访问的连续性，在L2中保持接近100\%命中率，数据无需下沉至L3，CPI相对稳定，性能差距扩大至12.2倍。
+
+当矩阵规模超过L3 Cache容量（N=4096时内存占用128MB），内存访问延迟占主导。平凡算法的性能进一步崩塌，其跨列访问导致内存访问高度随机，引发页表跳跃，有效带宽利用率较低。且此时，平凡算法的L3 Miss率较高，会增大访存开销。优化算法则通过内存访问连续性维持优势。
+\subsection{Profiling（VTune分析）}
+\subsubsection{缓存命中率分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$ $} }& \multicolumn{2}{c|}{N=256} & \multicolumn{2}{c|}{N=1024} &\multicolumn{2}{c|}{N=4096}\\
+		\cline{3-8}
+		\multicolumn{2}{|c|}{}&$Ordinary$&$Cache$&$Ordinary$&$Cache$&$Ordinary$&$Cache$\\
+		\hline
+		\multirow{9}*{指标}&$L1 HIT$&60,000,180&58,000,174&974,002,922&986,002,958&14,904,044,712&14,674,044,022\\
+		\cline{2-8}
+		&$L1 MIS$&1,600,024&800,012&89,201,338&4,800,072&1,652,824,792&88,001,320\\
+		\cline{2-8}
+		&$L1 HitRate$&97.4\%&98.6\%&91.6\%&99.5\%&90.0\%&99.4\%\\
+		\cline{2-8}
+		&$L2 HIT$&1,600,024&0&2,400,036&5,200,078&102,801,542&86,401,296\\
+		\cline{2-8}
+		&$L2 MIS$&0&0&87,018,270&0&1,548,725,164&2,000,420\\
+		\cline{2-8}
+		&$L2 HitRate$&100\%&0\%&2.7\%&100\%&6.2\%&97.7\%\\
+		\cline{2-8}
+		&$L3 HIT$&0&0&82,817,388&200,042&1,289,470,732&0\\
+		\cline{2-8}
+		&$L3 MIS$&0&0&600,252&0&290,822,094&2,000,840\\
+		\cline{2-8}
+		&$L3 HitRate$&0\%&0\%&99.3\%&100\%&81.6\%&0\%\\
+		\hline
+	\end{tabular}
+	\caption{缓存命中率分析}
+	\label{table:t3}
+\end{table}
+\subsection{结果分析}
+为了印证之前的分析和解释，采集了数据规模在256，1024 和 4096 的两组实验，通过 VTune分析其各级缓存的访存次数和命中率，如表\ref{table:3}所示。
+
+在小规模阶段（N=256，矩阵占用512KB），数据完全容纳于L1 Cache（2.1MB），但平凡算法的逐列访问导致Cache Line利用率低下，引发L1 Miss率3.7\%（命中率96.3\%），触发160万次L2访问（全部命中）。优化算法通过行主序访问使L1命中率提升至98.6\%，L2访问次数为0，此时L2的高效命中掩盖了平凡算法的局部性缺陷，两者耗时差距仅1.6倍。
+
+当规模增至N=1024（矩阵8MB），数据进入L2 Cache（32MB），平凡算法的跨列访问彻底破坏空间局部性,L1 Miss率升至8.4\%（命中率91.6\%），触发8920万次L2访问，但L2命中率仅2.7\%（240万次命中），剩余8680万次L2 Miss下沉至L3，引发8340万次L3访问（命中率95.2\%）。优化算法凭借行主序连续性，L2命中率保持100\%，L3访问仅20万次，耗时差距拉大至12.2倍，印证了L2局部性崩塌对性能的毁灭性影响。
+
+在超大规模阶段（N=4096，矩阵128MB），数据远超L3容量（36MB），平凡算法L3 Miss率达18.4\%（2.9亿次Miss），触发2.9亿次内存访问，耗时显著增大；优化算法通过连续内存访问高效利用cache,利用L1和L2的高命中处理大多数据，虽然L3高Miss有部分进入内存，但量小且优化算法能通过内存访问连续性维持优势，性能差距来到9.4倍。
+
+%-------------------------实验二----------------------------------
+\section{实验二：n个数求和}
+\subsection{算法设计}
+对于该问题，平凡算法顺序累加（sum += a[i]）存在强数据依赖（每步依赖前一步的sum），导致流水线频繁停滞，IPC（指令/周期）被限制。多链路方法（如两路链式累加）将累加拆分为多条独立计算链（sum1 += a[i]和sum2 += a[i+1]），消除依赖后，在一个循环内同时用着多个临时变量对多个不同的位置进行累加，达到多个位置并行累加的效果，IPC提升。而递归分治通过分治策略进一步减少跨步访问，但受限于函数调用开销，性能弱于循环展开。
+\subsubsection{平凡算法设计思路}
+核心逻辑：顺序累加所有元素，单链式依赖。
+
+性能瓶颈：指令级并行性差，无法充分利用超标量流水线。
+\subsubsection{指令级并行算法设计思路}
+两路链式累加：将累加拆分为两条独立链，减少数据依赖。
+
+递归分治算法：两两相加后递归合并，利用分治减少依赖。
+
+二重循环分阶段累加：非递归实现，通过循环分阶段合并中间结果。
+\subsection{编程实现}
+\begin{lstlisting}[title=平凡算法：链式累加,frame=trbl,language={C++}]
+	double naive_sum(double* data_array, int n) {
+		double sum = 0.0;
+		for (int i = 0; i < n; i++) {
+			sum += data_array[i];
+		}
+		return sum;
+	}
+\end{lstlisting}
+\begin{lstlisting}[title=两路链式累加,frame=trbl,language={C++}]
+	double unrolled_sum(double* data_array, int n) {
+		double sum1 = 0.0, sum2 = 0.0;
+		for (int i = 0; i < n; i += 2) {
+			sum1 += data_array[i];
+			sum2 += data_array[i + 1];
+		}
+		return sum1 + sum2;
+	}
+\end{lstlisting}
+\begin{lstlisting}[title=递归分治算法,frame=trbl,language={C++}]
+	void recursive_sum(double* a, int n) {
+		if (n == 1) return;
+		for (int i = 0; i < n / 2; i++) {
+			a[i] += a[n - i - 1];
+		}
+		recursive_sum(a, n / 2);
+	}
+\end{lstlisting}
+\begin{lstlisting}[title=二重循环分阶段累加,frame=trbl,language={C++}]
+	double iterative_sum(double* a, int n) {
+		int m = n;
+		while (m > 1) {
+			for (int i = 0; i < m / 2; i++) {
+				a[i] = a[i * 2] + a[i * 2 + 1];
+			}
+			m /= 2;
+		}
+		return a[0];
+	}
+\end{lstlisting}
+\subsection{性能测试}
+\subsubsection{测试结果（不同规模对比）}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		n& 平凡算法(ms)& 两路链式(ms)& 递归分治(ms)& 二重循环(ms)\\
+		\midrule
+		9& 0.002315& 0.001176& 0.001728& 0.001981\\
+		11& 0.01142& 0.00462& 0.00617& 0.00663\\
+		13& 0.0337& 0.0158& 0.02008& 0.02154\\
+		15& 0.08932& 0.04832& 0.05855& 0.06259\\
+		17& 0.41218& 0.19498& 0.32907& 0.4541\\
+		18& 0.98426& 0.5837& 0.68102& 0.52231\\
+		19& 1.94406& 1.04768& 1.08826& 0.70162\\
+		21& 3.26595& 1.8186& 2.16697& 2.82545\\
+		23& 13.1043& 6.96917& 10.6366& 12.0525\\
+		24& 26.7308& 14.5883& 18.5498& 22.6445\\
+		25& 52.1121& 29.1828& 39.7539& 48.8386\\
+		\bottomrule
+	\end{tabular}
+	\caption{平均用时}
+	\label{table:t4}
+\end{table}
+\subsubsection{关键观察与尝试解释}
+两路链式累加通过指令级并行性和连续内存访问，在中小规模下保持绝对优势；递归分治因分治策略的渐进局部性优化，在极端规模下表现稳健；二重循环通过分阶段内存压缩，在特定规模区间具备优势。链式累加则因强数据依赖和随机访问模式全程垫底。
+\subsection{Profiling（VTune分析）}
+\subsubsection{CPI分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$naive_sum$} }& \multicolumn{4}{c|}{规模}\\
+		\cline{3-6}
+		\multicolumn{2}{|c|}{}&$n=15$&$n=18$&$n=21$&$n=24$\\
+		\hline
+		\multirow{4}*{指标}&$CPU Time$&1.653ms&4.960ms&9.921ms&297.619ms\\
+		\cline{2-6}
+		&$Clockticks$&2,000,003&24,000,036&22,000,033&1,390,002,085\\
+		\cline{2-6}
+		&$Instructions Retired$&4,000,006&36,000,054&38,000,057&2,350,003,525\\
+		\cline{2-6}
+		&$CPI Rate$&0.500&0.667&0.579&0.591\\
+		\hline
+	\end{tabular}
+	\caption{平凡算法CPI}
+	\label{table:t5}
+\end{table}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$unrolled_sum$} }& \multicolumn{4}{c|}{规模}\\
+		\cline{3-6}
+		\multicolumn{2}{|c|}{}&$n=15$&$n=18$&$n=21$&$n=24$\\
+		\hline
+		\multirow{4}*{指标}&$CPU Time$&0usec&4.134ms&33.896ms&152.117ms\\
+		\cline{2-6}
+		&$Clockticks$&2,000,003&10,000,015&90,000,135&736,001,104\\
+		\cline{2-6}
+		&$Instructions Retired$&4,000,006&30,000,045&256,000,384&2,014,003,021\\
+		\cline{2-6}
+		&$CPI Rate$&0.500&0.333&0.352&0.365\\
+		\hline
+	\end{tabular}
+	\caption{两路链式CPI}
+	\label{table:t6}
+\end{table}
+\subsection{结果分析}
+从VTune数据可见，两路链式累加算法在不同规模下均显著优于平凡算法，其核心优势源于指令级并行性优化与流水线效率提升。可从以下两方面解析：
+
+1. 指令级并行性提升：
+平凡算法的单链式累加（sum += a[i]）存在强数据依赖，每条加法指令需等待前一条结果，导致流水线频繁空闲。两路链式将累加拆分为独立的两条链，消除依赖后，超标量流水线可同时执行两组加法指令，IPC提升。从指令数对比看，n=24时两路链式仅需20.1亿条指令，少于平凡算法的23.5亿条，表明其通过减少循环指令数进一步优化了指令效率。
+
+2. 流水线停滞减少：
+平凡算法的强依赖导致流水线停滞，以n=24为例，CPI=0.591意味着每指令平均消耗0.59周期，而两路链式CPI=0.365，效率提升38\%。这一差距在小规模（n=15）时本应显现，但因指令数少，时间差异不显著；当规模扩大至n=18时，两路链式CPI降至0.333，耗时进一步缩小。随着规模进一步增大（n=24），两路链式可能是通过减少分支预测失败率和缓存局部性优化，进一步巩固了优势。
+%-------------------------实验总结----------------------------------
+\section{实验总结和思考}
+\subsection{对比两个实验的异同}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		对比维度& 矩阵内积实验& n数求和实验\\
+		\midrule
+		优化目标&提升Cache局部性&充分发挥CPU超标量优化\\
+		关键优化手段&行主序访问&超标量并行、分治策略\\
+		性能瓶颈&Cache Miss&数据依赖、分支预测失败\\
+		\bottomrule
+	\end{tabular}
+	\caption{两实验对比}
+	\label{table:t7}
+\end{table}
+\subsection{总结}
+Cache优化优先级：矩阵计算中，改善访存模式（如行主序访问）的收益很高，尤其当数据规模超过缓存容量时。
+
+指令级并行潜力：在计算密集型任务中，通过减少数据依赖（如超标量并行、循环展开）可显著提升IPC，但需减少函数调用开销。
+
+规模敏感性：
+
+矩阵实验：性能拐点在数据规模超过L2 Cache时（N=256）。
+
+求和实验：递归算法在n>20时性能急剧下降，受栈深度等因素影响。
+
+工具验证必要性：善用VTune等性能分析工具精准定位瓶颈（如Cache Miss、IPC），避免盲目优化。
+\subsection{进一步优化思考}
+矩阵内积：将矩阵划分为与Cache大小匹配的子块，可能进一步提升效率。
+
+n数求和：展开为4路或8路，可能进一步减少依赖。
+
+\section{链接}
+\textbf{Gitee链接}  \href{https://gitee.com/sky_whale/parallel-programming-with-nku}{Gitee}
+
+\end{document}

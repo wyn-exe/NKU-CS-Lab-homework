@@ -1,0 +1,25 @@
+\babel@toc {UKenglish}{}\relax 
+\contentsline {section}{\numberline {1}\kaishu {论文研读分析}}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}\kaishu {论文一：《Generative Adversarial Nets》—— 对抗生成网络的开山之作}}{1}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}\kaishu {核心思想}}{1}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}\kaishu {关键贡献}}{1}{subsubsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.3}\kaishu {模型局限}}{2}{subsubsection.1.1.3}%
+\contentsline {subsubsection}{\numberline {1.1.4}\kaishu {在本课题中的定位}}{2}{subsubsection.1.1.4}%
+\contentsline {subsection}{\numberline {1.2}\kaishu {论文二：《PixelCNN++: Improving the PixelCNN with Discretized Logistic Mixture Likelihood and Other Modifications》—— 精巧的自回归与显式似然建模}}{2}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}\kaishu {核心思想}}{2}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}\kaishu {关键贡献}}{3}{subsubsection.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.3}\kaishu { 模型局限}}{4}{subsubsection.1.2.3}%
+\contentsline {subsubsection}{\numberline {1.2.4}\kaishu {在本课题中的定位}}{4}{subsubsection.1.2.4}%
+\contentsline {subsection}{\numberline {1.3}\kaishu {论文三：《How to Train Your Energy-Based Models》—— 能量模型的理论与实践指南}}{4}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}\kaishu {核心思想}}{4}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}\kaishu {关键贡献}}{5}{subsubsection.1.3.2}%
+\contentsline {subsubsection}{\numberline {1.3.3}\kaishu {模型局限}}{6}{subsubsection.1.3.3}%
+\contentsline {subsubsection}{\numberline {1.3.4}\kaishu {在本课题中的定位}}{6}{subsubsection.1.3.4}%
+\contentsline {subsection}{\numberline {1.4}\kaishu {论文四：《Denoising Diffusion Probabilistic Models》 (DDPM)—— 融合多范式思想的生成模型新王者}}{6}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}\kaishu {核心思想}}{6}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}\kaishu {与其他范式的思想融合}}{7}{subsubsection.1.4.2}%
+\contentsline {subsubsection}{\numberline {1.4.3}\kaishu {关键贡献与局限}}{8}{subsubsection.1.4.3}%
+\contentsline {subsubsection}{\numberline {1.4.4}\kaishu {在本课题中的定位}}{8}{subsubsection.1.4.4}%
+\contentsline {section}{\numberline {2}\kaishu {总结与收获}}{9}{section.2}%
+\contentsline {subsection}{\numberline {2.1}\kaishu {各范式对比总结}}{9}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}\kaishu {技术演进的脉络与收获}}{9}{subsection.2.2}%

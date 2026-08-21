@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n}{d}\PYG{o}{=}\PYG{n}{ss\PYGZus{}f}\PYG{o}{.}\PYG{n}{restructure\PYGZus{}polynomial}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{,}\PYG{n}{d\PYGZus{}23}\PYG{p}{,}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{n}{p}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} 这一步是为了计算平均值}
+\PYG{n}{d} \PYG{o}{=} \PYG{n}{d} \PYG{o}{/} \PYG{l+m+mi}{3}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{得票结果为：}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{d}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\end{MintedVerbatim}

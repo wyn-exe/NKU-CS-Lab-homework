@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}详情 - {{ anime.title }}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <!-- 基本信息卡片 -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title">{{ anime.title }}</h3>
+        <p><strong>年份：</strong>{{ anime.year }} &nbsp; <strong>地区：</strong>{{ anime.region }}</p>
+        <p><strong>播放量：</strong>{{ anime.views | int }} &nbsp; <strong>评分：</strong>{{ anime.rating }}</p>
+      </div>
+    </div>
+
+    <div class="mb-3 row align-items-center">
+      <label class="col-sm-2 col-form-label">评分</label>
+      <div class="col-sm-2">
+        <h5>{{ anime.rating or '—' }}</h5>
+      </div>
+      <div class="col-sm-4">
+        <form class="d-flex" method="post" action="{{ url_for('update_rating', anime_id=anime.anime_id) }}">
+          <input name="new_rating" 
+                 type="number" step="0.1" min="0" max="10"
+                 class="form-control me-2" placeholder="新评分">
+          <button class="btn btn-outline-primary">更新评分</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 标签管理 -->
+    <div class="card mb-4">
+      <div class="card-header">标签管理</div>
+      <div class="card-body">
+        {% for t in tags %}
+          <span class="badge bg-info text-dark me-1">
+            {{ t }} <a href="{{ url_for('remove_tag', anime_id=anime.anime_id, tag_name=t) }}" class="text-danger ms-1 text-decoration-none">×</a>
+          </span>
+        {% endfor %}
+        <form class="mt-3 d-flex" method="post" action="{{ url_for('add_tag', anime_id=anime.anime_id) }}">
+          <input name="tag" class="form-control me-2" placeholder="新增标签">
+          <button class="btn btn-outline-primary">添加</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 导演管理 -->
+    <div class="card mb-4">
+      <div class="card-header">导演管理</div>
+      <div class="card-body">
+        {% for d in directors %}
+          <span class="badge bg-warning text-dark me-1">
+            {{ d.name }} <a href="{{ url_for('remove_director', anime_id=anime.anime_id, director_id=d.director_id) }}" class="text-danger ms-1 text-decoration-none">×</a>
+          </span>
+        {% endfor %}
+        <form class="mt-3 d-flex" method="post" action="{{ url_for('add_director', anime_id=anime.anime_id) }}">
+          <select name="director_id" class="form-select me-2">
+            {% for d in all_directors %}
+              <option value="{{ d.director_id }}">{{ d.name }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-outline-primary">添加导演</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 声优管理 -->
+    <div class="card mb-4">
+      <div class="card-header">声优管理</div>
+      <div class="card-body">
+        {% for s in seiyuus %}
+          <span class="badge bg-success text-dark me-1">
+            {{ s.name }} <a href="{{ url_for('remove_seiyuu', anime_id=anime.anime_id, seiyuu_id=s.seiyuu_id) }}" class="text-danger ms-1 text-decoration-none">×</a>
+          </span>
+        {% endfor %}
+        <form class="mt-3 d-flex" method="post" action="{{ url_for('add_seiyuu', anime_id=anime.anime_id) }}">
+          <select name="seiyuu_id" class="form-select me-2">
+            {% for s in all_seiyuu %}
+              <option value="{{ s.seiyuu_id }}">{{ s.name }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-outline-primary">添加声优</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 改编管理 -->
+    <div class="card mb-4">
+      <div class="card-header">改编管理</div>
+      <div class="card-body">
+        {% for a in adaptations %}
+          <div class="d-flex align-items-center mb-1">
+            <span class="me-auto">{{ a.type }} —《{{ a.original_title }}》 by {{ a.original_author }}</span>
+            <a href="{{ url_for('remove_adaptation', anime_id=anime.anime_id, original_title=a.original_title, original_author=a.original_author) }}" class="text-danger">×</a>
+          </div>
+        {% endfor %}
+        <form class="row gx-2" method="post" action="{{ url_for('add_adaptation', anime_id=anime.anime_id) }}">
+          <div class="col"><select name="original_title" class="form-select">
+            {% for o in all_originals %}
+              <option value="{{ o.title }}">{{ o.title }}</option>
+            {% endfor %}
+          </select></div>
+          <div class="col"><select name="original_author" class="form-select">
+            {% for o in all_originals %}
+              <option value="{{ o.author }}">{{ o.author }}</option>
+            {% endfor %}
+          </select></div>
+          <div class="col"><input name="adaptation_type" class="form-control" placeholder="改编类型"></div>
+          <div class="col-auto"><button class="btn btn-outline-primary">添加</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="list-group shadow-sm">
+      <a class="list-group-item list-group-item-action active">快捷操作</a>
+      <a href="{{ url_for('edit', anime_id=anime.anime_id) }}" class="list-group-item list-group-item-action">编辑番剧</a>
+      <a href="{{ url_for('delete', anime_id=anime.anime_id) }}" class="list-group-item list-group-item-action text-danger">删除番剧</a>
+      <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action">返回列表</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

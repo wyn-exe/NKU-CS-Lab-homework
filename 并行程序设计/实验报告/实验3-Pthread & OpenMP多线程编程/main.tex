@@ -1,0 +1,625 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\appendixpagename}{附录}
+\renewcommand{\refname}{参考文献} 
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+		\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+		\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+		\textbf{\Huge\textbf{\kaishu{Pthread \& OpenMP多线程编程}}}
+
+		\vspace{\fill}
+    
+    % \textbf{\Large \textbf{并行程序设计期末实验报告}}\\[0.8cm]
+    % \HRule \\[0.9cm]
+    % \HRule \\[2.0cm]
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+    
+    \vfill
+    {\Large \today}
+    \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}  
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\tableofcontents
+\newpage
+
+%--------------------------目标--------------------------------
+\section{实验目标}
+本实验旨在探索数论变换（NTT）在多项式乘法中的多线程优化方法，重点关注两种并行化场景：
+
+朴素多线程优化：通过将NTT蝶形运算的循环层划分到多个线程，利用线程级并行性加速计算。蝶形运算的独立性使得不同线程可处理不同数据块，通过同步机制保障运算正确性。
+
+多模数CRT合并优化：针对超大模数（如超过64位）的计算场景，将模数分解为多个小模数，在每个模数上并行执行NTT，最后通过中国剩余定理（CRT）合并结果。该方法在同态加密等需要大模数的应用中具有显著优势。
+
+实验覆盖Pthread和OpenMP两种多线程编程模型，通过对比分析不同优化策略的性能提升效果。
+%-------------------------配置----------------------------------
+\section{实验平台配置}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{ccccccccccc}
+		\toprule  
+		平台$\backslash$ 处理器& 操作系统& 编译器\\
+		\midrule
+		ARM/华为鲲鹏处理器& OpenEuler& GCC\\
+		\bottomrule
+	\end{tabular}
+	\caption{实验环境}
+	\label{table:t1}
+\end{table}
+%-------------------------实验内容----------------------------------
+\section{Pthread多线程编程}
+\subsection{朴素NTT的Pthread多线程优化}
+\subsubsection{设计思想}
+在迭代NTT的蝶形运算中，每层循环的段（segments）之间相互独立。通过将段分配给不同线程，实现并行计算。具体地，外层循环（h）按蝶形运算的层级展开，内层循环（seg）划分到多个线程，每个线程处理连续的若干段。通过pthread\_barrier保证每层计算完成后同步所有线程，确保数据一致性。
+\subsubsection{代码实现}
+在NTT\_Iteration\_Pthread函数中，首先对输入进行位逆序重排，随后创建多个线程，每个线程执行butterfly\_worker函数并处理若干段的蝶形操作。线程通过pthread\_barrier\_wait同步进入下一层。乘法函数NTT\_Iteration\_multiply\_Pthread在完成正变换、点值乘与逆变换后，归一化输出。
+\begin{lstlisting}[title=朴素NTT的Pthread多线程优化,frame=trbl,language={C++}]
+	const int MAX_THREADS = 8;
+	struct ThreadArgs {
+		LL *a;
+		int len;
+		int op;
+		LL g;
+		LL p;
+		int thread_id;
+		int num_threads;
+		pthread_barrier_t *barrier;
+	};
+	
+	void* butterfly_worker(void* args) {
+		ThreadArgs* t = (ThreadArgs*)args;
+		LL *a = t->a;
+		int len = t->len;
+		int op  = t->op;
+		LL  g   = t->g;
+		LL  p   = t->p;
+		int id  = t->thread_id;
+		int T   = t->num_threads;
+		auto barrier = t->barrier;
+	
+		// 每层 h
+		for (int h = 2; h <= len; h <<= 1) {
+			// 当前层段数
+			int segments = len / h;
+			// 均分到各线程
+			int chunk = (segments + T - 1) / T;
+			int start_seg = id * chunk;
+			int end_seg = std::min(start_seg + chunk, segments);
+			// 计算本层根
+			LL root = (op == 1 ? g : qpowll(g, p - 2, p));
+			LL wn = qpowll(root, (p - 1) / h, p);
+			// 对每个分配到的 segment 做蝶形
+			for (int seg = start_seg; seg < end_seg; seg++) {
+				int base = seg * h;
+				LL w = 1;
+				for (int k = base; k < base + h/2; k++) {
+					LL tval = a[k + h/2] * w % p;
+					a[k + h/2] = (a[k] - tval + p) % p;
+					a[k]       = (a[k] + tval)       % p;
+					w = w * wn % p;
+				}
+			}
+			// 同步到下一层
+			pthread_barrier_wait(barrier);
+		}
+		return nullptr;
+	}
+	
+	void NTT_Iteration_Pthread(LL *a, int len, int op, LL g, LL p) {
+		// 位逆序 (单线程)
+		for (int i = 1, j = 0; i < len - 1; i++) {
+			for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+			if (i < j) std::swap(a[i], a[j]);
+		}
+		pthread_barrier_t barrier;
+		pthread_barrier_init(&barrier, nullptr, MAX_THREADS);
+		// 启动线程
+		pthread_t threads[MAX_THREADS];
+		ThreadArgs args[MAX_THREADS];
+		for (int i = 0; i < MAX_THREADS; i++) {
+			args[i] = { a, len, op, g, p, i, MAX_THREADS, &barrier };
+			pthread_create(&threads[i], nullptr, butterfly_worker, &args[i]);
+		}
+		// 等待结束
+		for (int i = 0; i < MAX_THREADS; i++) {
+			pthread_join(threads[i], nullptr);
+		}
+		pthread_barrier_destroy(&barrier);
+	}
+	
+	void NTT_Iteration_multiply_Pthread(const LL *A, const LL *B, LL *C, int n, LL p) {
+		int N = 2*n - 1;
+		int len = 1;
+		while (len < N) len <<= 1;
+		LL inv_len = qpowll(len, p - 2, p);
+		
+		// 拷贝并扩展
+		LL *a = new LL[len]();
+		LL *b = new LL[len]();
+		for (int i = 0; i < n; i++) {
+			a[i] = A[i];
+			b[i] = B[i];
+		}
+		
+		// 正变换
+		NTT_Iteration_Pthread(a, len, 1, 3, p);
+		NTT_Iteration_Pthread(b, len, 1, 3, p);
+		// 点值乘
+		for (int i = 0; i < len; i++) {
+			a[i] = a[i] * b[i] % p;
+		}
+		// 逆变换
+		NTT_Iteration_Pthread(a, len, -1, 3, p);
+		// 乘上 inv_len
+		for (int i = 0; i < N; i++) {
+			C[i] = a[i] * inv_len % p;
+		}
+		
+		delete[] a;
+		delete[] b;
+	}
+\end{lstlisting}
+\subsubsection{性能分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$time/us$} }& \multicolumn{1}{c|}{n = 4} & \multicolumn{3}{c|}{n = 131072} \\
+		\cline{3-6}
+		\multicolumn{2}{|c|}{}&$p = 7340033$&$p = 7340033$&$p = 104857601$&$p = 469762049$\\
+		\hline
+		\multirow{2}*{算法}&$NTT\_Iteration\_multiply$&0.00449&83.5684&88.2875&91.4507\\
+		\cline{2-2}
+		&$NTT\_Iteration\_multiply\_Pthread$&1.88915&29.178&30.7708& 31.4566\\
+		\hline
+	\end{tabular}
+	\caption{运行结果}
+	\label{table:t2}
+\end{table}
+性能分析显示，对于n=131072和p=7340033的情况，优化后延迟从83.57μs降至29.18μs，加速比约2.86倍。然而在小规模问题（n=4）上，由于线程创建和同步开销，性能反而下降（0.00449μs→1.89μs）。值得注意的是，在尝试超大模数1337006139375617时出现了结果错误，表明朴素方法对大整数运算的支持有限。
+
+\subsection{CRT合并的Pthread多线程优化}
+\subsubsection{多模数CRT合并NTT}
+\paragraph{设计思想}
+为支持极大模数的NTT，本实验采用四个小模数分别对输入执行NTT多项式乘法，点乘后通过中国剩余定理将结果映射回目标大模数域,最终合并结果满足目标模数mod p。该合并方法适用于同态加密等高精度场景。
+\paragraph{代码实现}
+函数NTT\_CRT\_4mod中，分别在每个模数上调用NTT\_Iteration\_multiply处理，通过\_\_int128中间计算保证精度，最后逐项通过crt4函数进行模数合并，得到最终结果。
+\begin{lstlisting}[title=多模数合并NTT\_CRT,frame=trbl,language={C++}]
+	LL inv(LL a, LL p) { return qpowll(a % p, p - 2, p); }
+	LL crt4(LL r1, LL r2, LL r3, LL r4, LL m1, LL m2, LL m3, LL m4, LL mod) {
+		//如果 mod 恰好等于某个分模，就直接返回对应余数
+		if (mod == m1) return (r1 % m1 + m1) % m1;
+		if (mod == m2) return (r2 % m2 + m2) % m2;
+		if (mod == m3) return (r3 % m3 + m3) % m3;
+		if (mod == m4) return (r4 % m4 + m4) % m4;
+		
+		// 合并前两模 → M12
+		__int128 M1 = m1, M2 = m2;
+		__int128 t12 = (__int128)(r2 - r1) * inv(m1 % m2, m2) % M2;
+		if (t12 < 0) t12 += m2;
+		__int128 x12 = M1 * t12 + r1;       //  mod M12
+		
+		// 合并第三模 → M123
+		__int128 M12 = M1 * M2;
+		__int128 t123 = (__int128)(r3 - x12) * inv((LL)(M12 % m3), m3) % m3;
+		if (t123 < 0) t123 += m3;
+		__int128 x123 = x12 + M12 * t123;   //  mod M123
+		
+		// 合并第四模 → M1234
+		__int128 M123 = M12 * m3;
+		__int128 t1234 = (__int128)(r4 - x123) * inv((LL)(M123 % m4), m4) % m4;
+		if (t1234 < 0) t1234 += m4;
+		__int128 x1234 = x123 + M123 * t1234; //  mod M1234
+		
+		// 最后对目标 mod 取一次
+		LL ans = (LL)(x1234 % mod);
+		return (ans + mod) % mod;
+	}
+	void NTT_CRT_4mod(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+		const int p1 = 998244353;
+		const int p2 = 1004535809;
+		const int p3 = 469762049;
+		const int p4 = 167772161;
+		
+		int *a1=new int[n], *b1=new int[n], *r1=new int[2*n];
+		int *a2=new int[n], *b2=new int[n], *r2=new int[2*n];
+		int *a3=new int[n], *b3=new int[n], *r3=new int[2*n];
+		int *a4=new int[n], *b4=new int[n], *r4=new int[2*n];
+		
+		for(int i=0;i<n;i++){
+			a1[i]=(a[i]%p1+p1)%p1; b1[i]=(b[i]%p1+p1)%p1;
+			a2[i]=(a[i]%p2+p2)%p2; b2[i]=(b[i]%p2+p2)%p2;
+			a3[i]=(a[i]%p3+p3)%p3; b3[i]=(b[i]%p3+p3)%p3;
+			a4[i]=(a[i]%p4+p4)%p4; b4[i]=(b[i]%p4+p4)%p4;
+		}
+		NTT_Iteration_multiply(a1,b1,r1,n,p1);
+		NTT_Iteration_multiply(a2,b2,r2,n,p2);
+		NTT_Iteration_multiply(a3,b3,r3,n,p3);
+		NTT_Iteration_multiply(a4,b4,r4,n,p4);
+		
+		// CRT 合并
+		for(int i=0;i<2*n-1;i++){
+			ab[i] = crt4(
+			r1[i], r2[i], r3[i], r4[i],
+			p1, p2, p3, p4,
+			LLp
+			);
+		}
+		
+		// 释放
+		delete[] a1; delete[] b1; delete[] r1;
+		delete[] a2; delete[] b2; delete[] r2;
+		delete[] a3; delete[] b3; delete[] r3;
+		delete[] a4; delete[] b4; delete[] r4;
+	}
+\end{lstlisting}
+\subsubsection{NTT\_CRT\_4mod的Pthread多线程优化}
+\paragraph{设计思想}
+由于不同模数之间的NTT乘法完全独立，天然适合并行。我们创建四个线程，分别计算四个模数上的NTT乘法，最后统一在主线程中进行CRT合并。
+\paragraph{代码实现}
+在NTT\_CRT\_4mod\_Pthread中，通过构造NTTTask结构体传递参数，每个线程调用thread\_ntt\_mul完成自身模数上的NTT乘法，并填充对应输出数组。主线程随后执行CRT合并。
+\begin{lstlisting}[title=多模数合并NTT的Pthread多线程优化,frame=trbl,language={C++}]
+	struct NTTTask {// 单次 NTT 乘法任务参数
+		const LL* a;    // 原始输入 a
+		const LL* b;    // 原始输入 b
+		int    n;       // 多项式长度
+		int    p;       // 当前模数
+		int    g;       // 原根
+		int*   res;     // 输出缓冲
+	};
+	
+	void* thread_ntt_mul(void* arg){// 线程执行函数
+		NTTTask* task = (NTTTask*)arg;
+		int n = task->n, p = task->p, g = task->g;
+		int N = 2 * n - 1, len = 1;
+		while(len < N) len <<= 1;
+		int ni = qpow(len, p - 2, p);
+		
+		// 分配临时数组
+		int *A = new int[len](), *B = new int[len]();
+		for(int i = 0; i < n; i++){
+			A[i] = (int)((task->a[i] % p + p) % p);
+			B[i] = (int)((task->b[i] % p + p) % p);
+		}
+		// NTT、点乘、逆 NTT
+		NTT_Iteration(A, len, 1, g, p);
+		NTT_Iteration(B, len, 1, g, p);
+		for(int i = 0; i < len; i++) A[i] = (int)((1LL * A[i] * B[i]) % p);
+		NTT_Iteration(A, len, -1, g, p);
+		for(int i = 0; i < N; i++){
+			task->res[i] = (int)((1LL * A[i] * ni) % p);
+		}
+		delete[] A;
+		delete[] B;
+		return nullptr;
+	}
+	
+	void NTT_CRT_4mod_Pthread(const LL *a, const LL *b, LL *ab, int n, LL LLp){// 并行 CRT-NTT 乘法
+		static const int p1 = 998244353, p2 = 1004535809,
+		p3 = 469762049,  p4 = 167772161;
+		// 为每路分配结果缓冲
+		int *r1 = new int[2*n], *r2 = new int[2*n],
+		*r3 = new int[2*n], *r4 = new int[2*n];
+		
+		// 填充 Task 参数
+		NTTTask tasks[4] = {
+			{a,b,n,p1,g, r1},
+			{a,b,n,p2,g, r2},
+			{a,b,n,p3,g, r3},
+			{a,b,n,p4,g, r4},
+		};
+		pthread_t tids[4];
+		// 创建线程
+		for(int i = 0; i < 4; i++){
+			if(pthread_create(&tids[i], nullptr, thread_ntt_mul, &tasks[i]) != 0){
+				perror("pthread_create");
+				exit(1);
+			}
+		}
+		// 等待线程完成
+		for(int i = 0; i < 4; i++){
+			pthread_join(tids[i], nullptr);
+		}
+		
+		// CRT 合并到目标模 LLp
+		for(int i = 0; i < 2*n - 1; i++){
+			ab[i] = crt4(r1[i], r2[i], r3[i], r4[i],
+			p1, p2, p3, p4,
+			LLp);
+		}
+		
+		delete[] r1; delete[] r2;
+		delete[] r3; delete[] r4;
+	}
+\end{lstlisting}
+\subsubsection{性能分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$time/us$} }& \multicolumn{1}{c|}{n = 4} & \multicolumn{4}{c|}{n = 131072} \\
+		\cline{3-7}
+		\multicolumn{2}{|c|}{}&$p = 7340033$&$p = 7340033$&$104857601$&$469762049$&$1337006139375617$\\
+		\hline
+		\multirow{3}*{算法}&$NTT\_Iteration\_multiply$&0.00449&83.5684&88.2875&91.4507&结果错误\\
+		\cline{2-3}
+		&$NTT\_CRT\_4mod$&0.04388 &643.352&644.462&372.949&648.741\\
+		&$NTT\_CRT\_4mod\_Pthread$&0.872592&370.791&373.941&98.1992&374.908\\
+		\hline
+	\end{tabular}
+	\caption{运行结果}
+	\label{table:t3}
+\end{table}
+性能分析表明，对于n=131072，多模数方法能正确处理超大模数（如1337006139375617），而朴素方法失败。p=1337006139375617时的用时从648.741μs降至374.908μs，加速明显。但相比朴素Pthread优化（27.2072μs），CRT方法开销更大，这是其支持大模数必须付出的代价。
+
+
+\section{OpenMP多线程编程}
+\subsection{朴素NTT的OpenMP多线程优化}
+\subsubsection{设计思想}
+OpenMP实现采用更高级的并行抽象。设计上使用\#pragma omp parallel for自动划分循环迭代，隐式处理线程创建和同步。代码结构更简洁，NTT\_Iteration\_OpenMP中通过schedule(static)保证负载均衡。
+\subsubsection{代码实现}
+\begin{lstlisting}[title=朴素NTT的OpenMP多线程优化,frame=trbl,language={C++}]
+	void NTT_Iteration_OpenMP(LL *a, int len, int op, LL g, LL p) {
+		// 1. 位逆序重排
+		for (int i = 1, j = 0; i < len - 1; i++) {
+			for (int k = len >> 1; (j ^= k) < k; k >>= 1);
+			if (i < j) swap(a[i], a[j]);
+		}
+		
+		// 2. 分层蝶形运算
+		for (int h = 2; h <= len; h <<= 1) {
+			int segments = len / h;
+			// 根据正/逆变换选择根
+			LL root = (op == 1 ? g : qpowll(g, p - 2, p));
+			LL wn   = qpowll(root, (p - 1) / h, p);
+			
+			// 并行处理每个 segment
+			#pragma omp parallel for schedule(static)
+			for (int seg = 0; seg < segments; seg++) {
+				int base = seg * h;
+				LL w = 1;
+				for (int k = base; k < base + h/2; k++) {
+					LL tval    = a[k + h/2] * w % p;
+					a[k + h/2] = (a[k] - tval + p) % p;
+					a[k]       = (a[k] + tval)       % p;
+					w = w * wn % p;
+				}
+			}
+			// 到这里隐式有一个 barrier，同步所有线程
+		}
+	}
+	void NTT_Iteration_multiply_openmp(const LL *A, const LL *B, LL *C, int n, LL p) {
+		int N = 2 * n - 1;
+		int len = 1;
+		while (len < N) len <<= 1;
+		LL inv_len = qpowll(len, p - 2, p);
+		
+		// 申请临时数组并初始化
+		vector<LL> a(len), b(len);
+		for (int i = 0; i < n; i++) {
+			a[i] = A[i];
+			b[i] = B[i];
+		}
+		// 其余位置默认 0（vector 已经自动初始化为 0）
+		
+		// 正变换
+		NTT_Iteration_OpenMP(a.data(), len,  1, 3, p);
+		NTT_Iteration_OpenMP(b.data(), len,  1, 3, p);
+		
+		// 点值乘，完全并行
+		#pragma omp parallel for schedule(static)
+		for (int i = 0; i < len; i++) {
+			a[i] = a[i] * b[i] % p;
+		}
+		
+		// 逆变换
+		NTT_Iteration_OpenMP(a.data(), len, -1, 3, p);
+		
+		// 归一化并写回 C
+		#pragma omp parallel for schedule(static)
+		for (int i = 0; i < N; i++) {
+			C[i] = a[i] * inv_len % p;
+		}
+	}
+\end{lstlisting}
+\subsubsection{性能分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$time/us$} }& \multicolumn{1}{c|}{n = 4} & \multicolumn{3}{c|}{n = 131072} \\
+		\cline{3-6}
+		\multicolumn{2}{|c|}{}&$p = 7340033$&$p = 7340033$&$p = 104857601$&$p = 469762049$\\
+		\hline
+		\multirow{2}*{算法}&$NTT\_Iteration\_multiply$&0.00449&83.5684&88.2875&91.4507\\
+		\cline{2-3}
+		&$NTT\_Iteration\_multiply\_Pthread$&1.88915&29.178&30.7708& 31.4566\\
+		&$NTT\_Iteration\_multiply\_openmp$&0.810621&27.3698&27.9615&28.3022\\
+		\hline
+	\end{tabular}
+	\caption{运行结果}
+	\label{table:t4}
+\end{table}
+对比单线程（83–91μs）提升约3倍，与Pthread版本几乎持平甚至略优,可能有因OpenMP线程池复用减少开销的原因；小规模数据n=4仍存在约0.8μs开销，略逊于串行；同样在大模数下出现计算错误，验证了朴素方法的局限性。
+
+\subsection{CRT合并的OpenMP多线程优化}
+\subsubsection{设计思想}
+类似Pthread思路，四个模数上的NTT乘法可独立并行，通过OpenMP的\#pragma omp parallel sections实现。每段通过单独section并发执行。CRT合并过程通过\#pragma omp parallel for优化。
+\subsubsection{代码实现}
+在NTT\_CRT\_4mod\_openmp函数中，利用OpenMP sections对四模数NTT乘法并发执行，随后并行遍历合并每个输出系数。
+\begin{lstlisting}[title=NTT\_CRT\_4mod\_openmp,frame=trbl,language={C++}]
+	// 多模数合并NTT的Openmp并行
+	void NTT_CRT_4mod_openmp(const LL *a, const LL *b, LL *ab, int n, LL LLp) {
+		const LL p1 = 998244353, p2 = 1004535809,
+		p3 = 469762049,  p4 = 167772161;
+		const LL g  = 3;  // 四个模素根均可取 3
+		
+		int N    = 2*n - 1;
+		int lenR = N;     // 合并结果长度
+		
+		// 为四路结果分配缓冲
+		vector<LL> r1(lenR), r2(lenR), r3(lenR), r4(lenR);
+		
+		// 并行执行四路 NTT 乘法
+		#pragma omp parallel sections
+		{
+			#pragma omp section
+			{
+				NTT_Iteration_multiply_openmp(a, b, r1.data(), n, p1);
+			}
+			#pragma omp section
+			{
+				NTT_Iteration_multiply_openmp(a, b, r2.data(), n, p2);
+			}
+			#pragma omp section
+			{
+				NTT_Iteration_multiply_openmp(a, b, r3.data(), n, p3);
+			}
+			#pragma omp section
+			{
+				NTT_Iteration_multiply_openmp(a, b, r4.data(), n, p4);
+			}
+		}
+		
+		// 并行 CRT 合并到目标模 LLp
+		#pragma omp parallel for schedule(static)
+		for (int i = 0; i < lenR; i++) {
+			ab[i] = crt4(
+			r1[i], r2[i], r3[i], r4[i],
+			p1, p2, p3, p4,
+			LLp
+			);
+		}
+	}
+\end{lstlisting}
+\subsubsection{性能分析}
+\begin{table}[!htbp]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		\multicolumn{2}{|c|}{ \multirow{2}*{$time/us$} }& \multicolumn{1}{c|}{n = 4} & \multicolumn{4}{c|}{n = 131072} \\
+		\cline{3-7}
+		\multicolumn{2}{|c|}{}&$p = 7340033$&$p = 7340033$&$104857601$&$ 469762049$&$1337006139375617$\\
+		\hline
+		\multirow{3}*{算法}&$NTT\_Iteration\_multiply$&0.00449&83.5684&88.2875&91.4507&结果错误\\
+		\cline{2-4}
+		&$NTT\_CRT\_4mod$&0.04388 &643.352&644.462&372.949&648.741\\
+		&$NTT\_CRT\_4mod\_Pthread$&0.872592&370.791&373.941&98.1992&374.908\\
+		&$NTT\_CRT\_4mod\_openmp$&0.556041&137.028&137.312&103.878&138.969\\
+		\hline
+	\end{tabular}
+	\caption{运行结果}
+	\label{table:t5}
+\end{table}
+未优化的四模数合并NTT版本延迟为643–648μs，OpenMP优化降至137–139μs，整体提速约为4.6倍。相较于Pthread版本（370–374μs），OpenMP效果更为显著，尤其在大规模数据下。
+%-------------------------实验总结----------------------------------
+\section{实验总结和思考}
+通过本次实验，我们发现NTT蝶形结构的高度并行性使其非常适合多线程加速。在朴素NTT优化中，Pthread与OpenMP均可带来3倍左右的性能提升，前者灵活性高但开发复杂，后者开发简洁且性能优秀。在CRT多模数合并场景中，OpenMP的优化效果显著优于Pthread，尤其在大型数据上表现更为突出，推测原因在于OpenMP调度开销更低、分工更合理。综合来看：
+
+1.Pthread适用于对线程调度与资源控制需求较高的场景；
+
+2.OpenMP适用于结构明确、并行粒度清晰的数值计算任务；
+
+3.多模数NTT在同态加密等应用中有着重要意义，合理并行优化可显著提升实用性；
+
+4.线程并行在小规模问题上可能适得其反。
+
+\section{链接}
+\textbf{Gitee链接}  \href{https://gitee.com/sky_whale/parallel-programming-with-nku}{Gitee}
+
+\end{document}

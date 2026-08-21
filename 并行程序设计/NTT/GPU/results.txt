@@ -1,0 +1,88 @@
+GPU: GRID T4-8Q
+SM数量: 40
+最大线程数/块: 1024
+最大网格大小: 2147483647
+
+========== 测试数据集 0 ===========
+n = 4, p = 7340033
+GPU基础版本(无规约优化): 124.33 ms
+多项式乘法结果正确
+CPU Barrett规约版本: 0.011232 ms
+多项式乘法结果正确
+CPU Montgomery规约版本: 0.005274 ms
+多项式乘法结果正确
+GPU Barrett规约版本: 2.42356 ms
+多项式乘法结果正确
+GPU Montgomery规约版本: 0.713783 ms
+多项式乘法结果正确
+
+========== 加速比分析 ===========
+GPU基础版本相对CPU Barrett规约的加速比: 9.03401e-05x
+GPU基础版本相对CPU Montgomery规约的加速比: 4.24193e-05x
+GPU Barrett规约相对CPU Barrett规约的加速比: 0.00463451x
+GPU Barrett规约相对GPU基础版本的加速比: 51.3007x
+GPU Montgomery规约相对CPU Montgomery规约的加速比: 0.0073888x
+GPU Montgomery规约相对GPU基础版本的加速比: 174.185x
+
+========== 测试数据集 1 ===========
+n = 131072, p = 7340033
+GPU基础版本(无规约优化): 24.4061 ms
+多项式乘法结果正确
+CPU Barrett规约版本: 61.5018 ms
+多项式乘法结果正确
+CPU Montgomery规约版本: 48.6055 ms
+多项式乘法结果正确
+GPU Barrett规约版本: 18.5368 ms
+多项式乘法结果正确
+GPU Montgomery规约版本: 19.9021 ms
+多项式乘法结果正确
+
+========== 加速比分析 ===========
+GPU基础版本相对CPU Barrett规约的加速比: 2.51994x
+GPU基础版本相对CPU Montgomery规约的加速比: 1.99153x
+GPU Barrett规约相对CPU Barrett规约的加速比: 3.31782x
+GPU Barrett规约相对GPU基础版本的加速比: 1.31663x
+GPU Montgomery规约相对CPU Montgomery规约的加速比: 2.44223x
+GPU Montgomery规约相对GPU基础版本的加速比: 1.22631x
+
+========== 测试数据集 2 ===========
+n = 131072, p = 104857601
+GPU基础版本(无规约优化): 26.1966 ms
+多项式乘法结果正确
+CPU Barrett规约版本: 61.7102 ms
+多项式乘法结果正确
+CPU Montgomery规约版本: 48.801 ms
+多项式乘法结果正确
+GPU Barrett规约版本: 17.8512 ms
+多项式乘法结果正确
+GPU Montgomery规约版本: 16.7896 ms
+多项式乘法结果正确
+
+========== 加速比分析 ===========
+GPU基础版本相对CPU Barrett规约的加速比: 2.35566x
+GPU基础版本相对CPU Montgomery规约的加速比: 1.86288x
+GPU Barrett规约相对CPU Barrett规约的加速比: 3.45693x
+GPU Barrett规约相对GPU基础版本的加速比: 1.4675x
+GPU Montgomery规约相对CPU Montgomery规约的加速比: 2.90662x
+GPU Montgomery规约相对GPU基础版本的加速比: 1.56028x
+
+========== 测试数据集 3 ===========
+n = 131072, p = 469762049
+GPU基础版本(无规约优化): 24.8173 ms
+多项式乘法结果正确
+CPU Barrett规约版本: 61.815 ms
+多项式乘法结果正确
+CPU Montgomery规约版本: 48.5368 ms
+多项式乘法结果正确
+GPU Barrett规约版本: 18.1829 ms
+多项式乘法结果正确
+GPU Montgomery规约版本: 18.1143 ms
+多项式乘法结果正确
+
+========== 加速比分析 ===========
+GPU基础版本相对CPU Barrett规约的加速比: 2.4908x
+GPU基础版本相对CPU Montgomery规约的加速比: 1.95577x
+GPU Barrett规约相对CPU Barrett规约的加速比: 3.39962x
+GPU Barrett规约相对GPU基础版本的加速比: 1.36487x
+GPU Montgomery规约相对CPU Montgomery规约的加速比: 2.67947x
+GPU Montgomery规约相对GPU基础版本的加速比: 1.37004x

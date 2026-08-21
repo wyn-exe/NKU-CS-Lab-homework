@@ -1,0 +1,357 @@
+% !TeX program = xelatex
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{
+	numbers=left,
+	basicstyle=\tiny,
+	numberstyle=\tiny,
+	keywordstyle=\color{blue!70},
+	commentstyle=\color{red!50!green!50!blue!50},
+	frame=single,
+	rulesepcolor=\color{red!20!green!20!blue!20},
+	showstringspaces=false,
+	keepspaces=true,
+	columns=fullflexible
+}
+
+\graphicspath{ {fig/} {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pdflscape}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit,calc}
+\tikzset{
+	block/.style={
+		rectangle,
+		draw,
+		rounded corners=2pt,
+		align=center,
+		minimum height=1.2cm,
+		text width=3cm   % 控制文字换行
+	},
+	arrow/.style={-Latex, thick}
+}
+
+\newcommand{\screenshotfigure}[2]{
+	\begin{figure}[H]
+		\centering
+		\IfFileExists{fig/#1}{
+			\includegraphics[width=0.92\textwidth]{fig/#1}
+		}{
+			\fbox{
+				\begin{minipage}[c][4.2cm][c]{0.88\textwidth}
+					\centering
+					\textbf{截图占位}\\[1mm]
+					请将对应命令的截图保存为：\texttt{报告编辑/fig/#1}\\[1mm]
+					本图下方列出了获取该截图的 cmd 指令。
+				\end{minipage}
+			}
+		}
+		\caption{#2}
+	\end{figure}
+}
+
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+	language=Verilog, % 设置默认语言为Verilog
+	breaklines,%自动换行
+	basicstyle=\small\ttfamily, % 使用等宽字体
+	keywordstyle=\color{ blue!70} \bfseries,
+	commentstyle=\color{red!50!green!50!blue!50},% 
+	stringstyle=\ttfamily,% 
+	extendedchars=false,% 
+	linewidth=\textwidth,% 
+	numbers=left,% 
+	numberstyle=\tiny \color{blue!50},% 
+	frame=trbl,% 
+	rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 数据安全作业报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+	\renewcommand{\contentsname}{目\ 录}
+	\renewcommand{\appendixname}{附录}
+	\renewcommand{\appendixpagename}{附录}
+	\renewcommand{\refname}{参考文献} 
+	\renewcommand{\figurename}{图}
+	\renewcommand{\tablename}{表}
+	\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+	
+	%-------------------------封面----------------
+	\begin{titlepage}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{NKU.png}\\[1cm]
+			\vspace{20mm}
+			\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+			\textbf{\huge{\kaishu{数据安全实验报告}}}\\[2.3cm]
+			\textbf{\Huge\textbf{\kaishu{秘密共享实践}}}
+			
+			\vspace{\fill}
+			
+			% \textbf{\Large \textbf{数据安全实验报告}}\\[0.8cm]
+			% \HRule \\[0.9cm]
+			% \HRule \\[2.0cm]
+			\centering
+			\textsc{\LARGE \kaishu{姓名\ :\ 王一诺}}\\[0.5cm]
+			\textsc{\LARGE \kaishu{学号\ :\ 2312331}}\\[0.5cm]
+			\textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+			
+			\vfill
+			{\Large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+	\renewcommand{\figurename}{图}
+	\renewcommand{\contentsname}{目录}  
+	\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+	
+	
+	% 生成目录
+	\clearpage
+	\tableofcontents
+	\newpage
+	\setcounter{figure}{0} % 每章开始前重置图片计数器
+	
+	
+	\section{实验要求}
+	假设有三个同学需要对班里的优秀干部 Alice、Bob、Charles、Douglas 进行投票，最后统计各个 班干部获得的票数。这个时候就可以利用 Shamir 秘密共享将各个投票方的投票分享出去并进行隐私 求和计算。 
+	
+	借鉴实验 3.2，实现三个人对于他们拥有的数据的平均值的计算。
+	
+	\section{实验原理}
+	
+	\subsection{秘密共享}
+	秘密共享（Secret Sharing）是一类将秘密拆分为多个份额并分发给不同参与方的密码技术。单个份额不应泄露原始秘密，只有满足重构条件的参与方集合才能恢复秘密。其核心目标是避免秘密集中存放带来的单点泄露风险，同时支持后续的安全多方计算。
+	
+	在本实验中，每个同学持有一个私有数据。为了在不直接公开各自数据的情况下计算平均值，每个同学先把自己的数据拆成多个秘密份额，再把份额分发给其他同学。随后各同学只在份额层面做加法，最终由计数方根据足够数量的份额重构总和，再除以人数得到平均值。
+	
+	\subsection{Shamir 门限秘密共享}
+	Shamir 秘密共享是一种典型的 $(t,n)$ 门限秘密共享方案。其思想是利用多项式插值：次数为 $t-1$ 的多项式由 $t$ 个不同点唯一确定，而少于 $t$ 个点无法确定该多项式的常数项。
+	
+	设秘密为 $s$，在有限域 $\mathbb{Z}_p$ 上随机选择一个次数为 $t-1$ 的多项式：
+	\[
+		f(x)=s+a_1x+a_2x^2+\cdots+a_{t-1}x^{t-1}\pmod p
+	\]
+	其中 $f(0)=s$，随机系数 $a_1,\ldots,a_{t-1}$ 用于隐藏秘密。对不同的非零横坐标 $x_i$ 计算 $f(x_i)$，得到秘密份额 $(x_i,f(x_i))$。重构时使用拉格朗日插值在 $x=0$ 处求值：
+	\[
+		f(0)=\sum_{i=1}^{t} y_i \prod_{j\ne i}\frac{0-x_j}{x_i-x_j}\pmod p
+	\]
+	在模素数 $p$ 下，除法通过乘以模逆元实现。参考代码中的 \texttt{quickpower} 使用快速幂计算 $b^{p-2}\bmod p$，从而依据费马小定理得到 $b$ 的模逆。
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[node distance=1.35cm]
+			\node[block] (secret) {秘密\\$s=f(0)$};
+			\node[block, below left=of secret] (share1) {份额 1\\$(1,f(1))$};
+			\node[block, below=of secret] (share2) {份额 2\\$(2,f(2))$};
+			\node[block, below right=of secret] (share3) {份额 3\\$(3,f(3))$};
+			\node[block, below=2.0cm of share2] (recover) {任意两个份额\\插值重构 $f(0)$};
+			\draw[arrow] (secret) -- (share1);
+			\draw[arrow] (secret) -- (share2);
+			\draw[arrow] (secret) -- (share3);
+			\draw[arrow] (share1) -- (recover);
+			\draw[arrow] (share2) -- (recover);
+			\draw[arrow] (share3) -- (recover);
+		\end{tikzpicture}
+		\caption{Shamir 门限秘密共享基本原理}
+	\end{figure}
+	
+	\subsection{基于秘密共享的平均值计算}
+	本实验采用 $(2,3)$ 门限方案，即共有 3 个参与方，任意 2 个求和份额即可重构结果。因此每个同学构造一次一阶多项式：
+	\[
+		f_i(x)=s_i+r_ix\pmod p,\quad i=1,2,3
+	\]
+	其中 $s_i$ 是第 $i$ 个同学的私有数据，$r_i$ 是随机数。第 $i$ 个同学分别计算 $f_i(1),f_i(2),f_i(3)$，并将第 $j$ 个份额发送给 Student $j$。
+	
+	Student $j$ 收到三个份额后，只计算份额和：
+	\[
+		d_j=f_1(j)+f_2(j)+f_3(j)\pmod p
+	\]
+	由于多项式加法满足线性性质，$d_j$ 实际上是总和多项式 $F(x)=f_1(x)+f_2(x)+f_3(x)$ 在 $x=j$ 处的取值，而
+	\[
+		F(0)=f_1(0)+f_2(0)+f_3(0)=s_1+s_2+s_3
+	\]
+	因此计数方只需任选两个 $d_j$ 进行插值重构，就能得到三个数据的总和，再除以 3 得到平均值：
+	\[
+		\bar{s}=\frac{F(0)}{3}
+	\]
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[node distance=1.15cm and 1.4cm]
+			\node[block] (s1) {Student 1\\私有数据 $s_1$};
+			\node[block, right=of s1] (s2) {Student 2\\私有数据 $s_2$};
+			\node[block, right=of s2] (s3) {Student 3\\私有数据 $s_3$};
+			\node[block, below=of s1] (p1) {生成份额\\$f_1(1),f_1(2),f_1(3)$};
+			\node[block, below=of s2] (p2) {生成份额\\$f_2(1),f_2(2),f_2(3)$};
+			\node[block, below=of s3] (p3) {生成份额\\$f_3(1),f_3(2),f_3(3)$};
+			\node[block, below=1.6cm of p1] (d1) {Student 1\\计算 $d_1$};
+			\node[block, below=1.6cm of p2] (d2) {Student 2\\计算 $d_2$};
+			\node[block, below=1.6cm of p3] (d3) {Student 3\\计算 $d_3$};
+			\node[block, below=1.6cm of d2] (avg) {任选两个 $d_j$\\重构总和并求平均};
+			\draw[arrow] (s1) -- (p1);
+			\draw[arrow] (s2) -- (p2);
+			\draw[arrow] (s3) -- (p3);
+			\draw[arrow] (p1) -- (d1);
+			\draw[arrow] (p2) -- (d2);
+			\draw[arrow] (p3) -- (d3);
+			\draw[arrow] (d1) -- (avg);
+			\draw[arrow] (d2) -- (avg);
+			\draw[arrow] (d3) -- (avg);
+		\end{tikzpicture}
+		\caption{基于 Shamir 秘密共享的隐私平均值计算流程}
+	\end{figure}
+	
+	\section{实验过程}
+	
+	\subsection{实验代码说明}
+	本次实验保持参考代码内容完全一致，不对 \texttt{ss\_function.py}、\texttt{ss\_student.py}、\texttt{count\_student.py} 和 \texttt{vote\_counter.py} 进行修改。四个文件的作用如下：
+	
+	\begin{itemize}
+		\item \texttt{ss\_function.py}：实现快速幂、随机多项式生成、多项式取值和拉格朗日插值重构；
+		\item \texttt{ss\_student.py}：每个同学输入自己的数据，构造一阶多项式并生成三个秘密份额；
+		\item \texttt{count\_student.py}：每个同学读取属于自己的三个份额并求和，生成 \texttt{d\_i.txt}；
+		\item \texttt{vote\_counter.py}：计数方读取两个求和份额，重构总和并除以 3 得到平均值。
+	\end{itemize}
+	
+	其中 \texttt{vote\_counter.py} 中的关键平均值计算语句为：
+	\begin{minted}[linenos,breaklines,fontsize=\small]{python}
+d=ss_f.restructure_polynomial([2,3],d_23,2,p)
+# 这一步是为了计算平均值
+d = d / 3
+print(f'得票结果为：{d}')
+	\end{minted}
+	虽然输出提示文字仍保留为“得票结果”，但此时变量 \texttt{d} 已经由总和除以 3，因此输出值即为三个输入数据的平均值。
+	
+	\subsection{生成三个同学的秘密份额}
+	本实验沿用投票场景中的二值数据，令三个同学对某一候选人的输入分别为：
+	\[
+		s_1=0,\quad s_2=1,\quad s_3=0
+	\]
+	因此明文平均值应为 $(0+1+0)/3=0.333333\ldots$。在不公开各自输入的情况下，三个同学分别执行 \texttt{ss\_student.py} 生成秘密份额。
+	
+	\screenshotfigure{share.png}{三个同学生成秘密份额}
+	
+	本机一次运行得到的随机多项式和份额如下。由于多项式斜率由 \texttt{random.randrange(0,p)} 随机生成，每次运行的中间份额会不同，但最终平均值应保持一致。
+	
+	\begin{table}[H]
+		\centering
+		\caption{三个同学的秘密份额生成结果}
+		\resizebox{\textwidth}{!}{
+		\begin{tabular}{c c c c c c}
+			\toprule
+			参与方 & 输入数据 & 随机多项式 & $x=1$ 份额 & $x=2$ 份额 & $x=3$ 份额 \\
+			\midrule
+			Student 1 & 0 & $f_1(x)=0+481449096x$ & 481449096 & 962898192 & 444347281 \\
+			Student 2 & 1 & $f_2(x)=1+538118585x$ & 538118585 & 76237164 & 614355749 \\
+			Student 3 & 0 & $f_3(x)=0+716816366x$ & 716816366 & 433632725 & 150449084 \\
+			\bottomrule
+		\end{tabular}
+		}
+	\end{table}
+	
+	运行完成后，程序生成 \texttt{student\_1\_1.txt} 到 \texttt{student\_3\_3.txt} 共 9 个份额文件。文件名 \texttt{student\_i\_j.txt} 表示 Student $i$ 为 Student $j$ 生成的秘密份额。
+	
+	\screenshotfigure{sharefiles.png}{生成的 9 个秘密份额文件}
+	
+	\subsection{各同学计算份额和}
+	接下来三个同学分别执行 \texttt{count\_student.py}。Student $j$ 读取 \texttt{student\_1\_j.txt}、\texttt{student\_2\_j.txt}、\texttt{student\_3\_j.txt}，并计算：
+	\[
+		d_j=f_1(j)+f_2(j)+f_3(j)\pmod p
+	\]
+	该过程只在秘密份额上做加法，不需要知道其他同学的原始输入。
+	
+	\screenshotfigure{sum.png}{三个同学计算秘密份额和}
+	
+	本机一次运行生成的三个求和份额如下：
+	\[
+		d_1=736384041,\quad d_2=472768074,\quad d_3=209152107
+	\]
+	三个求和结果分别写入 \texttt{d\_1.txt}、\texttt{d\_2.txt}、\texttt{d\_3.txt}。
+	
+	\screenshotfigure{dfiles.png}{生成的求和份额文件}
+	
+	\subsection{重构总和并计算平均值}
+	最后计数方执行 \texttt{vote\_counter.py}。该程序读取 \texttt{d\_2.txt} 和 \texttt{d\_3.txt}，使用两个点 $(2,d_2)$、$(3,d_3)$ 对总和多项式 $F(x)$ 做拉格朗日插值，恢复 $F(0)$。
+	
+	在本次运行中，总和多项式的一次项系数为：
+	\[
+		481449096+538118585+716816366\equiv 736384041\pmod {1000000007}
+	\]
+	所以总和多项式可表示为：
+	\[
+		F(x)=1+736384041x\pmod {1000000007}
+	\]
+	对应的 $F(2)=472768074$、$F(3)=209152107$ 与文件中的 \texttt{d\_2.txt}、\texttt{d\_3.txt} 一致。通过插值恢复得到：
+	\[
+		F(0)=1
+	\]
+	因此平均值为：
+	\[
+		\bar{s}=\frac{1}{3}=0.3333333333333333
+	\]
+	
+	\screenshotfigure{result.png}{重构并输出平均值}
+	
+	程序最终输出：
+	\begin{lstlisting}[language=bash]
+得票结果为：0.3333333333333333
+	\end{lstlisting}
+	结果与明文直接计算的 $(0+1+0)/3$ 一致，说明利用 Shamir 秘密共享可以在不公开各同学原始数据的前提下完成平均值计算。
+
+
+	\section{结论与实践心得}
+	通过实验可以看到，Shamir 秘密共享不仅可以恢复单个秘密，也可以利用其线性性质完成隐私求和。每个参与方只暴露多项式取值形式的份额，计数方只获取两个求和后的份额，因此不会直接得到某个同学的原始输入。在本实验采用的 $(2,3)$ 门限设置下，任意两个求和份额即可重构总和，少于两个份额则无法确定总和多项式。
+	
+	本实验也体现了秘密共享方案的局限：参与方数量和门限值需要提前确定；协议要求各参与方正确保存和传递份额；如果扩展到更复杂的数据类型或更大规模参与方，还需要考虑通信开销、恶意参与方校验和可验证秘密共享等问题。总体来看，Shamir 秘密共享结构清晰、实现成本较低，是理解安全多方计算中隐私求和与平均值计算的重要基础。
+	
+
+\end{document}

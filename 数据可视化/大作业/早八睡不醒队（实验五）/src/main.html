@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playing Card Hover Effects</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+  <link rel="stylesheet" href="styles2.css">
+  <script src="node_modules\d3\dist\d3.min.js"></script>
+  <style>
+    @import 'google-fonts.css';
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      --bg: #222;
+      --clr: #ffffff00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background:var(--bg);
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .main-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container .card {
+      position: absolute;
+      width: 240px;
+      height: 320px;
+      background-color: #5e5cfc;
+      color: rgba(0, 0, 0, 0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(0, 0, 0, 0);
+      font-size: 8em;
+      font-weight: 700;
+      border: 10px solid rgba(0, 0, 0, .1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: .5s;
+      transform-origin: 50% 100%;
+      filter: hue-rotate(calc(var(--i) * 50deg));
+      box-shadow: 0 15px 50px rgba(0, 0, 0, .1);
+      user-select: none;
+      z-index: 100;
+    }
+
+    .container:hover .card {
+      transform: rotate(calc(var(--i) *5deg)) translate(calc(var(--i) * 120px), -50px);
+      color: rgba(0, 0, 0, .25);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, .25);
+    }
+
+    .container:active .card {
+      background-color: #333;
+    }
+
+    .container .card:active {
+      translate: calc(var(--i) * 20px) -50px;
+      z-index: 100;
+      background-color: #5e5cfc;
+    }
+    .card.number-card {
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
+      background-size: 400% 400%;
+      animation: gradientAnimation 10s infinite alternate;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .content-section {
+      width: 100vw;
+      height: 100vh;
+      background-color: #1a1a1a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3em;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-icon {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      list-style: none;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.5s;
+      z-index: 1000;
+    }
+
+    .home-icon::before {
+      content: "";
+      position: absolute;
+      box-shadow: 0 0 0 10px #ffcc00,
+                  0 0 0 20px var(--bg),
+                  0 0 0 22px #ffcc00;
+      inset: 30px;
+      transition: 0.5s;
+    }
+
+    .home-icon:hover::before {
+      inset: 15px;
+    }
+
+    .home-icon::after {
+      content: "";
+      position: absolute;
+      background: var(--bg);
+      inset: 0px;
+      transform: rotate(45deg);
+      transition: 0.5s;
+    }
+
+    .home-icon:hover::after {
+      transform: rotate(0);
+    }
+
+    .home-icon a {
+      position: relative;
+      text-decoration: none;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .home-icon a i {
+      font-size: 32px;
+      color: #ffcc00;
+      transition: 0.5s;
+    }
+
+    .home-icon:hover a i {
+      transform: translateY(-40%);
+    }
+
+    .home-icon a span {
+      position: absolute;
+      color: #ffcc00;
+      transform: scale(0) translateY(200%);
+      opacity: 0;
+      transition: 0.5s;
+    }
+
+    .home-icon:hover a span {
+      opacity: 1;
+      transform: scale(1) translateY(100%);
+    }
+
+    .home-icon:hover a i,
+    .home-icon a span {
+      filter: drop-shadow(0 0 20px #ffcc00) drop-shadow(0 0 40px #ffcc00) drop-shadow(0 0 60px #ffcc00);
+    }
+
+    .chart-button {
+      list-style: none;
+      width: 300px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.5s;
+      z-index: 1000;
+    }
+
+    .chart-button::before {
+      content: "";
+      position: absolute;
+      box-shadow: 0 0 0 10px var(--button-clr),
+                  0 0 0 20px var(--bg),
+                  0 0 0 22px var(--button-clr);
+      inset: 30px;
+      transition: 0.5s;
+    }
+
+    .chart-button:hover::before {
+      inset: 15px;
+    }
+
+    .chart-button a {
+      position: relative;
+      text-decoration: none;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .chart-button a i {
+      font-size: 32px;
+      color: var(--button-clr);
+      transition: 0.5s;
+    }
+
+    .chart-button:hover a i {
+      transform: translateY(-40%);
+    }
+
+    .chart-button a span {
+      position: absolute;
+      color: var(--button-clr);
+      transform: scale(0) translateY(200%);
+      opacity: 0;
+      transition: 0.5s;
+      white-space: nowrap;
+    }
+
+    .chart-button:hover a span {
+      opacity: 1;
+      transform: scale(1) translateY(100%);
+    }
+
+    .chart-button:hover a i,
+    .chart-button a span {
+      filter: drop-shadow(0 0 20px var(--button-clr)) drop-shadow(0 0 40px var(--button-clr)) drop-shadow(0 0 60px var(--button-clr));
+    }
+
+    .chart {
+      display: none;
+      width: 90%;
+      height: 90%;
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 100;
+      background: #1a1a1ad7;
+    }
+
+    .chart.active {
+      display: block;
+    }
+
+    .axis path,
+        .axis line {
+            fill: none;
+            stroke: rgb(255, 255, 255);
+            shape-rendering: crispEdges;
+        }
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .legend text {
+            font-size: 14px;
+        }
+        .legend rect {
+            width: 20px;
+            height: 10px;
+            margin-right: 5px;
+        }
+        .emoji-point {
+            font-family: sans-serif;
+            font-size: 30px;
+            text-anchor: middle;
+        }
+    .bubbles{
+      position: fixed;
+      display: flex;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      flex-wrap: wrap;
+      pointer-events: none; /* 确保气泡不影响其他元素的点击事件 */
+      z-index: 10;
+    }
+    .bubbles span{
+      position: fixed;
+      width: 30px;
+      height:30px;
+      background: #4fc3dc;
+      margin:0 4px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 10px #4fc3dc44,
+      0 0 50px #4fc3dc,
+      0 0 100px #4fc3dc;
+      animation: animate 15s linear infinite;
+      animation-duration: calc(150s/var(--i));
+    }
+    .bubbles span:nth-child(even)
+    {
+      background: #ff2d75;
+      box-shadow: 0 0 0 10px #ff2d7544,
+      0 0 50px #ff2d75,
+      0 0 100px #ff2d75;
+    }
+    @keyframes animate
+    {
+      0%
+      {
+        transform: translateX(calc(var(--x) * 100vw)) translateY(100vh) scale(0);
+      }
+      100%
+      {
+        transform: translateX(calc(var(--x) * 100vw)) translateY(-10vh) scale(1);
+      }
+    }
+    .scratch-off-canvas {
+            width: 500px;
+            height: 350px;
+            cursor: crosshair;
+            position: relative;
+            top:25%;
+        }
+    .result-message {
+            display: none;
+            text-align: center;
+            font-size: 1.0em;
+            color: white;
+            margin-top: 20px;
+        }
+  </style>
+</head>
+<body>
+    <div class="main-container">
+      <div class="bubbles">
+        <span style="--i:11;--x:0;"></span>
+            <span style="--i:12;--x:0.12;"></span>
+            <span style="--i:24;--x:0.25;"></span>
+            <span style="--i:10;--x:0.3;"></span>
+            <span style="--i:14;--x:0.45;"></span>
+            <span style="--i:23;--x:0.56;"></span>
+            <span style="--i:18;--x:0.67;"></span>
+            <span style="--i:16;--x:0.74;"></span>
+            <span style="--i:19;--x:0.86;"></span>
+            <span style="--i:20;--x:0.91;"></span>
+            <span style="--i:22;--x:0.0;"></span>
+            <span style="--i:25;--x:0.1;"></span>
+            <span style="--i:18;--x:0.2;"></span>
+            <span style="--i:21;--x:0.3;"></span>
+            <span style="--i:15;--x:0.4;"></span>
+            <span style="--i:13;--x:0.5;"></span>
+            <span style="--i:26;--x:0.6;"></span>
+            <span style="--i:21;--x:0.7;"></span>
+            <span style="--i:17;--x:0.8;"></span>
+            <span style="--i:28;--x:0.9;"></span>
+            <span style="--i:12;--x:0.06;"></span>
+            <span style="--i:11;--x:0.16;"></span>
+            <span style="--i:12;--x:0.28;"></span>
+            <span style="--i:24;--x:0.33;"></span>
+            <span style="--i:10;--x:0.54;"></span>
+            <span style="--i:14;--x:0.78;"></span>
+            <span style="--i:23;--x:0.83;"></span>
+            <span style="--i:18;--x:0.98;"></span>
+            <span style="--i:16;--x:0.42;"></span>
+            <span style="--i:19;--x:0.67;"></span>
+            <span style="--i:20;--x:0.09;"></span>
+            <span style="--i:22;--x:0.26;"></span>
+            <span style="--i:25;--x:0.63;"></span>
+            <span style="--i:18;--x:0.57;"></span>
+            <span style="--i:21;--x:0.84;"></span>
+            <span style="--i:15;--x:0.95;"></span>
+            <span style="--i:13;--x:0.4;"></span>
+            <span style="--i:26;--x:0.3;"></span>
+            <span style="--i:21;--x:0.6;"></span>
+            <span style="--i:17;--x:0.7;"></span>
+            <span style="--i:28;--x:0.8;"></span>
+            <span style="--i:12;--x:0.9;"></span>
+      </div>
+        <div class="container">
+            <div class="card" style="--i: -4;">😊</div>
+            <div class="card number-card" onclick="scrollToSection(1)" style="--i: -3;">1</div>
+            <div class="card" style="--i: -2;">😢</div>
+            <div class="card number-card" onclick="scrollToSection(2)" style="--i: -1;">2</div>
+            <div class="card number-card" onclick="scrollToSection(3)" style="--i: -0;">3</div>
+            <div class="card" style="--i: 1;">😎</div>
+            <div class="card" style="--i: 2;">😍</div>
+            <div class="card number-card" onclick="scrollToSection(4)" style="--i: 3;">4</div>
+          </div>
+          <div id="section1" class="content-section">
+            <div class="chart-button" style="--button-clr: #ff9a9e;" onclick="showChart(event,this)">
+                <a href="#">
+                  <i class="fa fa-bar-chart"></i>
+                  <span>Popular EMOJI</span>
+                </a>
+              </div>
+              <div class="chart chart1">
+                <!-- 图表1的内容 -->
+                 <div id="top">
+                  <div>
+                    <button onclick="updateChart('😂')">😂</button>
+                <button onclick="updateChart('❤️')">❤️</button>
+                <button onclick="updateChart('😍')">😍</button>
+                <button onclick="updateChart('😘')">😘</button>
+                <button onclick="updateChart('😁')">😁</button>
+                <button onclick="updateChart('👍')">👍</button>
+                <button onclick="updateChart('😎')">😎</button>
+                <button onclick="updateChart('🙏')">🙏</button>
+                <button onclick="updateChart('🤣')">🤣</button>
+                <button onclick="updateChart('😭')">😭</button>
+                <button onclick="updateChart('🥺')">🥺</button>
+                <button onclick="updateChart('all')">全部</button>
+                  </div>
+                <script src="top.js"></script>
+                 </div>
+              </div>
+          </div>
+          <div id="section2" class="content-section">
+            <div class="chart-button" style="--button-clr: #fad0c4;" onclick="showChart(event,this)">
+              <a href="#">
+                <i class="fa fa-pie-chart"></i>
+                <span>Emoji受众</span>
+              </a>
+            </div>
+            <div class="chart chart2">
+              <!-- 图表2的内容 -->
+              <div id="sidebar">
+                <h2>Emoji Statistics</h2>
+                <ul id="emojiList">
+                    <script src="total.js"></script>
+                </ul>
+            </div>
+            </div>
+          </div>
+          <div id="section3" class="content-section">
+            <div class="chart-button" style="--button-clr: #a18cd1;" onclick="showChart(event,this)">
+              <a href="#">
+                <i class="fa fa-line-chart"></i>
+                <span>EMOJI族谱(/≧▽≦)/</span>
+              </a>
+            </div>
+            <div class="chart chart3">
+              <!-- 图表3的内容 -->
+              <div id="buttons"></div>
+              <svg height="800" width="1000" id="forceStimulation"></svg>
+              <script src="forceStimulation.js"></script>
+            </div>
+          </div>
+          <div id="section4" class="content-section">
+            <div class="chart-button" style="--button-clr: #fbc2eb;" onclick="showChart(event,this)">
+              <a href="#">
+                <i class="fa fa-area-chart"></i>
+                <span>幸运EMOJI</span>
+              </a>
+            </div>
+            <div class="chart chart4">
+              <canvas class="scratch-off-canvas" width="500" height="350"></canvas>
+                <div class="result-message">
+                    <h2>Your Lucky Emojis:</h2>
+                    <p id="emoji-result"></p>
+                    <p id="motivational-quote"></p>
+                </div>
+            </div>
+          </div>
+        
+          <div class="home-icon" onclick="scrollToTop()">
+            <a href="#">
+              <i class="fa fa-home"></i>
+              <span>Home</span>
+            </a>
+          </div>
+    </div>
+    
+
+  <script>
+    function scrollToSection(sectionNumber) {
+      const sectionId = `section${sectionNumber}`;
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showChart(event, button) {
+      event.preventDefault();
+      button.style.display = 'none';
+      const section = button.parentElement;
+      const chart = section.querySelector('.chart');
+      chart.classList.add('active');
+       // 初始化刮刮乐
+       initScratchOff();
+    }
+
+    function getRandomEmoji() {
+            const emojis = ['😊', '😢', '😎', '😍', '🤔', '🤗'];
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        function getRandomQuote() {
+            const quotes = [
+                "You are capable of achieving great things.",
+                "Believe in yourself and all that you are.",
+                "Every day is a new opportunity to be happy.",
+                "Your potential is greater than you can imagine.",
+                "Stay positive and keep moving forward."
+            ];
+            return quotes[Math.floor(Math.random() * quotes.length)];
+        }
+
+        function initScratchOff() {
+            const canvas = document.querySelector('.scratch-off-canvas');
+            const ctx = canvas.getContext('2d');
+            const resultMessage = document.querySelector('.result-message');
+            const emojiResult = document.getElementById('emoji-result');
+            const motivationalQuote = document.getElementById('motivational-quote');
+
+            // Draw overlay
+            ctx.fillStyle = '#ccc';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let isDrawing = false;
+
+            canvas.addEventListener('mousedown', () => {
+                isDrawing = true;
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+
+            canvas.addEventListener('mousemove', (event) => {
+                if (!isDrawing) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            canvas.addEventListener('touchstart', (event) => {
+                event.preventDefault();
+                isDrawing = true;
+            });
+
+            canvas.addEventListener('touchend', () => {
+                isDrawing = false;
+            });
+
+            canvas.addEventListener('touchmove', (event) => {
+                if (!isDrawing) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const touch = event.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            canvas.addEventListener('click', () => {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixelCount = imageData.data.length / 4;
+                let transparentPixels = 0;
+
+                for (let i = 0; i < pixelCount; i++) {
+                    if (imageData.data[i * 4 + 3] === 0) {
+                        transparentPixels++;
+                    }
+                }
+
+                if (transparentPixels > pixelCount * 0.5) {
+                    // More than 90% of the pixels have been scratched off
+                    const emojis = Array.from({ length: 3 }, () => getRandomEmoji()).join(' ');
+                    const quote = getRandomQuote();
+
+                    emojiResult.textContent = emojis;
+                    motivationalQuote.textContent = quote;
+                    resultMessage.style.display = 'block';
+                }
+            });
+        }
+  </script>
+
+
+</body>
+</html>
+
+
+

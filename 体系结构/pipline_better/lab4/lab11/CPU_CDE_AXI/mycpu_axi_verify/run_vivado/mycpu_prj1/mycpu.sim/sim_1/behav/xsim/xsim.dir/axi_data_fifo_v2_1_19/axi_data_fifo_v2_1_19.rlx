@@ -1,0 +1,5 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+D:/pipline_better/lab4/lab11/CPU_CDE_AXI/mycpu_axi_verify/run_vivado/mycpu_prj1/mycpu.ip_user_files/ipstatic/hdl/axi_data_fifo_v2_1_vl_rfs.v,1764857283,verilog,,,,axi_data_fifo_v2_1_19_axi_data_fifo;axi_data_fifo_v2_1_19_axic_fifo;axi_data_fifo_v2_1_19_axic_reg_srl_fifo;axi_data_fifo_v2_1_19_axic_srl_fifo;axi_data_fifo_v2_1_19_fifo_gen;axi_data_fifo_v2_1_19_ndeep_srl,,,../../../../../../../cpu132_gettrace/rtl/CPU_gs132;../../../../mycpu.ip_user_files/ipstatic;../../../../mycpu.ip_user_files/ipstatic/hdl,,,,,

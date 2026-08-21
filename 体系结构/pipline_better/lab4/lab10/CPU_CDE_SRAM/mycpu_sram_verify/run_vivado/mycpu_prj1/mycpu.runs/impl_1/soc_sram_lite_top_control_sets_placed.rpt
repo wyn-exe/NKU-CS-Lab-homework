@@ -1,0 +1,172 @@
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2019.2 (win64) Build 2708876 Wed Nov  6 21:40:23 MST 2019
+| Date         : Thu Dec  4 20:39:19 2025
+| Host         : wyn running 64-bit major release  (build 9200)
+| Command      : report_control_sets -verbose -file soc_sram_lite_top_control_sets_placed.rpt
+| Design       : soc_sram_lite_top
+| Device       : xc7a200t
+----------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    94 |
+|    Minimum number of control sets                        |    94 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |   116 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    94 |
+| >= 0 to < 4        |     3 |
+| >= 4 to < 6        |     7 |
+| >= 6 to < 8        |     3 |
+| >= 8 to < 10       |     2 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     2 |
+| >= 14 to < 16      |     0 |
+| >= 16              |    77 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |             194 |           64 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |             185 |           63 |
+| Yes          | No                    | No                     |            1658 |          827 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |             631 |          270 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++-----------------------------+----------------------------------------------------------+------------------------------------------------------+------------------+----------------+
+|         Clock Signal        |                       Enable Signal                      |                   Set/Reset Signal                   | Slice Load Count | Bel Load Count |
++-----------------------------+----------------------------------------------------------+------------------------------------------------------+------------------+----------------+
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/p_32_in                      | cpu/u_ls132r_core/u_fetch/ir_inst_r_reg[18]_1        |                1 |              1 |
+|  pll.clk_pll/inst/cpu_clk   | u_confreg/step0_sample                                   | u_confreg/cpu_resetn_reg                             |                1 |              1 |
+|  pll.clk_pll/inst/cpu_clk   | u_confreg/step1_sample                                   | u_confreg/cpu_resetn_reg                             |                1 |              1 |
+|  pll.clk_pll/inst/cpu_clk   |                                                          | u_confreg/state_count0                               |                1 |              4 |
+|  pll.clk_pll/inst/cpu_clk   | u_data_sram_wrap/ena                                     |                                                      |                2 |              4 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_cause_IP0_i_1_n_0         | u_confreg/cpu_resetn_reg                             |                3 |              4 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/p_32_in                      | cpu/u_ls132r_core/u_execute/rs_excode_r[4]_i_1_n_0   |                2 |              5 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/inst_pc_r[30]_i_1_n_0          |                                                      |                4 |              5 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_debug_DExcCode[4]_i_1_n_0 |                                                      |                3 |              5 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_status_EXL1               | u_confreg/cpu_resetn_reg                             |                3 |              5 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wb_excode_r[5]_i_1_n_0       |                                                      |                2 |              6 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cnt_incr_en                  | cpu/u_ls132r_core/u_execute/mul_div_cnt_r[5]_i_1_n_0 |                2 |              6 |
+|  pll.clk_pll/inst/cpu_clk   | u_confreg/state_count_reg[3]                             | u_confreg/cpu_resetn_reg                             |                3 |              6 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/E[0]                         | u_confreg/cpu_resetn_reg                             |                4 |              8 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_depc_DEPC[31]_i_1_n_0     |                                                      |                6 |              9 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/p_1_in                       | u_confreg/cpu_resetn_reg                             |                9 |             12 |
+|  pll.clk_pll/inst/cpu_clk   | u_inst_sram_wrap/ena                                     |                                                      |                6 |             13 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cpu_resetn_reg[0]                             | u_confreg/cpu_resetn_reg                             |                7 |             16 |
+|  pll.clk_pll/inst/cpu_clk   |                                                          | u_confreg/key_count0                                 |                5 |             20 |
+|  pll.clk_pll/inst/cpu_clk   |                                                          | u_confreg/step0_count0                               |                5 |             20 |
+|  pll.clk_pll/inst/cpu_clk   |                                                          | u_confreg/step1_count0                               |                5 |             20 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_depc_DEPC[30]_i_1_n_0     | u_confreg/cpu_resetn_reg                             |               11 |             23 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/inst_pc_r[31]_i_2_n_0          | u_confreg/cpu_resetn_reg                             |               12 |             27 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/tbuf_r[95]_i_1_n_0           |                                                      |                9 |             31 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[11]                 |                                                      |               14 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[12]                 |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[4]                  |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[13]                 |                                                      |               14 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[14]                 |                                                      |               19 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[6]                  |                                                      |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[15]                 |                                                      |               11 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[16]                 |                                                      |               21 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[17]                 |                                                      |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[10]                 |                                                      |               27 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[30]                 |                                                      |               13 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[23]                 |                                                      |               13 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[25]                 |                                                      |               10 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[22]                 |                                                      |               17 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[24]                 |                                                      |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[20]                 |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[29]                 |                                                      |               17 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[18]                 |                                                      |               26 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[26]                 |                                                      |               26 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[28]                 |                                                      |               22 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[21]                 |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[19]                 |                                                      |               13 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/fsm_to_full                    |                                                      |               13 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[5]                  |                                                      |               11 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/tbuf_r[63]_i_1_n_0           |                                                      |               17 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cpu_resetn_reg[0]            |                                                      |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cpu_resetn_reg_0[0]          |                                                      |               14 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/io_simu[31]_i_5[0]           | u_confreg/cpu_resetn_reg                             |                7 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[27]                 |                                                      |               10 |             32 |
+|  pll.clk_pll/inst/timer_clk |                                                          | u_confreg/cpu_resetn_reg                             |                8 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/reg_hi                       |                                                      |               28 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/reg_lo                       |                                                      |               19 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_badvaddr0                 |                                                      |                8 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cnt_incr_en                  |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/ir_inst_r_reg[1]_0[0]          |                                                      |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_compare[31]_i_1_n_0       | u_confreg/cpu_resetn_reg                             |               12 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_count[0]_i_1_n_0          | u_confreg/cpu_resetn_reg                             |                8 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/ir_inst_r_reg[27]_0[0]         |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/ir_inst_r_reg[28]_0[0]         |                                                      |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_desave                    |                                                      |               21 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[3]                  |                                                      |               11 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[9]                  |                                                      |                9 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_epc[31]_i_1_n_0           |                                                      |               17 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/cr_errorepc[31]_i_1_n_0      | u_confreg/cpu_resetn_reg                             |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[0]                  |                                                      |               27 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[7]                  |                                                      |               14 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[2]                  |                                                      |               19 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[8]                  |                                                      |               22 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/conf_req                                      | u_confreg/cpu_resetn_reg                             |               13 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr1[31]_i_2[0]                                | u_confreg/cpu_resetn_reg                             |               14 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr4[31]_i_3_0[0]                              | u_confreg/cpu_resetn_reg                             |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cpu_resetn_reg[0]                             |                                                      |                8 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/wen0_vec[1]                  |                                                      |                9 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cpu_resetn_reg_0[0]                           |                                                      |               12 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr4[31]_i_3_1[0]                              | u_confreg/cpu_resetn_reg                             |               13 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr0[31]_i_6[0]                                | u_confreg/cpu_resetn_reg                             |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr1[31]_i_2_0[0]                              | u_confreg/cpu_resetn_reg                             |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr4[31]_i_3[0]                                | u_confreg/cpu_resetn_reg                             |               12 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/cr4[31]_i_3_2[0]                              | u_confreg/cpu_resetn_reg                             |               15 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/data_ram_i_9_1[0]                             | u_confreg/cpu_resetn_reg                             |               16 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/led_rg0_data[31]_i_3_0[0]                     | u_confreg/cpu_resetn_reg                             |                9 |             32 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/E[0]                                          | u_confreg/cpu_resetn_reg                             |               18 |             34 |
+|  pll.clk_pll/inst/cpu_clk   | bridge_1x2/led_rg0_data[31]_i_3[0]                       | u_confreg/cpu_resetn_reg                             |               12 |             34 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_execute/p_32_in                      |                                                      |               22 |             47 |
+|  pll.clk_pll/inst/cpu_clk   | u_inst_sram_wrap/buf_rdata_reg_0_3_0_5_i_1_n_0           |                                                      |                6 |             48 |
+|  pll.clk_pll/inst/cpu_clk   | u_data_sram_wrap/buf_rdata_reg_0_3_0_5_i_1__0_n_0        |                                                      |                6 |             48 |
+|  pll.clk_pll/inst/cpu_clk   | cpu/u_ls132r_core/u_fetch/new_inst_in                    |                                                      |               34 |             66 |
+|  pll.clk_pll/inst/timer_clk |                                                          |                                                      |               13 |             67 |
+|  pll.clk_pll/inst/cpu_clk   |                                                          | u_confreg/cpu_resetn_reg                             |               39 |             89 |
+|  pll.clk_pll/inst/cpu_clk   |                                                          |                                                      |               51 |            127 |
++-----------------------------+----------------------------------------------------------+------------------------------------------------------+------------------+----------------+
+
+
