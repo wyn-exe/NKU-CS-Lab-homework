@@ -1,0 +1,13 @@
+# Local Git metadata from copied course-project repositories
+**/.git-inner-backup/
+
+# IDE and generated build artifacts
+.vs/
+**/.vs/
+*.ipch
+*.wdb
+
+# GitHub blocks individual files larger than 100 MB; retain these locally.
+体系结构/pipline_better/CPU设计实战 CPU Design and Practice (汪文祥, 邢金璋) (Z-Library).pdf
+体系结构/pipline_better/lab4/lab10/CPU_CDE_SRAM/mycpu_sram_verify/run_vivado/mycpu_prj1/mycpu.sim/sim_1/behav/xsim/tb_top_behav.wdb
+数据安全/2312331王一诺数据安全期末汇报.zip

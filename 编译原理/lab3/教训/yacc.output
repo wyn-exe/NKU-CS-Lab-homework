@@ -1,0 +1,4330 @@
+Terminals unused in grammar
+
+    STR_CONST
+    ERR_TOKEN
+    SWITCH
+    CASE
+    GOTO
+    DO
+    ARROW
+    DOT
+    ELLIPSIS
+
+
+Grammar
+
+    0 $accept: PROGRAM $end
+
+    1 PROGRAM: STMT_LIST
+    2        | PROGRAM END
+
+    3 STMT_LIST: STMT
+    4          | STMT_LIST STMT
+
+    5 STMT: EXPR_STMT
+    6     | VAR_DECL_STMT
+    7     | FUNC_DECL_STMT
+    8     | FOR_STMT
+    9     | IF_STMT
+   10     | CONTINUE_STMT
+   11     | BREAK_STMT
+   12     | WHILE_STMT
+   13     | RETURN_STMT
+   14     | BLOCK_STMT
+   15     | SEMICOLON
+
+   16 CONTINUE_STMT: CONTINUE SEMICOLON
+
+   17 EXPR_STMT: EXPR SEMICOLON
+
+   18 VAR_DECLARATION: TYPE VAR_DECLARATOR_LIST
+   19                | CONST TYPE VAR_DECLARATOR_LIST
+
+   20 VAR_DECL_STMT: VAR_DECLARATION SEMICOLON
+
+   21 BLOCK_STMT: LBRACE RBRACE
+   22           | LBRACE STMT_LIST RBRACE
+
+   23 FUNC_BODY: LBRACE RBRACE
+   24          | LBRACE STMT_LIST RBRACE
+
+   25 FUNC_DECL_STMT: TYPE IDENT LPAREN PARAM_DECLARATOR_LIST RPAREN FUNC_BODY
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+   27         | FOR LPAREN EXPR SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+
+   28 IF_STMT: IF LPAREN EXPR RPAREN STMT
+   29        | IF LPAREN EXPR RPAREN STMT ELSE STMT
+
+   30 BREAK_STMT: BREAK SEMICOLON
+
+   31 RETURN_STMT: RETURN SEMICOLON
+   32            | RETURN EXPR SEMICOLON
+
+   33 WHILE_STMT: WHILE LPAREN EXPR RPAREN STMT
+
+   34 PARAM_DECLARATOR: TYPE IDENT
+   35                 | TYPE IDENT LBRACKET RBRACKET
+   36                 | TYPE IDENT ARRAY_DIMENSION_EXPR_LIST
+   37                 | TYPE IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST
+
+   38 PARAM_DECLARATOR_LIST: ε
+   39                      | PARAM_DECLARATOR
+   40                      | PARAM_DECLARATOR_LIST COMMA PARAM_DECLARATOR
+
+   41 VAR_DECLARATOR: LEFT_VAL_EXPR
+   42               | LEFT_VAL_EXPR ASSIGN INITIALIZER
+
+   43 VAR_DECLARATOR_LIST: VAR_DECLARATOR
+   44                    | VAR_DECLARATOR_LIST COMMA VAR_DECLARATOR
+
+   45 INITIALIZER: NOCOMMA_EXPR
+   46            | LBRACE RBRACE
+   47            | LBRACE INITIALIZER_LIST RBRACE
+
+   48 INITIALIZER_LIST: INITIALIZER
+   49                 | INITIALIZER_LIST COMMA INITIALIZER
+
+   50 ASSIGN_EXPR: CONDITIONAL_EXPR
+   51            | LEFT_VAL_EXPR ASSIGN ASSIGN_EXPR
+   52            | LEFT_VAL_EXPR PLUSEQ ASSIGN_EXPR
+   53            | LEFT_VAL_EXPR MINUSEQ ASSIGN_EXPR
+   54            | LEFT_VAL_EXPR MULEQ ASSIGN_EXPR
+   55            | LEFT_VAL_EXPR DIVEQ ASSIGN_EXPR
+   56            | LEFT_VAL_EXPR MODEQ ASSIGN_EXPR
+   57            | LEFT_VAL_EXPR BITOREQ ASSIGN_EXPR
+   58            | LEFT_VAL_EXPR BITANDEQ ASSIGN_EXPR
+   59            | LEFT_VAL_EXPR BITXOREQ ASSIGN_EXPR
+   60            | LEFT_VAL_EXPR LSHIFTEQ ASSIGN_EXPR
+   61            | LEFT_VAL_EXPR RSHIFTEQ ASSIGN_EXPR
+
+   62 EXPR_LIST: NOCOMMA_EXPR
+   63          | EXPR_LIST COMMA NOCOMMA_EXPR
+
+   64 EXPR: NOCOMMA_EXPR
+   65     | EXPR COMMA NOCOMMA_EXPR
+
+   66 NOCOMMA_EXPR: ASSIGN_EXPR
+
+   67 LOGICAL_OR_EXPR: LOGICAL_OR_EXPR OR LOGICAL_AND_EXPR
+   68                | LOGICAL_AND_EXPR
+
+   69 CONDITIONAL_EXPR: LOGICAL_OR_EXPR
+   70                 | LOGICAL_OR_EXPR QUESTION EXPR COLON CONDITIONAL_EXPR
+
+   71 LOGICAL_AND_EXPR: LOGICAL_AND_EXPR AND BIT_OR_EXPR
+   72                 | BIT_OR_EXPR
+
+   73 EQUALITY_EXPR: EQUALITY_EXPR EQ RELATIONAL_EXPR
+   74              | EQUALITY_EXPR NE RELATIONAL_EXPR
+   75              | RELATIONAL_EXPR
+
+   76 RELATIONAL_EXPR: RELATIONAL_EXPR LT SHIFT_EXPR
+   77                | RELATIONAL_EXPR LE SHIFT_EXPR
+   78                | RELATIONAL_EXPR GT SHIFT_EXPR
+   79                | RELATIONAL_EXPR GE SHIFT_EXPR
+   80                | SHIFT_EXPR
+
+   81 SHIFT_EXPR: SHIFT_EXPR LSHIFT ADDSUB_EXPR
+   82           | SHIFT_EXPR RSHIFT ADDSUB_EXPR
+   83           | ADDSUB_EXPR
+
+   84 BIT_OR_EXPR: BIT_OR_EXPR BITOR BIT_XOR_EXPR
+   85            | BIT_XOR_EXPR
+
+   86 BIT_XOR_EXPR: BIT_XOR_EXPR BITXOR BIT_AND_EXPR
+   87             | BIT_AND_EXPR
+
+   88 BIT_AND_EXPR: BIT_AND_EXPR BITAND EQUALITY_EXPR
+   89             | EQUALITY_EXPR
+
+   90 ADDSUB_EXPR: ADDSUB_EXPR PLUS MULDIV_EXPR
+   91            | ADDSUB_EXPR MINUS MULDIV_EXPR
+   92            | MULDIV_EXPR
+
+   93 MULDIV_EXPR: MULDIV_EXPR STAR UNARY_EXPR
+   94            | MULDIV_EXPR SLASH UNARY_EXPR
+   95            | MULDIV_EXPR MOD UNARY_EXPR
+   96            | UNARY_EXPR
+
+   97 UNARY_EXPR: POSTFIX_EXPR
+   98           | UNARY_OP UNARY_EXPR
+   99           | PLUSPLUS LEFT_VAL_EXPR
+  100           | MINUSMINUS LEFT_VAL_EXPR
+
+  101 POSTFIX_EXPR: BASIC_EXPR
+  102             | POSTFIX_EXPR PLUSPLUS
+  103             | POSTFIX_EXPR MINUSMINUS
+
+  104 BASIC_EXPR: LITERAL_EXPR
+  105           | LEFT_VAL_EXPR
+  106           | LPAREN EXPR RPAREN
+  107           | FUNC_CALL_EXPR
+
+  108 FUNC_CALL_EXPR: IDENT LPAREN RPAREN
+  109               | IDENT LPAREN EXPR_LIST RPAREN
+
+  110 ARRAY_DIMENSION_EXPR: LBRACKET NOCOMMA_EXPR RBRACKET
+
+  111 ARRAY_DIMENSION_EXPR_LIST: ARRAY_DIMENSION_EXPR
+  112                          | ARRAY_DIMENSION_EXPR_LIST ARRAY_DIMENSION_EXPR
+
+  113 LEFT_VAL_EXPR: IDENT
+  114              | IDENT ARRAY_DIMENSION_EXPR_LIST
+
+  115 LITERAL_EXPR: INT_CONST
+  116             | LL_CONST
+  117             | FLOAT_CONST
+  118             | DOUBLE_CONST
+
+  119 TYPE: INT
+  120     | FLOAT
+  121     | VOID
+  122     | DOUBLE
+
+  123 UNARY_OP: PLUS
+  124         | MINUS
+  125         | NOT
+  126         | BITNOT
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    INT_CONST <int> (258) 115
+    LL_CONST <long long> (259) 116
+    FLOAT_CONST <float> (260) 117
+    DOUBLE_CONST <double> (261) 118
+    STR_CONST <std::string> (262)
+    ERR_TOKEN <std::string> (263)
+    IDENT <std::string> (264) 25 34 35 36 37 108 109 113 114
+    IF (265) 28 29
+    ELSE (266) 29
+    FOR (267) 26 27
+    WHILE (268) 33
+    CONTINUE (269) 16
+    BREAK (270) 30
+    SWITCH (271)
+    CASE (272)
+    GOTO (273)
+    DO (274)
+    RETURN (275) 31 32
+    CONST (276) 19
+    SEMICOLON (277) 15 16 17 20 26 27 30 31 32
+    COMMA (278) 40 44 49 63 65
+    LPAREN (279) 25 26 27 28 29 33 106 108 109
+    RPAREN (280) 25 26 27 28 29 33 106 108 109
+    LBRACKET (281) 35 37 110
+    RBRACKET (282) 35 37 110
+    LBRACE (283) 21 22 23 24 46 47
+    RBRACE (284) 21 22 23 24 46 47
+    INT (285) 119
+    FLOAT (286) 120
+    VOID (287) 121
+    DOUBLE (288) 122
+    PLUS (289) 90 123
+    MINUS (290) 91 124
+    STAR (291) 93
+    SLASH (292) 94
+    MOD (293) 95
+    PLUSPLUS (294) 99 102
+    MINUSMINUS (295) 100 103
+    ASSIGN (296) 42 51
+    PLUSEQ (297) 52
+    MINUSEQ (298) 53
+    MULEQ (299) 54
+    DIVEQ (300) 55
+    MODEQ (301) 56
+    BITOREQ (302) 57
+    BITANDEQ (303) 58
+    BITXOREQ (304) 59
+    LSHIFTEQ (305) 60
+    RSHIFTEQ (306) 61
+    EQ (307) 73
+    NE (308) 74
+    LT (309) 76
+    LE (310) 77
+    GT (311) 78
+    GE (312) 79
+    AND (313) 71
+    OR (314) 67
+    NOT (315) 125
+    BITAND (316) 88
+    BITOR (317) 84
+    BITXOR (318) 86
+    BITNOT (319) 126
+    LSHIFT (320) 81
+    RSHIFT (321) 82
+    QUESTION (322) 70
+    COLON (323) 70
+    ARROW (324)
+    DOT (325)
+    ELLIPSIS (326)
+    END (327) 2
+    THEN (328)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (74)
+        on left: 0
+    PROGRAM <FE::AST::Root*> (75)
+        on left: 1 2
+        on right: 0 2
+    STMT_LIST <std::vector<FE::AST::StmtNode*>*> (76)
+        on left: 3 4
+        on right: 1 4 22 24
+    STMT <FE::AST::StmtNode*> (77)
+        on left: 5 6 7 8 9 10 11 12 13 14 15
+        on right: 3 4 26 27 28 29 33
+    CONTINUE_STMT <FE::AST::StmtNode*> (78)
+        on left: 16
+        on right: 10
+    EXPR_STMT <FE::AST::StmtNode*> (79)
+        on left: 17
+        on right: 5
+    VAR_DECLARATION <FE::AST::VarDeclaration*> (80)
+        on left: 18 19
+        on right: 20 26
+    VAR_DECL_STMT <FE::AST::StmtNode*> (81)
+        on left: 20
+        on right: 6
+    BLOCK_STMT <FE::AST::StmtNode*> (82)
+        on left: 21 22
+        on right: 14
+    FUNC_BODY <FE::AST::StmtNode*> (83)
+        on left: 23 24
+        on right: 25
+    FUNC_DECL_STMT <FE::AST::StmtNode*> (84)
+        on left: 25
+        on right: 7
+    FOR_STMT <FE::AST::StmtNode*> (85)
+        on left: 26 27
+        on right: 8
+    IF_STMT <FE::AST::StmtNode*> (86)
+        on left: 28 29
+        on right: 9
+    BREAK_STMT <FE::AST::StmtNode*> (87)
+        on left: 30
+        on right: 11
+    RETURN_STMT <FE::AST::StmtNode*> (88)
+        on left: 31 32
+        on right: 13
+    WHILE_STMT <FE::AST::StmtNode*> (89)
+        on left: 33
+        on right: 12
+    PARAM_DECLARATOR <FE::AST::ParamDeclarator*> (90)
+        on left: 34 35 36 37
+        on right: 39 40
+    PARAM_DECLARATOR_LIST <std::vector<FE::AST::ParamDeclarator*>*> (91)
+        on left: 38 39 40
+        on right: 25 40
+    VAR_DECLARATOR <FE::AST::VarDeclarator*> (92)
+        on left: 41 42
+        on right: 43 44
+    VAR_DECLARATOR_LIST <std::vector<FE::AST::VarDeclarator*>*> (93)
+        on left: 43 44
+        on right: 18 19 44
+    INITIALIZER <FE::AST::InitDecl*> (94)
+        on left: 45 46 47
+        on right: 42 48 49
+    INITIALIZER_LIST <std::vector<FE::AST::InitDecl*>*> (95)
+        on left: 48 49
+        on right: 47 49
+    ASSIGN_EXPR <FE::AST::ExprNode*> (96)
+        on left: 50 51 52 53 54 55 56 57 58 59 60 61
+        on right: 51 52 53 54 55 56 57 58 59 60 61 66
+    EXPR_LIST <std::vector<FE::AST::ExprNode*>*> (97)
+        on left: 62 63
+        on right: 63 109
+    EXPR <FE::AST::ExprNode*> (98)
+        on left: 64 65
+        on right: 17 26 27 28 29 32 33 65 70 106
+    NOCOMMA_EXPR <FE::AST::ExprNode*> (99)
+        on left: 66
+        on right: 45 62 63 64 65 110
+    LOGICAL_OR_EXPR <FE::AST::ExprNode*> (100)
+        on left: 67 68
+        on right: 67 69 70
+    CONDITIONAL_EXPR <FE::AST::ExprNode*> (101)
+        on left: 69 70
+        on right: 50 70
+    LOGICAL_AND_EXPR <FE::AST::ExprNode*> (102)
+        on left: 71 72
+        on right: 67 68 71
+    EQUALITY_EXPR <FE::AST::ExprNode*> (103)
+        on left: 73 74 75
+        on right: 73 74 88 89
+    RELATIONAL_EXPR <FE::AST::ExprNode*> (104)
+        on left: 76 77 78 79 80
+        on right: 73 74 75 76 77 78 79
+    SHIFT_EXPR <FE::AST::ExprNode*> (105)
+        on left: 81 82 83
+        on right: 76 77 78 79 80 81 82
+    BIT_OR_EXPR <FE::AST::ExprNode*> (106)
+        on left: 84 85
+        on right: 71 72 84
+    BIT_XOR_EXPR <FE::AST::ExprNode*> (107)
+        on left: 86 87
+        on right: 84 85 86
+    BIT_AND_EXPR <FE::AST::ExprNode*> (108)
+        on left: 88 89
+        on right: 86 87 88
+    ADDSUB_EXPR <FE::AST::ExprNode*> (109)
+        on left: 90 91 92
+        on right: 81 82 83 90 91
+    MULDIV_EXPR <FE::AST::ExprNode*> (110)
+        on left: 93 94 95 96
+        on right: 90 91 92 93 94 95
+    UNARY_EXPR <FE::AST::ExprNode*> (111)
+        on left: 97 98 99 100
+        on right: 93 94 95 96 98
+    POSTFIX_EXPR <FE::AST::ExprNode*> (112)
+        on left: 101 102 103
+        on right: 97 102 103
+    BASIC_EXPR <FE::AST::ExprNode*> (113)
+        on left: 104 105 106 107
+        on right: 101
+    FUNC_CALL_EXPR <FE::AST::ExprNode*> (114)
+        on left: 108 109
+        on right: 107
+    ARRAY_DIMENSION_EXPR <FE::AST::ExprNode*> (115)
+        on left: 110
+        on right: 111 112
+    ARRAY_DIMENSION_EXPR_LIST <std::vector<FE::AST::ExprNode*>*> (116)
+        on left: 111 112
+        on right: 36 37 112 114
+    LEFT_VAL_EXPR <FE::AST::ExprNode*> (117)
+        on left: 113 114
+        on right: 41 42 51 52 53 54 55 56 57 58 59 60 61 99 100 105
+    LITERAL_EXPR <FE::AST::ExprNode*> (118)
+        on left: 115 116 117 118
+        on right: 104
+    TYPE <FE::AST::Type*> (119)
+        on left: 119 120 121 122
+        on right: 18 19 25 34 35 36 37
+    UNARY_OP <FE::AST::Operator> (120)
+        on left: 123 124 125 126
+        on right: 98
+
+
+State 0
+
+    0 $accept: • PROGRAM $end
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    PROGRAM           go to state 26
+    STMT_LIST         go to state 27
+    STMT              go to state 28
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 1
+
+  115 LITERAL_EXPR: INT_CONST •
+
+    $default  reduce using rule 115 (LITERAL_EXPR)
+
+
+State 2
+
+  116 LITERAL_EXPR: LL_CONST •
+
+    $default  reduce using rule 116 (LITERAL_EXPR)
+
+
+State 3
+
+  117 LITERAL_EXPR: FLOAT_CONST •
+
+    $default  reduce using rule 117 (LITERAL_EXPR)
+
+
+State 4
+
+  118 LITERAL_EXPR: DOUBLE_CONST •
+
+    $default  reduce using rule 118 (LITERAL_EXPR)
+
+
+State 5
+
+  108 FUNC_CALL_EXPR: IDENT • LPAREN RPAREN
+  109               | IDENT • LPAREN EXPR_LIST RPAREN
+  113 LEFT_VAL_EXPR: IDENT •
+  114              | IDENT • ARRAY_DIMENSION_EXPR_LIST
+
+    LPAREN    shift, and go to state 62
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 113 (LEFT_VAL_EXPR)
+
+    ARRAY_DIMENSION_EXPR       go to state 64
+    ARRAY_DIMENSION_EXPR_LIST  go to state 65
+
+
+State 6
+
+   28 IF_STMT: IF • LPAREN EXPR RPAREN STMT
+   29        | IF • LPAREN EXPR RPAREN STMT ELSE STMT
+
+    LPAREN  shift, and go to state 66
+
+
+State 7
+
+   26 FOR_STMT: FOR • LPAREN VAR_DECLARATION SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+   27         | FOR • LPAREN EXPR SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+
+    LPAREN  shift, and go to state 67
+
+
+State 8
+
+   33 WHILE_STMT: WHILE • LPAREN EXPR RPAREN STMT
+
+    LPAREN  shift, and go to state 68
+
+
+State 9
+
+   16 CONTINUE_STMT: CONTINUE • SEMICOLON
+
+    SEMICOLON  shift, and go to state 69
+
+
+State 10
+
+   30 BREAK_STMT: BREAK • SEMICOLON
+
+    SEMICOLON  shift, and go to state 70
+
+
+State 11
+
+   31 RETURN_STMT: RETURN • SEMICOLON
+   32            | RETURN • EXPR SEMICOLON
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    SEMICOLON     shift, and go to state 71
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 72
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 12
+
+   19 VAR_DECLARATION: CONST • TYPE VAR_DECLARATOR_LIST
+
+    INT     shift, and go to state 16
+    FLOAT   shift, and go to state 17
+    VOID    shift, and go to state 18
+    DOUBLE  shift, and go to state 19
+
+    TYPE  go to state 73
+
+
+State 13
+
+   15 STMT: SEMICOLON •
+
+    $default  reduce using rule 15 (STMT)
+
+
+State 14
+
+  106 BASIC_EXPR: LPAREN • EXPR RPAREN
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 74
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 15
+
+   21 BLOCK_STMT: LBRACE • RBRACE
+   22           | LBRACE • STMT_LIST RBRACE
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    RBRACE        shift, and go to state 75
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT_LIST         go to state 76
+    STMT              go to state 28
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 16
+
+  119 TYPE: INT •
+
+    $default  reduce using rule 119 (TYPE)
+
+
+State 17
+
+  120 TYPE: FLOAT •
+
+    $default  reduce using rule 120 (TYPE)
+
+
+State 18
+
+  121 TYPE: VOID •
+
+    $default  reduce using rule 121 (TYPE)
+
+
+State 19
+
+  122 TYPE: DOUBLE •
+
+    $default  reduce using rule 122 (TYPE)
+
+
+State 20
+
+  123 UNARY_OP: PLUS •
+
+    $default  reduce using rule 123 (UNARY_OP)
+
+
+State 21
+
+  124 UNARY_OP: MINUS •
+
+    $default  reduce using rule 124 (UNARY_OP)
+
+
+State 22
+
+   99 UNARY_EXPR: PLUSPLUS • LEFT_VAL_EXPR
+
+    IDENT  shift, and go to state 77
+
+    LEFT_VAL_EXPR  go to state 78
+
+
+State 23
+
+  100 UNARY_EXPR: MINUSMINUS • LEFT_VAL_EXPR
+
+    IDENT  shift, and go to state 77
+
+    LEFT_VAL_EXPR  go to state 79
+
+
+State 24
+
+  125 UNARY_OP: NOT •
+
+    $default  reduce using rule 125 (UNARY_OP)
+
+
+State 25
+
+  126 UNARY_OP: BITNOT •
+
+    $default  reduce using rule 126 (UNARY_OP)
+
+
+State 26
+
+    0 $accept: PROGRAM • $end
+    2 PROGRAM: PROGRAM • END
+
+    $end  shift, and go to state 80
+    END   shift, and go to state 81
+
+
+State 27
+
+    1 PROGRAM: STMT_LIST •
+    4 STMT_LIST: STMT_LIST • STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    $default  reduce using rule 1 (PROGRAM)
+
+    STMT              go to state 82
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 28
+
+    3 STMT_LIST: STMT •
+
+    $default  reduce using rule 3 (STMT_LIST)
+
+
+State 29
+
+   10 STMT: CONTINUE_STMT •
+
+    $default  reduce using rule 10 (STMT)
+
+
+State 30
+
+    5 STMT: EXPR_STMT •
+
+    $default  reduce using rule 5 (STMT)
+
+
+State 31
+
+   20 VAR_DECL_STMT: VAR_DECLARATION • SEMICOLON
+
+    SEMICOLON  shift, and go to state 83
+
+
+State 32
+
+    6 STMT: VAR_DECL_STMT •
+
+    $default  reduce using rule 6 (STMT)
+
+
+State 33
+
+   14 STMT: BLOCK_STMT •
+
+    $default  reduce using rule 14 (STMT)
+
+
+State 34
+
+    7 STMT: FUNC_DECL_STMT •
+
+    $default  reduce using rule 7 (STMT)
+
+
+State 35
+
+    8 STMT: FOR_STMT •
+
+    $default  reduce using rule 8 (STMT)
+
+
+State 36
+
+    9 STMT: IF_STMT •
+
+    $default  reduce using rule 9 (STMT)
+
+
+State 37
+
+   11 STMT: BREAK_STMT •
+
+    $default  reduce using rule 11 (STMT)
+
+
+State 38
+
+   13 STMT: RETURN_STMT •
+
+    $default  reduce using rule 13 (STMT)
+
+
+State 39
+
+   12 STMT: WHILE_STMT •
+
+    $default  reduce using rule 12 (STMT)
+
+
+State 40
+
+   66 NOCOMMA_EXPR: ASSIGN_EXPR •
+
+    $default  reduce using rule 66 (NOCOMMA_EXPR)
+
+
+State 41
+
+   17 EXPR_STMT: EXPR • SEMICOLON
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    SEMICOLON  shift, and go to state 84
+    COMMA      shift, and go to state 85
+
+
+State 42
+
+   64 EXPR: NOCOMMA_EXPR •
+
+    $default  reduce using rule 64 (EXPR)
+
+
+State 43
+
+   67 LOGICAL_OR_EXPR: LOGICAL_OR_EXPR • OR LOGICAL_AND_EXPR
+   69 CONDITIONAL_EXPR: LOGICAL_OR_EXPR •
+   70                 | LOGICAL_OR_EXPR • QUESTION EXPR COLON CONDITIONAL_EXPR
+
+    OR        shift, and go to state 86
+    QUESTION  shift, and go to state 87
+
+    $default  reduce using rule 69 (CONDITIONAL_EXPR)
+
+
+State 44
+
+   50 ASSIGN_EXPR: CONDITIONAL_EXPR •
+
+    $default  reduce using rule 50 (ASSIGN_EXPR)
+
+
+State 45
+
+   68 LOGICAL_OR_EXPR: LOGICAL_AND_EXPR •
+   71 LOGICAL_AND_EXPR: LOGICAL_AND_EXPR • AND BIT_OR_EXPR
+
+    AND  shift, and go to state 88
+
+    $default  reduce using rule 68 (LOGICAL_OR_EXPR)
+
+
+State 46
+
+   73 EQUALITY_EXPR: EQUALITY_EXPR • EQ RELATIONAL_EXPR
+   74              | EQUALITY_EXPR • NE RELATIONAL_EXPR
+   89 BIT_AND_EXPR: EQUALITY_EXPR •
+
+    EQ  shift, and go to state 89
+    NE  shift, and go to state 90
+
+    $default  reduce using rule 89 (BIT_AND_EXPR)
+
+
+State 47
+
+   75 EQUALITY_EXPR: RELATIONAL_EXPR •
+   76 RELATIONAL_EXPR: RELATIONAL_EXPR • LT SHIFT_EXPR
+   77                | RELATIONAL_EXPR • LE SHIFT_EXPR
+   78                | RELATIONAL_EXPR • GT SHIFT_EXPR
+   79                | RELATIONAL_EXPR • GE SHIFT_EXPR
+
+    LT  shift, and go to state 91
+    LE  shift, and go to state 92
+    GT  shift, and go to state 93
+    GE  shift, and go to state 94
+
+    $default  reduce using rule 75 (EQUALITY_EXPR)
+
+
+State 48
+
+   80 RELATIONAL_EXPR: SHIFT_EXPR •
+   81 SHIFT_EXPR: SHIFT_EXPR • LSHIFT ADDSUB_EXPR
+   82           | SHIFT_EXPR • RSHIFT ADDSUB_EXPR
+
+    LSHIFT  shift, and go to state 95
+    RSHIFT  shift, and go to state 96
+
+    $default  reduce using rule 80 (RELATIONAL_EXPR)
+
+
+State 49
+
+   72 LOGICAL_AND_EXPR: BIT_OR_EXPR •
+   84 BIT_OR_EXPR: BIT_OR_EXPR • BITOR BIT_XOR_EXPR
+
+    BITOR  shift, and go to state 97
+
+    $default  reduce using rule 72 (LOGICAL_AND_EXPR)
+
+
+State 50
+
+   85 BIT_OR_EXPR: BIT_XOR_EXPR •
+   86 BIT_XOR_EXPR: BIT_XOR_EXPR • BITXOR BIT_AND_EXPR
+
+    BITXOR  shift, and go to state 98
+
+    $default  reduce using rule 85 (BIT_OR_EXPR)
+
+
+State 51
+
+   87 BIT_XOR_EXPR: BIT_AND_EXPR •
+   88 BIT_AND_EXPR: BIT_AND_EXPR • BITAND EQUALITY_EXPR
+
+    BITAND  shift, and go to state 99
+
+    $default  reduce using rule 87 (BIT_XOR_EXPR)
+
+
+State 52
+
+   83 SHIFT_EXPR: ADDSUB_EXPR •
+   90 ADDSUB_EXPR: ADDSUB_EXPR • PLUS MULDIV_EXPR
+   91            | ADDSUB_EXPR • MINUS MULDIV_EXPR
+
+    PLUS   shift, and go to state 100
+    MINUS  shift, and go to state 101
+
+    $default  reduce using rule 83 (SHIFT_EXPR)
+
+
+State 53
+
+   92 ADDSUB_EXPR: MULDIV_EXPR •
+   93 MULDIV_EXPR: MULDIV_EXPR • STAR UNARY_EXPR
+   94            | MULDIV_EXPR • SLASH UNARY_EXPR
+   95            | MULDIV_EXPR • MOD UNARY_EXPR
+
+    STAR   shift, and go to state 102
+    SLASH  shift, and go to state 103
+    MOD    shift, and go to state 104
+
+    $default  reduce using rule 92 (ADDSUB_EXPR)
+
+
+State 54
+
+   96 MULDIV_EXPR: UNARY_EXPR •
+
+    $default  reduce using rule 96 (MULDIV_EXPR)
+
+
+State 55
+
+   97 UNARY_EXPR: POSTFIX_EXPR •
+  102 POSTFIX_EXPR: POSTFIX_EXPR • PLUSPLUS
+  103             | POSTFIX_EXPR • MINUSMINUS
+
+    PLUSPLUS    shift, and go to state 105
+    MINUSMINUS  shift, and go to state 106
+
+    $default  reduce using rule 97 (UNARY_EXPR)
+
+
+State 56
+
+  101 POSTFIX_EXPR: BASIC_EXPR •
+
+    $default  reduce using rule 101 (POSTFIX_EXPR)
+
+
+State 57
+
+  107 BASIC_EXPR: FUNC_CALL_EXPR •
+
+    $default  reduce using rule 107 (BASIC_EXPR)
+
+
+State 58
+
+   51 ASSIGN_EXPR: LEFT_VAL_EXPR • ASSIGN ASSIGN_EXPR
+   52            | LEFT_VAL_EXPR • PLUSEQ ASSIGN_EXPR
+   53            | LEFT_VAL_EXPR • MINUSEQ ASSIGN_EXPR
+   54            | LEFT_VAL_EXPR • MULEQ ASSIGN_EXPR
+   55            | LEFT_VAL_EXPR • DIVEQ ASSIGN_EXPR
+   56            | LEFT_VAL_EXPR • MODEQ ASSIGN_EXPR
+   57            | LEFT_VAL_EXPR • BITOREQ ASSIGN_EXPR
+   58            | LEFT_VAL_EXPR • BITANDEQ ASSIGN_EXPR
+   59            | LEFT_VAL_EXPR • BITXOREQ ASSIGN_EXPR
+   60            | LEFT_VAL_EXPR • LSHIFTEQ ASSIGN_EXPR
+   61            | LEFT_VAL_EXPR • RSHIFTEQ ASSIGN_EXPR
+  105 BASIC_EXPR: LEFT_VAL_EXPR •
+
+    ASSIGN    shift, and go to state 107
+    PLUSEQ    shift, and go to state 108
+    MINUSEQ   shift, and go to state 109
+    MULEQ     shift, and go to state 110
+    DIVEQ     shift, and go to state 111
+    MODEQ     shift, and go to state 112
+    BITOREQ   shift, and go to state 113
+    BITANDEQ  shift, and go to state 114
+    BITXOREQ  shift, and go to state 115
+    LSHIFTEQ  shift, and go to state 116
+    RSHIFTEQ  shift, and go to state 117
+
+    $default  reduce using rule 105 (BASIC_EXPR)
+
+
+State 59
+
+  104 BASIC_EXPR: LITERAL_EXPR •
+
+    $default  reduce using rule 104 (BASIC_EXPR)
+
+
+State 60
+
+   18 VAR_DECLARATION: TYPE • VAR_DECLARATOR_LIST
+   25 FUNC_DECL_STMT: TYPE • IDENT LPAREN PARAM_DECLARATOR_LIST RPAREN FUNC_BODY
+
+    IDENT  shift, and go to state 118
+
+    VAR_DECLARATOR       go to state 119
+    VAR_DECLARATOR_LIST  go to state 120
+    LEFT_VAL_EXPR        go to state 121
+
+
+State 61
+
+   98 UNARY_EXPR: UNARY_OP • UNARY_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    UNARY_EXPR      go to state 122
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 62
+
+  108 FUNC_CALL_EXPR: IDENT LPAREN • RPAREN
+  109               | IDENT LPAREN • EXPR_LIST RPAREN
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    RPAREN        shift, and go to state 124
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR_LIST         go to state 125
+    NOCOMMA_EXPR      go to state 126
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 63
+
+  110 ARRAY_DIMENSION_EXPR: LBRACKET • NOCOMMA_EXPR RBRACKET
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 127
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 64
+
+  111 ARRAY_DIMENSION_EXPR_LIST: ARRAY_DIMENSION_EXPR •
+
+    $default  reduce using rule 111 (ARRAY_DIMENSION_EXPR_LIST)
+
+
+State 65
+
+  112 ARRAY_DIMENSION_EXPR_LIST: ARRAY_DIMENSION_EXPR_LIST • ARRAY_DIMENSION_EXPR
+  114 LEFT_VAL_EXPR: IDENT ARRAY_DIMENSION_EXPR_LIST •
+
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 114 (LEFT_VAL_EXPR)
+
+    ARRAY_DIMENSION_EXPR  go to state 128
+
+
+State 66
+
+   28 IF_STMT: IF LPAREN • EXPR RPAREN STMT
+   29        | IF LPAREN • EXPR RPAREN STMT ELSE STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 129
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 67
+
+   26 FOR_STMT: FOR LPAREN • VAR_DECLARATION SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+   27         | FOR LPAREN • EXPR SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    CONST         shift, and go to state 12
+    LPAREN        shift, and go to state 14
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    VAR_DECLARATION   go to state 130
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 131
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 132
+    UNARY_OP          go to state 61
+
+
+State 68
+
+   33 WHILE_STMT: WHILE LPAREN • EXPR RPAREN STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 133
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 69
+
+   16 CONTINUE_STMT: CONTINUE SEMICOLON •
+
+    $default  reduce using rule 16 (CONTINUE_STMT)
+
+
+State 70
+
+   30 BREAK_STMT: BREAK SEMICOLON •
+
+    $default  reduce using rule 30 (BREAK_STMT)
+
+
+State 71
+
+   31 RETURN_STMT: RETURN SEMICOLON •
+
+    $default  reduce using rule 31 (RETURN_STMT)
+
+
+State 72
+
+   32 RETURN_STMT: RETURN EXPR • SEMICOLON
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    SEMICOLON  shift, and go to state 134
+    COMMA      shift, and go to state 85
+
+
+State 73
+
+   19 VAR_DECLARATION: CONST TYPE • VAR_DECLARATOR_LIST
+
+    IDENT  shift, and go to state 77
+
+    VAR_DECLARATOR       go to state 119
+    VAR_DECLARATOR_LIST  go to state 135
+    LEFT_VAL_EXPR        go to state 121
+
+
+State 74
+
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+  106 BASIC_EXPR: LPAREN EXPR • RPAREN
+
+    COMMA   shift, and go to state 85
+    RPAREN  shift, and go to state 136
+
+
+State 75
+
+   21 BLOCK_STMT: LBRACE RBRACE •
+
+    $default  reduce using rule 21 (BLOCK_STMT)
+
+
+State 76
+
+    4 STMT_LIST: STMT_LIST • STMT
+   22 BLOCK_STMT: LBRACE STMT_LIST • RBRACE
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    RBRACE        shift, and go to state 137
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 82
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 77
+
+  113 LEFT_VAL_EXPR: IDENT •
+  114              | IDENT • ARRAY_DIMENSION_EXPR_LIST
+
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 113 (LEFT_VAL_EXPR)
+
+    ARRAY_DIMENSION_EXPR       go to state 64
+    ARRAY_DIMENSION_EXPR_LIST  go to state 65
+
+
+State 78
+
+   99 UNARY_EXPR: PLUSPLUS LEFT_VAL_EXPR •
+
+    $default  reduce using rule 99 (UNARY_EXPR)
+
+
+State 79
+
+  100 UNARY_EXPR: MINUSMINUS LEFT_VAL_EXPR •
+
+    $default  reduce using rule 100 (UNARY_EXPR)
+
+
+State 80
+
+    0 $accept: PROGRAM $end •
+
+    $default  accept
+
+
+State 81
+
+    2 PROGRAM: PROGRAM END •
+
+    $default  reduce using rule 2 (PROGRAM)
+
+
+State 82
+
+    4 STMT_LIST: STMT_LIST STMT •
+
+    $default  reduce using rule 4 (STMT_LIST)
+
+
+State 83
+
+   20 VAR_DECL_STMT: VAR_DECLARATION SEMICOLON •
+
+    $default  reduce using rule 20 (VAR_DECL_STMT)
+
+
+State 84
+
+   17 EXPR_STMT: EXPR SEMICOLON •
+
+    $default  reduce using rule 17 (EXPR_STMT)
+
+
+State 85
+
+   65 EXPR: EXPR COMMA • NOCOMMA_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 138
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 86
+
+   67 LOGICAL_OR_EXPR: LOGICAL_OR_EXPR OR • LOGICAL_AND_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    LOGICAL_AND_EXPR  go to state 139
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 123
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 87
+
+   70 CONDITIONAL_EXPR: LOGICAL_OR_EXPR QUESTION • EXPR COLON CONDITIONAL_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 140
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 88
+
+   71 LOGICAL_AND_EXPR: LOGICAL_AND_EXPR AND • BIT_OR_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    EQUALITY_EXPR    go to state 46
+    RELATIONAL_EXPR  go to state 47
+    SHIFT_EXPR       go to state 48
+    BIT_OR_EXPR      go to state 141
+    BIT_XOR_EXPR     go to state 50
+    BIT_AND_EXPR     go to state 51
+    ADDSUB_EXPR      go to state 52
+    MULDIV_EXPR      go to state 53
+    UNARY_EXPR       go to state 54
+    POSTFIX_EXPR     go to state 55
+    BASIC_EXPR       go to state 56
+    FUNC_CALL_EXPR   go to state 57
+    LEFT_VAL_EXPR    go to state 123
+    LITERAL_EXPR     go to state 59
+    UNARY_OP         go to state 61
+
+
+State 89
+
+   73 EQUALITY_EXPR: EQUALITY_EXPR EQ • RELATIONAL_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    RELATIONAL_EXPR  go to state 142
+    SHIFT_EXPR       go to state 48
+    ADDSUB_EXPR      go to state 52
+    MULDIV_EXPR      go to state 53
+    UNARY_EXPR       go to state 54
+    POSTFIX_EXPR     go to state 55
+    BASIC_EXPR       go to state 56
+    FUNC_CALL_EXPR   go to state 57
+    LEFT_VAL_EXPR    go to state 123
+    LITERAL_EXPR     go to state 59
+    UNARY_OP         go to state 61
+
+
+State 90
+
+   74 EQUALITY_EXPR: EQUALITY_EXPR NE • RELATIONAL_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    RELATIONAL_EXPR  go to state 143
+    SHIFT_EXPR       go to state 48
+    ADDSUB_EXPR      go to state 52
+    MULDIV_EXPR      go to state 53
+    UNARY_EXPR       go to state 54
+    POSTFIX_EXPR     go to state 55
+    BASIC_EXPR       go to state 56
+    FUNC_CALL_EXPR   go to state 57
+    LEFT_VAL_EXPR    go to state 123
+    LITERAL_EXPR     go to state 59
+    UNARY_OP         go to state 61
+
+
+State 91
+
+   76 RELATIONAL_EXPR: RELATIONAL_EXPR LT • SHIFT_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    SHIFT_EXPR      go to state 144
+    ADDSUB_EXPR     go to state 52
+    MULDIV_EXPR     go to state 53
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 92
+
+   77 RELATIONAL_EXPR: RELATIONAL_EXPR LE • SHIFT_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    SHIFT_EXPR      go to state 145
+    ADDSUB_EXPR     go to state 52
+    MULDIV_EXPR     go to state 53
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 93
+
+   78 RELATIONAL_EXPR: RELATIONAL_EXPR GT • SHIFT_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    SHIFT_EXPR      go to state 146
+    ADDSUB_EXPR     go to state 52
+    MULDIV_EXPR     go to state 53
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 94
+
+   79 RELATIONAL_EXPR: RELATIONAL_EXPR GE • SHIFT_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    SHIFT_EXPR      go to state 147
+    ADDSUB_EXPR     go to state 52
+    MULDIV_EXPR     go to state 53
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 95
+
+   81 SHIFT_EXPR: SHIFT_EXPR LSHIFT • ADDSUB_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ADDSUB_EXPR     go to state 148
+    MULDIV_EXPR     go to state 53
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 96
+
+   82 SHIFT_EXPR: SHIFT_EXPR RSHIFT • ADDSUB_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ADDSUB_EXPR     go to state 149
+    MULDIV_EXPR     go to state 53
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 97
+
+   84 BIT_OR_EXPR: BIT_OR_EXPR BITOR • BIT_XOR_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    EQUALITY_EXPR    go to state 46
+    RELATIONAL_EXPR  go to state 47
+    SHIFT_EXPR       go to state 48
+    BIT_XOR_EXPR     go to state 150
+    BIT_AND_EXPR     go to state 51
+    ADDSUB_EXPR      go to state 52
+    MULDIV_EXPR      go to state 53
+    UNARY_EXPR       go to state 54
+    POSTFIX_EXPR     go to state 55
+    BASIC_EXPR       go to state 56
+    FUNC_CALL_EXPR   go to state 57
+    LEFT_VAL_EXPR    go to state 123
+    LITERAL_EXPR     go to state 59
+    UNARY_OP         go to state 61
+
+
+State 98
+
+   86 BIT_XOR_EXPR: BIT_XOR_EXPR BITXOR • BIT_AND_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    EQUALITY_EXPR    go to state 46
+    RELATIONAL_EXPR  go to state 47
+    SHIFT_EXPR       go to state 48
+    BIT_AND_EXPR     go to state 151
+    ADDSUB_EXPR      go to state 52
+    MULDIV_EXPR      go to state 53
+    UNARY_EXPR       go to state 54
+    POSTFIX_EXPR     go to state 55
+    BASIC_EXPR       go to state 56
+    FUNC_CALL_EXPR   go to state 57
+    LEFT_VAL_EXPR    go to state 123
+    LITERAL_EXPR     go to state 59
+    UNARY_OP         go to state 61
+
+
+State 99
+
+   88 BIT_AND_EXPR: BIT_AND_EXPR BITAND • EQUALITY_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    EQUALITY_EXPR    go to state 152
+    RELATIONAL_EXPR  go to state 47
+    SHIFT_EXPR       go to state 48
+    ADDSUB_EXPR      go to state 52
+    MULDIV_EXPR      go to state 53
+    UNARY_EXPR       go to state 54
+    POSTFIX_EXPR     go to state 55
+    BASIC_EXPR       go to state 56
+    FUNC_CALL_EXPR   go to state 57
+    LEFT_VAL_EXPR    go to state 123
+    LITERAL_EXPR     go to state 59
+    UNARY_OP         go to state 61
+
+
+State 100
+
+   90 ADDSUB_EXPR: ADDSUB_EXPR PLUS • MULDIV_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    MULDIV_EXPR     go to state 153
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 101
+
+   91 ADDSUB_EXPR: ADDSUB_EXPR MINUS • MULDIV_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    MULDIV_EXPR     go to state 154
+    UNARY_EXPR      go to state 54
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 102
+
+   93 MULDIV_EXPR: MULDIV_EXPR STAR • UNARY_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    UNARY_EXPR      go to state 155
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 103
+
+   94 MULDIV_EXPR: MULDIV_EXPR SLASH • UNARY_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    UNARY_EXPR      go to state 156
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 104
+
+   95 MULDIV_EXPR: MULDIV_EXPR MOD • UNARY_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    UNARY_EXPR      go to state 157
+    POSTFIX_EXPR    go to state 55
+    BASIC_EXPR      go to state 56
+    FUNC_CALL_EXPR  go to state 57
+    LEFT_VAL_EXPR   go to state 123
+    LITERAL_EXPR    go to state 59
+    UNARY_OP        go to state 61
+
+
+State 105
+
+  102 POSTFIX_EXPR: POSTFIX_EXPR PLUSPLUS •
+
+    $default  reduce using rule 102 (POSTFIX_EXPR)
+
+
+State 106
+
+  103 POSTFIX_EXPR: POSTFIX_EXPR MINUSMINUS •
+
+    $default  reduce using rule 103 (POSTFIX_EXPR)
+
+
+State 107
+
+   51 ASSIGN_EXPR: LEFT_VAL_EXPR ASSIGN • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 158
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 108
+
+   52 ASSIGN_EXPR: LEFT_VAL_EXPR PLUSEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 159
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 109
+
+   53 ASSIGN_EXPR: LEFT_VAL_EXPR MINUSEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 160
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 110
+
+   54 ASSIGN_EXPR: LEFT_VAL_EXPR MULEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 161
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 111
+
+   55 ASSIGN_EXPR: LEFT_VAL_EXPR DIVEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 162
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 112
+
+   56 ASSIGN_EXPR: LEFT_VAL_EXPR MODEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 163
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 113
+
+   57 ASSIGN_EXPR: LEFT_VAL_EXPR BITOREQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 164
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 114
+
+   58 ASSIGN_EXPR: LEFT_VAL_EXPR BITANDEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 165
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 115
+
+   59 ASSIGN_EXPR: LEFT_VAL_EXPR BITXOREQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 166
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 116
+
+   60 ASSIGN_EXPR: LEFT_VAL_EXPR LSHIFTEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 167
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 117
+
+   61 ASSIGN_EXPR: LEFT_VAL_EXPR RSHIFTEQ • ASSIGN_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 168
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 118
+
+   25 FUNC_DECL_STMT: TYPE IDENT • LPAREN PARAM_DECLARATOR_LIST RPAREN FUNC_BODY
+  113 LEFT_VAL_EXPR: IDENT •
+  114              | IDENT • ARRAY_DIMENSION_EXPR_LIST
+
+    LPAREN    shift, and go to state 169
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 113 (LEFT_VAL_EXPR)
+
+    ARRAY_DIMENSION_EXPR       go to state 64
+    ARRAY_DIMENSION_EXPR_LIST  go to state 65
+
+
+State 119
+
+   43 VAR_DECLARATOR_LIST: VAR_DECLARATOR •
+
+    $default  reduce using rule 43 (VAR_DECLARATOR_LIST)
+
+
+State 120
+
+   18 VAR_DECLARATION: TYPE VAR_DECLARATOR_LIST •
+   44 VAR_DECLARATOR_LIST: VAR_DECLARATOR_LIST • COMMA VAR_DECLARATOR
+
+    COMMA  shift, and go to state 170
+
+    $default  reduce using rule 18 (VAR_DECLARATION)
+
+
+State 121
+
+   41 VAR_DECLARATOR: LEFT_VAL_EXPR •
+   42               | LEFT_VAL_EXPR • ASSIGN INITIALIZER
+
+    ASSIGN  shift, and go to state 171
+
+    $default  reduce using rule 41 (VAR_DECLARATOR)
+
+
+State 122
+
+   98 UNARY_EXPR: UNARY_OP UNARY_EXPR •
+
+    $default  reduce using rule 98 (UNARY_EXPR)
+
+
+State 123
+
+  105 BASIC_EXPR: LEFT_VAL_EXPR •
+
+    $default  reduce using rule 105 (BASIC_EXPR)
+
+
+State 124
+
+  108 FUNC_CALL_EXPR: IDENT LPAREN RPAREN •
+
+    $default  reduce using rule 108 (FUNC_CALL_EXPR)
+
+
+State 125
+
+   63 EXPR_LIST: EXPR_LIST • COMMA NOCOMMA_EXPR
+  109 FUNC_CALL_EXPR: IDENT LPAREN EXPR_LIST • RPAREN
+
+    COMMA   shift, and go to state 172
+    RPAREN  shift, and go to state 173
+
+
+State 126
+
+   62 EXPR_LIST: NOCOMMA_EXPR •
+
+    $default  reduce using rule 62 (EXPR_LIST)
+
+
+State 127
+
+  110 ARRAY_DIMENSION_EXPR: LBRACKET NOCOMMA_EXPR • RBRACKET
+
+    RBRACKET  shift, and go to state 174
+
+
+State 128
+
+  112 ARRAY_DIMENSION_EXPR_LIST: ARRAY_DIMENSION_EXPR_LIST ARRAY_DIMENSION_EXPR •
+
+    $default  reduce using rule 112 (ARRAY_DIMENSION_EXPR_LIST)
+
+
+State 129
+
+   28 IF_STMT: IF LPAREN EXPR • RPAREN STMT
+   29        | IF LPAREN EXPR • RPAREN STMT ELSE STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    COMMA   shift, and go to state 85
+    RPAREN  shift, and go to state 175
+
+
+State 130
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION • SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+
+    SEMICOLON  shift, and go to state 176
+
+
+State 131
+
+   27 FOR_STMT: FOR LPAREN EXPR • SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    SEMICOLON  shift, and go to state 177
+    COMMA      shift, and go to state 85
+
+
+State 132
+
+   18 VAR_DECLARATION: TYPE • VAR_DECLARATOR_LIST
+
+    IDENT  shift, and go to state 77
+
+    VAR_DECLARATOR       go to state 119
+    VAR_DECLARATOR_LIST  go to state 120
+    LEFT_VAL_EXPR        go to state 121
+
+
+State 133
+
+   33 WHILE_STMT: WHILE LPAREN EXPR • RPAREN STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    COMMA   shift, and go to state 85
+    RPAREN  shift, and go to state 178
+
+
+State 134
+
+   32 RETURN_STMT: RETURN EXPR SEMICOLON •
+
+    $default  reduce using rule 32 (RETURN_STMT)
+
+
+State 135
+
+   19 VAR_DECLARATION: CONST TYPE VAR_DECLARATOR_LIST •
+   44 VAR_DECLARATOR_LIST: VAR_DECLARATOR_LIST • COMMA VAR_DECLARATOR
+
+    COMMA  shift, and go to state 170
+
+    $default  reduce using rule 19 (VAR_DECLARATION)
+
+
+State 136
+
+  106 BASIC_EXPR: LPAREN EXPR RPAREN •
+
+    $default  reduce using rule 106 (BASIC_EXPR)
+
+
+State 137
+
+   22 BLOCK_STMT: LBRACE STMT_LIST RBRACE •
+
+    $default  reduce using rule 22 (BLOCK_STMT)
+
+
+State 138
+
+   65 EXPR: EXPR COMMA NOCOMMA_EXPR •
+
+    $default  reduce using rule 65 (EXPR)
+
+
+State 139
+
+   67 LOGICAL_OR_EXPR: LOGICAL_OR_EXPR OR LOGICAL_AND_EXPR •
+   71 LOGICAL_AND_EXPR: LOGICAL_AND_EXPR • AND BIT_OR_EXPR
+
+    AND  shift, and go to state 88
+
+    $default  reduce using rule 67 (LOGICAL_OR_EXPR)
+
+
+State 140
+
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+   70 CONDITIONAL_EXPR: LOGICAL_OR_EXPR QUESTION EXPR • COLON CONDITIONAL_EXPR
+
+    COMMA  shift, and go to state 85
+    COLON  shift, and go to state 179
+
+
+State 141
+
+   71 LOGICAL_AND_EXPR: LOGICAL_AND_EXPR AND BIT_OR_EXPR •
+   84 BIT_OR_EXPR: BIT_OR_EXPR • BITOR BIT_XOR_EXPR
+
+    BITOR  shift, and go to state 97
+
+    $default  reduce using rule 71 (LOGICAL_AND_EXPR)
+
+
+State 142
+
+   73 EQUALITY_EXPR: EQUALITY_EXPR EQ RELATIONAL_EXPR •
+   76 RELATIONAL_EXPR: RELATIONAL_EXPR • LT SHIFT_EXPR
+   77                | RELATIONAL_EXPR • LE SHIFT_EXPR
+   78                | RELATIONAL_EXPR • GT SHIFT_EXPR
+   79                | RELATIONAL_EXPR • GE SHIFT_EXPR
+
+    LT  shift, and go to state 91
+    LE  shift, and go to state 92
+    GT  shift, and go to state 93
+    GE  shift, and go to state 94
+
+    $default  reduce using rule 73 (EQUALITY_EXPR)
+
+
+State 143
+
+   74 EQUALITY_EXPR: EQUALITY_EXPR NE RELATIONAL_EXPR •
+   76 RELATIONAL_EXPR: RELATIONAL_EXPR • LT SHIFT_EXPR
+   77                | RELATIONAL_EXPR • LE SHIFT_EXPR
+   78                | RELATIONAL_EXPR • GT SHIFT_EXPR
+   79                | RELATIONAL_EXPR • GE SHIFT_EXPR
+
+    LT  shift, and go to state 91
+    LE  shift, and go to state 92
+    GT  shift, and go to state 93
+    GE  shift, and go to state 94
+
+    $default  reduce using rule 74 (EQUALITY_EXPR)
+
+
+State 144
+
+   76 RELATIONAL_EXPR: RELATIONAL_EXPR LT SHIFT_EXPR •
+   81 SHIFT_EXPR: SHIFT_EXPR • LSHIFT ADDSUB_EXPR
+   82           | SHIFT_EXPR • RSHIFT ADDSUB_EXPR
+
+    LSHIFT  shift, and go to state 95
+    RSHIFT  shift, and go to state 96
+
+    $default  reduce using rule 76 (RELATIONAL_EXPR)
+
+
+State 145
+
+   77 RELATIONAL_EXPR: RELATIONAL_EXPR LE SHIFT_EXPR •
+   81 SHIFT_EXPR: SHIFT_EXPR • LSHIFT ADDSUB_EXPR
+   82           | SHIFT_EXPR • RSHIFT ADDSUB_EXPR
+
+    LSHIFT  shift, and go to state 95
+    RSHIFT  shift, and go to state 96
+
+    $default  reduce using rule 77 (RELATIONAL_EXPR)
+
+
+State 146
+
+   78 RELATIONAL_EXPR: RELATIONAL_EXPR GT SHIFT_EXPR •
+   81 SHIFT_EXPR: SHIFT_EXPR • LSHIFT ADDSUB_EXPR
+   82           | SHIFT_EXPR • RSHIFT ADDSUB_EXPR
+
+    LSHIFT  shift, and go to state 95
+    RSHIFT  shift, and go to state 96
+
+    $default  reduce using rule 78 (RELATIONAL_EXPR)
+
+
+State 147
+
+   79 RELATIONAL_EXPR: RELATIONAL_EXPR GE SHIFT_EXPR •
+   81 SHIFT_EXPR: SHIFT_EXPR • LSHIFT ADDSUB_EXPR
+   82           | SHIFT_EXPR • RSHIFT ADDSUB_EXPR
+
+    LSHIFT  shift, and go to state 95
+    RSHIFT  shift, and go to state 96
+
+    $default  reduce using rule 79 (RELATIONAL_EXPR)
+
+
+State 148
+
+   81 SHIFT_EXPR: SHIFT_EXPR LSHIFT ADDSUB_EXPR •
+   90 ADDSUB_EXPR: ADDSUB_EXPR • PLUS MULDIV_EXPR
+   91            | ADDSUB_EXPR • MINUS MULDIV_EXPR
+
+    PLUS   shift, and go to state 100
+    MINUS  shift, and go to state 101
+
+    $default  reduce using rule 81 (SHIFT_EXPR)
+
+
+State 149
+
+   82 SHIFT_EXPR: SHIFT_EXPR RSHIFT ADDSUB_EXPR •
+   90 ADDSUB_EXPR: ADDSUB_EXPR • PLUS MULDIV_EXPR
+   91            | ADDSUB_EXPR • MINUS MULDIV_EXPR
+
+    PLUS   shift, and go to state 100
+    MINUS  shift, and go to state 101
+
+    $default  reduce using rule 82 (SHIFT_EXPR)
+
+
+State 150
+
+   84 BIT_OR_EXPR: BIT_OR_EXPR BITOR BIT_XOR_EXPR •
+   86 BIT_XOR_EXPR: BIT_XOR_EXPR • BITXOR BIT_AND_EXPR
+
+    BITXOR  shift, and go to state 98
+
+    $default  reduce using rule 84 (BIT_OR_EXPR)
+
+
+State 151
+
+   86 BIT_XOR_EXPR: BIT_XOR_EXPR BITXOR BIT_AND_EXPR •
+   88 BIT_AND_EXPR: BIT_AND_EXPR • BITAND EQUALITY_EXPR
+
+    BITAND  shift, and go to state 99
+
+    $default  reduce using rule 86 (BIT_XOR_EXPR)
+
+
+State 152
+
+   73 EQUALITY_EXPR: EQUALITY_EXPR • EQ RELATIONAL_EXPR
+   74              | EQUALITY_EXPR • NE RELATIONAL_EXPR
+   88 BIT_AND_EXPR: BIT_AND_EXPR BITAND EQUALITY_EXPR •
+
+    EQ  shift, and go to state 89
+    NE  shift, and go to state 90
+
+    $default  reduce using rule 88 (BIT_AND_EXPR)
+
+
+State 153
+
+   90 ADDSUB_EXPR: ADDSUB_EXPR PLUS MULDIV_EXPR •
+   93 MULDIV_EXPR: MULDIV_EXPR • STAR UNARY_EXPR
+   94            | MULDIV_EXPR • SLASH UNARY_EXPR
+   95            | MULDIV_EXPR • MOD UNARY_EXPR
+
+    STAR   shift, and go to state 102
+    SLASH  shift, and go to state 103
+    MOD    shift, and go to state 104
+
+    $default  reduce using rule 90 (ADDSUB_EXPR)
+
+
+State 154
+
+   91 ADDSUB_EXPR: ADDSUB_EXPR MINUS MULDIV_EXPR •
+   93 MULDIV_EXPR: MULDIV_EXPR • STAR UNARY_EXPR
+   94            | MULDIV_EXPR • SLASH UNARY_EXPR
+   95            | MULDIV_EXPR • MOD UNARY_EXPR
+
+    STAR   shift, and go to state 102
+    SLASH  shift, and go to state 103
+    MOD    shift, and go to state 104
+
+    $default  reduce using rule 91 (ADDSUB_EXPR)
+
+
+State 155
+
+   93 MULDIV_EXPR: MULDIV_EXPR STAR UNARY_EXPR •
+
+    $default  reduce using rule 93 (MULDIV_EXPR)
+
+
+State 156
+
+   94 MULDIV_EXPR: MULDIV_EXPR SLASH UNARY_EXPR •
+
+    $default  reduce using rule 94 (MULDIV_EXPR)
+
+
+State 157
+
+   95 MULDIV_EXPR: MULDIV_EXPR MOD UNARY_EXPR •
+
+    $default  reduce using rule 95 (MULDIV_EXPR)
+
+
+State 158
+
+   51 ASSIGN_EXPR: LEFT_VAL_EXPR ASSIGN ASSIGN_EXPR •
+
+    $default  reduce using rule 51 (ASSIGN_EXPR)
+
+
+State 159
+
+   52 ASSIGN_EXPR: LEFT_VAL_EXPR PLUSEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 52 (ASSIGN_EXPR)
+
+
+State 160
+
+   53 ASSIGN_EXPR: LEFT_VAL_EXPR MINUSEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 53 (ASSIGN_EXPR)
+
+
+State 161
+
+   54 ASSIGN_EXPR: LEFT_VAL_EXPR MULEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 54 (ASSIGN_EXPR)
+
+
+State 162
+
+   55 ASSIGN_EXPR: LEFT_VAL_EXPR DIVEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 55 (ASSIGN_EXPR)
+
+
+State 163
+
+   56 ASSIGN_EXPR: LEFT_VAL_EXPR MODEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 56 (ASSIGN_EXPR)
+
+
+State 164
+
+   57 ASSIGN_EXPR: LEFT_VAL_EXPR BITOREQ ASSIGN_EXPR •
+
+    $default  reduce using rule 57 (ASSIGN_EXPR)
+
+
+State 165
+
+   58 ASSIGN_EXPR: LEFT_VAL_EXPR BITANDEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 58 (ASSIGN_EXPR)
+
+
+State 166
+
+   59 ASSIGN_EXPR: LEFT_VAL_EXPR BITXOREQ ASSIGN_EXPR •
+
+    $default  reduce using rule 59 (ASSIGN_EXPR)
+
+
+State 167
+
+   60 ASSIGN_EXPR: LEFT_VAL_EXPR LSHIFTEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 60 (ASSIGN_EXPR)
+
+
+State 168
+
+   61 ASSIGN_EXPR: LEFT_VAL_EXPR RSHIFTEQ ASSIGN_EXPR •
+
+    $default  reduce using rule 61 (ASSIGN_EXPR)
+
+
+State 169
+
+   25 FUNC_DECL_STMT: TYPE IDENT LPAREN • PARAM_DECLARATOR_LIST RPAREN FUNC_BODY
+
+    INT     shift, and go to state 16
+    FLOAT   shift, and go to state 17
+    VOID    shift, and go to state 18
+    DOUBLE  shift, and go to state 19
+
+    $default  reduce using rule 38 (PARAM_DECLARATOR_LIST)
+
+    PARAM_DECLARATOR       go to state 180
+    PARAM_DECLARATOR_LIST  go to state 181
+    TYPE                   go to state 182
+
+
+State 170
+
+   44 VAR_DECLARATOR_LIST: VAR_DECLARATOR_LIST COMMA • VAR_DECLARATOR
+
+    IDENT  shift, and go to state 77
+
+    VAR_DECLARATOR  go to state 183
+    LEFT_VAL_EXPR   go to state 121
+
+
+State 171
+
+   42 VAR_DECLARATOR: LEFT_VAL_EXPR ASSIGN • INITIALIZER
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 184
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    INITIALIZER       go to state 185
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 186
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 172
+
+   63 EXPR_LIST: EXPR_LIST COMMA • NOCOMMA_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 187
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 173
+
+  109 FUNC_CALL_EXPR: IDENT LPAREN EXPR_LIST RPAREN •
+
+    $default  reduce using rule 109 (FUNC_CALL_EXPR)
+
+
+State 174
+
+  110 ARRAY_DIMENSION_EXPR: LBRACKET NOCOMMA_EXPR RBRACKET •
+
+    $default  reduce using rule 110 (ARRAY_DIMENSION_EXPR)
+
+
+State 175
+
+   28 IF_STMT: IF LPAREN EXPR RPAREN • STMT
+   29        | IF LPAREN EXPR RPAREN • STMT ELSE STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 188
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 176
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON • EXPR SEMICOLON EXPR RPAREN STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 189
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 177
+
+   27 FOR_STMT: FOR LPAREN EXPR SEMICOLON • EXPR SEMICOLON EXPR RPAREN STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 190
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 178
+
+   33 WHILE_STMT: WHILE LPAREN EXPR RPAREN • STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 191
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 179
+
+   70 CONDITIONAL_EXPR: LOGICAL_OR_EXPR QUESTION EXPR COLON • CONDITIONAL_EXPR
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 192
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 123
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 180
+
+   39 PARAM_DECLARATOR_LIST: PARAM_DECLARATOR •
+
+    $default  reduce using rule 39 (PARAM_DECLARATOR_LIST)
+
+
+State 181
+
+   25 FUNC_DECL_STMT: TYPE IDENT LPAREN PARAM_DECLARATOR_LIST • RPAREN FUNC_BODY
+   40 PARAM_DECLARATOR_LIST: PARAM_DECLARATOR_LIST • COMMA PARAM_DECLARATOR
+
+    COMMA   shift, and go to state 193
+    RPAREN  shift, and go to state 194
+
+
+State 182
+
+   34 PARAM_DECLARATOR: TYPE • IDENT
+   35                 | TYPE • IDENT LBRACKET RBRACKET
+   36                 | TYPE • IDENT ARRAY_DIMENSION_EXPR_LIST
+   37                 | TYPE • IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST
+
+    IDENT  shift, and go to state 195
+
+
+State 183
+
+   44 VAR_DECLARATOR_LIST: VAR_DECLARATOR_LIST COMMA VAR_DECLARATOR •
+
+    $default  reduce using rule 44 (VAR_DECLARATOR_LIST)
+
+
+State 184
+
+   46 INITIALIZER: LBRACE • RBRACE
+   47            | LBRACE • INITIALIZER_LIST RBRACE
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 184
+    RBRACE        shift, and go to state 196
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    INITIALIZER       go to state 197
+    INITIALIZER_LIST  go to state 198
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 186
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 185
+
+   42 VAR_DECLARATOR: LEFT_VAL_EXPR ASSIGN INITIALIZER •
+
+    $default  reduce using rule 42 (VAR_DECLARATOR)
+
+
+State 186
+
+   45 INITIALIZER: NOCOMMA_EXPR •
+
+    $default  reduce using rule 45 (INITIALIZER)
+
+
+State 187
+
+   63 EXPR_LIST: EXPR_LIST COMMA NOCOMMA_EXPR •
+
+    $default  reduce using rule 63 (EXPR_LIST)
+
+
+State 188
+
+   28 IF_STMT: IF LPAREN EXPR RPAREN STMT •
+   29        | IF LPAREN EXPR RPAREN STMT • ELSE STMT
+
+    ELSE  shift, and go to state 199
+
+    $default  reduce using rule 28 (IF_STMT)
+
+
+State 189
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON EXPR • SEMICOLON EXPR RPAREN STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    SEMICOLON  shift, and go to state 200
+    COMMA      shift, and go to state 85
+
+
+State 190
+
+   27 FOR_STMT: FOR LPAREN EXPR SEMICOLON EXPR • SEMICOLON EXPR RPAREN STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    SEMICOLON  shift, and go to state 201
+    COMMA      shift, and go to state 85
+
+
+State 191
+
+   33 WHILE_STMT: WHILE LPAREN EXPR RPAREN STMT •
+
+    $default  reduce using rule 33 (WHILE_STMT)
+
+
+State 192
+
+   70 CONDITIONAL_EXPR: LOGICAL_OR_EXPR QUESTION EXPR COLON CONDITIONAL_EXPR •
+
+    $default  reduce using rule 70 (CONDITIONAL_EXPR)
+
+
+State 193
+
+   40 PARAM_DECLARATOR_LIST: PARAM_DECLARATOR_LIST COMMA • PARAM_DECLARATOR
+
+    INT     shift, and go to state 16
+    FLOAT   shift, and go to state 17
+    VOID    shift, and go to state 18
+    DOUBLE  shift, and go to state 19
+
+    PARAM_DECLARATOR  go to state 202
+    TYPE              go to state 182
+
+
+State 194
+
+   25 FUNC_DECL_STMT: TYPE IDENT LPAREN PARAM_DECLARATOR_LIST RPAREN • FUNC_BODY
+
+    LBRACE  shift, and go to state 203
+
+    FUNC_BODY  go to state 204
+
+
+State 195
+
+   34 PARAM_DECLARATOR: TYPE IDENT •
+   35                 | TYPE IDENT • LBRACKET RBRACKET
+   36                 | TYPE IDENT • ARRAY_DIMENSION_EXPR_LIST
+   37                 | TYPE IDENT • LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST
+
+    LBRACKET  shift, and go to state 205
+
+    $default  reduce using rule 34 (PARAM_DECLARATOR)
+
+    ARRAY_DIMENSION_EXPR       go to state 64
+    ARRAY_DIMENSION_EXPR_LIST  go to state 206
+
+
+State 196
+
+   46 INITIALIZER: LBRACE RBRACE •
+
+    $default  reduce using rule 46 (INITIALIZER)
+
+
+State 197
+
+   48 INITIALIZER_LIST: INITIALIZER •
+
+    $default  reduce using rule 48 (INITIALIZER_LIST)
+
+
+State 198
+
+   47 INITIALIZER: LBRACE INITIALIZER_LIST • RBRACE
+   49 INITIALIZER_LIST: INITIALIZER_LIST • COMMA INITIALIZER
+
+    COMMA   shift, and go to state 207
+    RBRACE  shift, and go to state 208
+
+
+State 199
+
+   29 IF_STMT: IF LPAREN EXPR RPAREN STMT ELSE • STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 209
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 200
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON EXPR SEMICOLON • EXPR RPAREN STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 210
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 201
+
+   27 FOR_STMT: FOR LPAREN EXPR SEMICOLON EXPR SEMICOLON • EXPR RPAREN STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 211
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 202
+
+   40 PARAM_DECLARATOR_LIST: PARAM_DECLARATOR_LIST COMMA PARAM_DECLARATOR •
+
+    $default  reduce using rule 40 (PARAM_DECLARATOR_LIST)
+
+
+State 203
+
+   23 FUNC_BODY: LBRACE • RBRACE
+   24          | LBRACE • STMT_LIST RBRACE
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    RBRACE        shift, and go to state 212
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT_LIST         go to state 213
+    STMT              go to state 28
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 204
+
+   25 FUNC_DECL_STMT: TYPE IDENT LPAREN PARAM_DECLARATOR_LIST RPAREN FUNC_BODY •
+
+    $default  reduce using rule 25 (FUNC_DECL_STMT)
+
+
+State 205
+
+   35 PARAM_DECLARATOR: TYPE IDENT LBRACKET • RBRACKET
+   37                 | TYPE IDENT LBRACKET • RBRACKET ARRAY_DIMENSION_EXPR_LIST
+  110 ARRAY_DIMENSION_EXPR: LBRACKET • NOCOMMA_EXPR RBRACKET
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    RBRACKET      shift, and go to state 214
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 127
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 206
+
+   36 PARAM_DECLARATOR: TYPE IDENT ARRAY_DIMENSION_EXPR_LIST •
+  112 ARRAY_DIMENSION_EXPR_LIST: ARRAY_DIMENSION_EXPR_LIST • ARRAY_DIMENSION_EXPR
+
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 36 (PARAM_DECLARATOR)
+
+    ARRAY_DIMENSION_EXPR  go to state 128
+
+
+State 207
+
+   49 INITIALIZER_LIST: INITIALIZER_LIST COMMA • INITIALIZER
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 184
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    INITIALIZER       go to state 215
+    ASSIGN_EXPR       go to state 40
+    NOCOMMA_EXPR      go to state 186
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    UNARY_OP          go to state 61
+
+
+State 208
+
+   47 INITIALIZER: LBRACE INITIALIZER_LIST RBRACE •
+
+    $default  reduce using rule 47 (INITIALIZER)
+
+
+State 209
+
+   29 IF_STMT: IF LPAREN EXPR RPAREN STMT ELSE STMT •
+
+    $default  reduce using rule 29 (IF_STMT)
+
+
+State 210
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON EXPR SEMICOLON EXPR • RPAREN STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    COMMA   shift, and go to state 85
+    RPAREN  shift, and go to state 216
+
+
+State 211
+
+   27 FOR_STMT: FOR LPAREN EXPR SEMICOLON EXPR SEMICOLON EXPR • RPAREN STMT
+   65 EXPR: EXPR • COMMA NOCOMMA_EXPR
+
+    COMMA   shift, and go to state 85
+    RPAREN  shift, and go to state 217
+
+
+State 212
+
+   23 FUNC_BODY: LBRACE RBRACE •
+
+    $default  reduce using rule 23 (FUNC_BODY)
+
+
+State 213
+
+    4 STMT_LIST: STMT_LIST • STMT
+   24 FUNC_BODY: LBRACE STMT_LIST • RBRACE
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    RBRACE        shift, and go to state 218
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 82
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 214
+
+   35 PARAM_DECLARATOR: TYPE IDENT LBRACKET RBRACKET •
+   37                 | TYPE IDENT LBRACKET RBRACKET • ARRAY_DIMENSION_EXPR_LIST
+
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 35 (PARAM_DECLARATOR)
+
+    ARRAY_DIMENSION_EXPR       go to state 64
+    ARRAY_DIMENSION_EXPR_LIST  go to state 219
+
+
+State 215
+
+   49 INITIALIZER_LIST: INITIALIZER_LIST COMMA INITIALIZER •
+
+    $default  reduce using rule 49 (INITIALIZER_LIST)
+
+
+State 216
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON EXPR SEMICOLON EXPR RPAREN • STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 220
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 217
+
+   27 FOR_STMT: FOR LPAREN EXPR SEMICOLON EXPR SEMICOLON EXPR RPAREN • STMT
+
+    INT_CONST     shift, and go to state 1
+    LL_CONST      shift, and go to state 2
+    FLOAT_CONST   shift, and go to state 3
+    DOUBLE_CONST  shift, and go to state 4
+    IDENT         shift, and go to state 5
+    IF            shift, and go to state 6
+    FOR           shift, and go to state 7
+    WHILE         shift, and go to state 8
+    CONTINUE      shift, and go to state 9
+    BREAK         shift, and go to state 10
+    RETURN        shift, and go to state 11
+    CONST         shift, and go to state 12
+    SEMICOLON     shift, and go to state 13
+    LPAREN        shift, and go to state 14
+    LBRACE        shift, and go to state 15
+    INT           shift, and go to state 16
+    FLOAT         shift, and go to state 17
+    VOID          shift, and go to state 18
+    DOUBLE        shift, and go to state 19
+    PLUS          shift, and go to state 20
+    MINUS         shift, and go to state 21
+    PLUSPLUS      shift, and go to state 22
+    MINUSMINUS    shift, and go to state 23
+    NOT           shift, and go to state 24
+    BITNOT        shift, and go to state 25
+
+    STMT              go to state 221
+    CONTINUE_STMT     go to state 29
+    EXPR_STMT         go to state 30
+    VAR_DECLARATION   go to state 31
+    VAR_DECL_STMT     go to state 32
+    BLOCK_STMT        go to state 33
+    FUNC_DECL_STMT    go to state 34
+    FOR_STMT          go to state 35
+    IF_STMT           go to state 36
+    BREAK_STMT        go to state 37
+    RETURN_STMT       go to state 38
+    WHILE_STMT        go to state 39
+    ASSIGN_EXPR       go to state 40
+    EXPR              go to state 41
+    NOCOMMA_EXPR      go to state 42
+    LOGICAL_OR_EXPR   go to state 43
+    CONDITIONAL_EXPR  go to state 44
+    LOGICAL_AND_EXPR  go to state 45
+    EQUALITY_EXPR     go to state 46
+    RELATIONAL_EXPR   go to state 47
+    SHIFT_EXPR        go to state 48
+    BIT_OR_EXPR       go to state 49
+    BIT_XOR_EXPR      go to state 50
+    BIT_AND_EXPR      go to state 51
+    ADDSUB_EXPR       go to state 52
+    MULDIV_EXPR       go to state 53
+    UNARY_EXPR        go to state 54
+    POSTFIX_EXPR      go to state 55
+    BASIC_EXPR        go to state 56
+    FUNC_CALL_EXPR    go to state 57
+    LEFT_VAL_EXPR     go to state 58
+    LITERAL_EXPR      go to state 59
+    TYPE              go to state 60
+    UNARY_OP          go to state 61
+
+
+State 218
+
+   24 FUNC_BODY: LBRACE STMT_LIST RBRACE •
+
+    $default  reduce using rule 24 (FUNC_BODY)
+
+
+State 219
+
+   37 PARAM_DECLARATOR: TYPE IDENT LBRACKET RBRACKET ARRAY_DIMENSION_EXPR_LIST •
+  112 ARRAY_DIMENSION_EXPR_LIST: ARRAY_DIMENSION_EXPR_LIST • ARRAY_DIMENSION_EXPR
+
+    LBRACKET  shift, and go to state 63
+
+    $default  reduce using rule 37 (PARAM_DECLARATOR)
+
+    ARRAY_DIMENSION_EXPR  go to state 128
+
+
+State 220
+
+   26 FOR_STMT: FOR LPAREN VAR_DECLARATION SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT •
+
+    $default  reduce using rule 26 (FOR_STMT)
+
+
+State 221
+
+   27 FOR_STMT: FOR LPAREN EXPR SEMICOLON EXPR SEMICOLON EXPR RPAREN STMT •
+
+    $default  reduce using rule 27 (FOR_STMT)
