@@ -1,0 +1,6 @@
+s=input()
+a=s.find("AB")
+b=s.find("BA",a+2)
+c=s.find("BA")
+d=s.find("AB",c+2)
+print("YES" if (a!=-1 and b!=-1) or (c!=-1 and d!=-1) else "NO")
